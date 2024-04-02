@@ -23,9 +23,9 @@ use Inertia\Inertia;
 Route::get('/', [ViewController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
-    Route::get('/product', [ViewController::class, 'product'])->name('product');
+    Route::get('product', [ViewController::class, 'product'])->name('product');
 
-    Route::apiResource('/products', ProductController::class);
+    Route::apiResource('products', ProductController::class);
 });
 
 Route::middleware('auth')->group(function () {
