@@ -27,4 +27,15 @@ class StoreProductRequest extends FormRequest
             'quantity' => 'required|integer'
         ];
     }
+
+    public function messages() {
+        return [
+            'code.required' => 'Harap isi kolom kode',
+            'code.string' => 'Mohon isi code menggunakan karakter alphabet',
+            'name.required' => 'Harap isi kolom nama',
+            'name.string' => 'Mohon isi nama menggunakan karakter alphabet',
+            'quantity.required' => 'Harap isi kolom kuantitas',
+            'quantity.integer' => 'Mohon isi kuantitas menggunakan karakter numerik'
+        ];
+    }
 }

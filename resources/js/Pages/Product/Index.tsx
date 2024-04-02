@@ -96,9 +96,20 @@ function ProductIndex({auth}) {
                 name : editProductData.name,
                 quantity : editProductData.quantity
             })
-            getProductData()
-            resetInput()
-            setShowEditModal(false)
+            .then(() => {
+                getProductData()
+                resetInput()
+                setShowEditModal(false)
+            })
+            .catch((error) => {
+                if(error.response) {
+                    const getError = error.response.data.errors
+                    console.log(error.response)
+                    setErrorCode(getError.code[0])
+                    setErrorName(getError.name[0])
+                    setErrorQuantity(getError.quantity[0])
+                }
+            })
         } catch(e) {
             console.error('Internal server error, please wait' + e)
         }
