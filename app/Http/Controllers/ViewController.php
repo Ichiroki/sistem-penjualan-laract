@@ -18,4 +18,8 @@ class ViewController extends Controller
     public function delivery() {
         return Inertia::render('Delivery/Index');
     }
+
+    public function incoming() {
+        return Inertia::render('Incoming/Index');
+    }
 }

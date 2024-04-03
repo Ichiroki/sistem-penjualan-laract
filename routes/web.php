@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DeliveriesController;
+use App\Http\Controllers\IncomingController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ViewController;
@@ -26,9 +27,11 @@ Route::get('/', [ViewController::class, 'dashboard'])->middleware(['auth', 'veri
 Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
     Route::get('product', [ViewController::class, 'product'])->name('product');
     Route::get('delivery', [ViewController::class, 'delivery'])->name('delivery');
+    Route::get('incoming', [ViewController::class, 'incoming'])->name('incoming');
 
     Route::apiResource('products', ProductController::class);
     Route::apiResource('deliveries', DeliveriesController::class);
+    Route::apiResource('incomings', IncomingController::class);
 });
 
 Route::middleware('auth')->group(function () {

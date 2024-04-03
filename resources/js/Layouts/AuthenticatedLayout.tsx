@@ -52,9 +52,9 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                         <Dropdown.Link href={route('product')}>
                                             List
                                         </Dropdown.Link>
-                                        {/* <Dropdown.Link href={route('product.masuk')} active={route().current('product.masuk')}>
-                                            Masuk
-                                        </Dropdown.Link> */}
+                                        <Dropdown.Link href={route('incoming')}>
+                                            Incoming
+                                        </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
                                 <NavLink href={route('delivery')} active={route().current('delivery')}>
