@@ -14,4 +14,8 @@ class ViewController extends Controller
     public function product() {
         return Inertia::render('Product/Index');
     }
+
+    public function delivery() {
+        return Inertia::render('Delivery/Index');
+    }
 }

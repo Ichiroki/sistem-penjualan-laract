@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from 'axios'
-
-interface Product {
-    code: string
-    name: string
-    quantity: number
-}
+import { Product } from "@/types/Product"
 
 export function Product () {
     const [product, setProduct] = useState<Product[]>([])
