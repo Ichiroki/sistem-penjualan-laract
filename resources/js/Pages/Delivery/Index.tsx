@@ -158,7 +158,7 @@ function DeliveryIndex({auth}) {
                                                     <div className='mb-4 w-full'>
                                                         <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
                                                         <select className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setKodeProduct(e.target.value)}>
-                                                            <option value="">Select a product</option>
+                                                                
                                                             {product.map((p) => (
                                                                 <option value={p.code} key={p.code}>{p.name}</option>
                                                             ))}

@@ -49,12 +49,12 @@ function ExpenseIndex({auth}) {
         setQuantity('')
     }
 
-    const [editIncomingData, setEditIncomingData] = useState({
+    const [editExpenseData, setEditExpenseData] = useState({
         id: 0,
         input_date: '',
         number_plates: '',
         product_code: '',
-        quantity: 0,
+        quantity: '',
     })
 
     const [showCreateModal, setShowCreateModal] = useState(false)
@@ -65,7 +65,7 @@ function ExpenseIndex({auth}) {
 
     const handleEditModal = (productId) => {
         const selectedProduct: any = expenses.find((p) => p.id === productId)
-        setEditIncomingData(selectedProduct)
+        setEditExpenseData(selectedProduct)
         setShowEditModal(!showEditModal)
     }
 
@@ -107,13 +107,13 @@ function ExpenseIndex({auth}) {
         }
     }
 
-    let editIncomingIdData = async (productId) => {
+    let editExpensesIdData = async (productId) => {
         try {
             await axios.put(`/expenses/${productId}`, {
-                input_date : editIncomingData.input_date,
-                number_plates : editIncomingData.number_plates,
-                product_code : editIncomingData.product_code,
-                quantity : editIncomingData.product_code
+                input_date : editExpenseData.input_date,
+                number_plates : editExpenseData.number_plates,
+                product_code : editExpenseData.product_code,
+                quantity : parseInt(editExpenseData.quantity)
             })
             .then(() => {
                 getExpensesData()
@@ -135,7 +135,7 @@ function ExpenseIndex({auth}) {
         }
     }
 
-    let deleteIncomingData = async (productId) => {
+    let deleteExpensesData = async (productId) => {
         try {
             await axios.delete(`/expenses/${productId}`)
             .then(() => {
@@ -259,52 +259,87 @@ function ExpenseIndex({auth}) {
                                                         <td className="whitespace-nowrap px-6 py-4">
                                                             <div className='flex gap-3'>
                                                                 <Button color="warning" onClick={() => handleEditModal(d.id)}>Edit</Button>
-                                                                {editIncomingData && editIncomingData.id === d.id && (
+                                                                {editExpenseData && editExpenseData.id === d.id && (
                                                                     <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
                                                                         <div className='p-5'>
                                                                             <div className='flex justify-between pb-4 border-b'>
-                                                                                <h1 className='text-medium text-xl'>Edit product</h1>
+                                                                                <h1 className='text-medium text-xl'>Edit Pengeluaran</h1>
                                                                                 <button onClick={() => setShowEditModal(!showEditModal)}>X</button>
                                                                             </div>
                                                                             <div className='my-4 flex items-center justify-center'>
-                                                                            <form onSubmit={editIncomingIdData}>
-                                                                                <div className='my-4'>
-                                                                                    <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                                                        <div className='flex justify-between w-full gap-5'>
-                                                                                            <div className='mb-4 w-1/2'>
-                                                                                                <InputLabel value="Kode" className='mb-2' htmlFor="kode" />
-                                                                                                <TextInput value={editIncomingData.input_date} onChange={(e) =>
-                                                                                                    setEditIncomingData((prevData) => ({
-                                                                                                    ...prevData,
-                                                                                                    input_date: e.target.value
-                                                                                                    }))
-                                                                                                } className="w-full" id="kode" disabled={true}/>
-                                                                                            </div>
-                                                                                            <div className='mb-4 w-1/2'>
-                                                                                                <InputLabel value="Nama" className='mb-2' htmlFor="nama"/>
-                                                                                                <TextInput value={editIncomingData.number_plates} onChange={(e) =>
-                                                                                                    setEditIncomingData((prevData) => ({
-                                                                                                    ...prevData,
-                                                                                                    number_plates: e.target.value
-                                                                                                    }))
-                                                                                                } className="w-full" id="nama"/>
-                                                                                            </div>
+                                                                            <form onSubmit={editExpensesIdData}>
+                                                                            <div className='my-4'>
+                                                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                                                    <div className='mb-4 w-full'>
+                                                                                        <InputLabel value="Input Date" className='mb-2' htmlFor="Input Date"/>
+                                                                                        <TextInput type="date" value={editExpenseData.input_date} onChange={(e) => setEditExpenseData((prevData) => ({
+                                                                                            ...prevData,
+                                                                                            input_date: e.target.value
+                                                                                        }))} className={errorInputDate ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
+                                                                                        {errorInputDate ? (
+                                                                                            <InputError message={errorInputDate}/>
+                                                                                        ) : (
+                                                                                            <>
+                                                                                            </>
+                                                                                        )}
+                                                                                    </div>
+                                                                                    <div className='flex justify-between w-full gap-5'>
+                                                                                        <div className='mb-4 w-full'>
+                                                                                            <InputLabel value="Plat Nomor" className='mb-2' htmlFor="numberPlates"/>
+                                                                                            <select id="numberPlates" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setEditExpenseData((prevData) => ({
+                                                                                                ...prevData,
+                                                                                                number_plates: e.target.value
+                                                                                            }))}>
+                                                                                                <option value="">Select deliveries</option>
+                                                                                                {deliveries.map((p) => (
+                                                                                                    <option value={p.number_plates} key={p.number_plates} selected={editExpenseData.number_plates === p.number_plates}>{p.number_plates}</option>
+                                                                                                ))}
+                                                                                            </select>
+                                                                                            {errorNumberPlates ? (
+                                                                                                <InputError message={errorNumberPlates}/>
+                                                                                            ) : (
+                                                                                                <>
+                                                                                                </>
+                                                                                            )}
                                                                                         </div>
                                                                                         <div className='mb-4 w-full'>
-                                                                                            <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
-                                                                                            <TextInput value={editIncomingData.product_code} onChange={(e) =>
-                                                                                                setEditIncomingData((prevData) => ({
+                                                                                            <InputLabel value="Kode Produk" className='mb-2' htmlFor="productCode"/>
+                                                                                            <select className='w-full outline-none rounded-lg selection::border-slate-900' id="productCode" onChange={(e) => setEditExpenseData((prevData) => ({
                                                                                                 ...prevData,
                                                                                                 product_code: e.target.value
-                                                                                                }))
-                                                                                            } className="w-full" id="jumlah"/>
+                                                                                            }))}>
+                                                                                                <option value="">Select a product</option>
+                                                                                                {product.map((p) => (
+                                                                                                    <option value={p.code} key={p.code} selected={editExpenseData.product_code === p.code}>{p.name}</option>
+                                                                                                ))}
+                                                                                            </select>
+                                                                                            {errorProductCode ? (
+                                                                                                <InputError message={errorProductCode}/>
+                                                                                            ) : (
+                                                                                                <>
+                                                                                                </>
+                                                                                            )}
                                                                                         </div>
                                                                                     </div>
+                                                                                    <div className='mb-4 w-full'>
+                                                                                        <InputLabel value="Quantity" className='mb-2' htmlFor="Quantity"/>
+                                                                                        <TextInput type="number" autoComplete='off' value={editExpenseData.quantity} onChange={(e) => setEditExpenseData((prevData) => ({
+                                                                                            ...prevData,
+                                                                                            quantity: e.target.value
+                                                                                        }))} className={errorQuantity ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
+                                                                                        {errorQuantity ? (
+                                                                                            <InputError message={errorQuantity}/>
+                                                                                        ) : (
+                                                                                            <>
+                                                                                            </>
+                                                                                        )}
+                                                                                    </div>
                                                                                 </div>
-                                                                                <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
-                                                                                    <Button color="light" type="button" onClick={() => setShowEditModal(!showEditModal)}>Close</Button>
-                                                                                    <Button color="success" type="button" onClick={() => editIncomingIdData(d.id)}>Submit</Button>
-                                                                                </div>
+                                                                            </div>
+                                                                            <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
+                                                                                <Button color="light" type="button" onClick={() => setShowCreateModal(!showCreateModal)}>Close</Button>
+                                                                                <Button color="success" type="button" onClick={() => editExpensesIdData(editExpenseData.id)}>Submit</Button>
+                                                                            </div>
                                                                             </form>
                                                                             </div>
                                                                         </div>
@@ -323,7 +358,7 @@ function ExpenseIndex({auth}) {
                                                                             </div>
                                                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                                 <Button color="light" type="button" onClick={() => setShowDeleteModal(!showDeleteModal)}>Close</Button>
-                                                                                <Button color="danger" onClick={() => deleteIncomingData(d.id)}>Delete</Button>
+                                                                                <Button color="danger" onClick={() => deleteExpensesData(d.id)}>Delete</Button>
                                                                             </div>
                                                                         </div>
                                                                     </Modal>
