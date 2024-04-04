@@ -55,6 +55,9 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                         <Dropdown.Link href={route('incoming')}>
                                             Incoming
                                         </Dropdown.Link>
+                                        <Dropdown.Link href={route('expense')}>
+                                            Expense
+                                        </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
                                 <NavLink href={route('delivery')} active={route().current('delivery')}>

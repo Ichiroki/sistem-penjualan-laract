@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DeliveriesController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\IncomingController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -28,10 +29,12 @@ Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
     Route::get('product', [ViewController::class, 'product'])->name('product');
     Route::get('delivery', [ViewController::class, 'delivery'])->name('delivery');
     Route::get('incoming', [ViewController::class, 'incoming'])->name('incoming');
+    Route::get('expense', [ViewController::class, 'expense'])->name('expense');
 
     Route::apiResource('products', ProductController::class);
     Route::apiResource('deliveries', DeliveriesController::class);
     Route::apiResource('incomings', IncomingController::class);
+    Route::apiResource('expenses', ExpenseController::class);
 });
 
 Route::middleware('auth')->group(function () {

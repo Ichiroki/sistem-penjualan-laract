@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('incomings', function (Blueprint $table) {
+        Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->dateTimeTz('input_date');
             $table->string('number_plates');
             $table->string('product_code');
+            $table->integer('quantity');
             $table->timestamps();
 
             $table->foreign('number_plates')->references('number_plates')->on('deliveries');
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('incomings');
+        Schema::dropIfExists('expenses');
     }
 };

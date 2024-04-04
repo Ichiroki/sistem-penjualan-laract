@@ -16,7 +16,9 @@ class IncomingController extends Controller
         $search = $request->query('search');
 
         if($search) {
-            $incoming = Incoming::where('number_plates', 'like' , '%'.$search.'%')->orWhere('product_code', 'like', '%'.$search.'%')->get();
+            $incoming = Incoming::where('number_plates', 'like' , '%'.$search.'%')
+            ->orWhere('product_code', 'like', '%'.$search.'%')
+            ->get();
         } else {
             $incoming = Incoming::all();
         }
