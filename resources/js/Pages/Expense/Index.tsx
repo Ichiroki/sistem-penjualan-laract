@@ -1,15 +1,15 @@
-import { Delivery } from '@/API/Delivery';
-import { Expense } from '@/API/Expense';
-import { Product } from '@/API/Product';
-import Button from '@/Components/Button';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import Modal from '@/Components/Modal';
-import TextInput from '@/Components/TextInput';
+import { Delivery } from '@/API/Delivery'
+import { Expense } from '@/API/Expense'
+import { Product } from '@/API/Product'
+import Button from '@/Components/Button'
+import InputError from '@/Components/InputError'
+import InputLabel from '@/Components/InputLabel'
+import Modal from '@/Components/Modal'
+import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
-import { Head } from '@inertiajs/react';
-import axios from 'axios';
-import { useState } from 'react';
+import { Head } from '@inertiajs/react'
+import axios from 'axios'
+import { useState } from 'react'
 
 function ExpenseIndex({auth}) {
 
@@ -337,7 +337,7 @@ function ExpenseIndex({auth}) {
                                                                                 </div>
                                                                             </div>
                                                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
-                                                                                <Button color="light" type="button" onClick={() => setShowCreateModal(!showCreateModal)}>Close</Button>
+                                                                                <Button color="light" type="button" onClick={() => setShowEditModal(false)}>Close</Button>
                                                                                 <Button color="success" type="button" onClick={() => editExpensesIdData(editExpenseData.id)}>Submit</Button>
                                                                             </div>
                                                                             </form>
