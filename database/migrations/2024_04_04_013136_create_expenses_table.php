@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->dateTimeTz('input_date');
-            $table->string('number_plates');
+            $table->string('delivery_id');
             $table->string('product_code');
             $table->integer('quantity');
             $table->timestamps();
 
-            $table->foreign('number_plates')->references('number_plates')->on('deliveries');
+            $table->foreign('delivery_id')->references('id')->on('deliveries');
             $table->foreign('product_code')->references('code')->on('products');
         });
     }

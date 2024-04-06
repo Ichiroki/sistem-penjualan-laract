@@ -2,10 +2,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import PieChart from '@/Components/PieChart';
+import { Delivery } from '@/API/Delivery';
 
 export default function Dashboard({ auth }: PageProps) {
-
-    
 
     const chartData = {
         labels: ['A', 'B', 'C'],
@@ -16,6 +15,12 @@ export default function Dashboard({ auth }: PageProps) {
             }
         ]
     };
+
+    const {
+        deliveries
+    } = Delivery()
+
+    console.log(deliveries)
 
     return (
         <AuthenticatedLayout
@@ -28,7 +33,12 @@ export default function Dashboard({ auth }: PageProps) {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                        <PieChart data={chartData}/>
+                            <div className="flex">
+                                <div className='w-1/2'>
+                                    <PieChart data={chartData} width="250px"/>
+                                </div>
+                                <div></div>
+                            </div>
                         </div>
                     </div>
                 </div>

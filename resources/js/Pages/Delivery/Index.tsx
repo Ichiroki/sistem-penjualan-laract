@@ -49,7 +49,8 @@ function DeliveryIndex({auth}) {
     }
 
     const handleEditModal = (pengirimanId: string) => {
-        const selectedPengiriman: any = deliveries.find((p) => p.number_plates === pengirimanId)
+        console.log(pengirimanId)
+        const selectedPengiriman: any = deliveries.find((p) => p.id === pengirimanId)
         setEditPengirimanData(selectedPengiriman)
         setShowEditModal(!showEditModal)
     }
@@ -60,6 +61,7 @@ function DeliveryIndex({auth}) {
     }
 
     const [editPengirimanData, setEditPengirimanData] = useState({
+        id: '',
         number_plates: '',
         vehicle_type: '',
         product_code: '',
@@ -112,7 +114,7 @@ function DeliveryIndex({auth}) {
         try {
             await axios.delete(`/deliveries/${deletePengirimanId}`)
             .then((res) => {
-                const updatePengirimanList = deliveries.filter((p) => p.number_plates !== pengirimanId)
+                const updatePengirimanList = deliveries.filter((p) => p.id !== pengirimanId)
                 setDeliveries(updatePengirimanList)
                 setDeletePengirimanId(null)
                 setShowDeleteModal(false)
@@ -158,9 +160,9 @@ function DeliveryIndex({auth}) {
                                                     <div className='mb-4 w-full'>
                                                         <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
                                                         <select className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setKodeProduct(e.target.value)}>
-                                                                
+                                                            <option value="" key={""}>Select Product</option>
                                                             {product.map((p) => (
-                                                                <option value={p.code} key={p.code}>{p.name}</option>
+                                                                <option value={p.code} key={p.code}>{p.code}</option>
                                                             ))}
                                                         </select>
                                                     </div>
@@ -205,8 +207,8 @@ function DeliveryIndex({auth}) {
                                                         <td className="whitespace-nowrap px-6 py-4">{p.target_delivery}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">
                                                             <div className='flex gap-3'>
-                                                                <Button color="warning" onClick={() => handleEditModal(p.number_plates)}>Edit</Button>
-                                                                {editPengirimanData && editPengirimanData.number_plates === p.number_plates && (
+                                                                <Button color="warning" onClick={() => handleEditModal(p.id)}>Edit</Button>
+                                                                {editPengirimanData && editPengirimanData.id === p.id && (
                                                                     <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
                                                                         <div className='p-5'>
                                                                             <div className='flex justify-between pb-4 border-b'>
@@ -266,15 +268,15 @@ function DeliveryIndex({auth}) {
                                                                                 </div>
                                                                                 <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                                     <Button color="light" type="button" onClick={() => setShowEditModal(!showEditModal)}>Close</Button>
-                                                                                    <Button color="success" type="button" onClick={() => editPengirimanIdData(p.number_plates)}>Submit</Button>
+                                                                                    <Button color="success" type="button" onClick={() => editPengirimanIdData(p.id)}>Submit</Button>
                                                                                 </div>
                                                                             </form>
                                                                             </div>
                                                                         </div>
                                                                     </Modal>
                                                                 )}
-                                                                <Button color="danger" onClick={() => handleDeleteModal(p.number_plates)}>Delete</Button>
-                                                                {deletePengirimanId && deletePengirimanId === p.number_plates && (
+                                                                <Button color="danger" onClick={() => handleDeleteModal(p.id)}>Delete</Button>
+                                                                {deletePengirimanId && deletePengirimanId === p.id && (
                                                                     <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
                                                                         <div className='p-5'>
                                                                             <div className='flex justify-between pb-4 border-b'>
@@ -286,7 +288,7 @@ function DeliveryIndex({auth}) {
                                                                             </div>
                                                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                                 <Button color="light" type="button" onClick={() => setShowDeleteModal(!showDeleteModal)}>Close</Button>
-                                                                                <Button color="danger" onClick={() => deletePengirimanData(p.number_plates)}>Delete</Button>
+                                                                                <Button color="danger" onClick={() => deletePengirimanData(p.id)}>Delete</Button>
                                                                             </div>
                                                                         </div>
                                                                     </Modal>

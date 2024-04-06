@@ -1,7 +1,7 @@
 import Chart from "chart.js/auto";
 import { useEffect, useRef } from "react";
 
-function PieChart({ data }) {
+function PieChart({ data, width }) {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
@@ -15,11 +15,13 @@ function PieChart({ data }) {
     chartInstance.current = new Chart(ctx, {
       type: "pie",
       data: data,
-      options: {},
+      options: {
+
+      },
     });
   }, [data]);
 
-  return <canvas ref={chartRef} />;
+  return <canvas ref={chartRef} className="w-24 h-24"/>;
 }
 
 export default PieChart;
