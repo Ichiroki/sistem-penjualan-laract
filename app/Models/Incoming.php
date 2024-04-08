@@ -11,11 +11,15 @@ class Incoming extends Model
 
     protected $fillable = [
         'input_date',
-        'number_plates',
+        'delivery_id',
         'product_code'
     ];
 
+    public function product() {
+        return $this->hasMany(Product::class, 'code', 'product_code');
+    }
+
     public function delivery() {
-        return $this->hasMany(Delivery::class);
+        return $this->hasMany(Delivery::class, 'id', 'delivery_id');
     }
 }

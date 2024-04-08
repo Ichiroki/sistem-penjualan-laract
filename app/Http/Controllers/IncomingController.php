@@ -16,11 +16,12 @@ class IncomingController extends Controller
         $search = $request->query('search');
 
         if($search) {
-            $incoming = Incoming::where('number_plates', 'like' , '%'.$search.'%')
+            $incoming = Incoming::with(['delivery', 'product'])
+            ->where('number_plates', 'like' , '%'.$search.'%')
             ->orWhere('product_code', 'like', '%'.$search.'%')
             ->get();
         } else {
-            $incoming = Incoming::all();
+            $incoming = Incoming::with(['delivery', 'product'])->get();
         }
 
         return response()->json($incoming);

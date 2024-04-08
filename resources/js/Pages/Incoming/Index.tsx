@@ -36,12 +36,12 @@ function ProductIndex({auth}) {
     const [errorProductCode, setErrorProductCode] = useState('')
 
     const [inputDate, setInputDate] = useState('')
-    const [deliveryId, setDeliveryId] = useState(0)
+    const [deliveryId, setDeliveryId] = useState(1)
     const [productCode, setProductCode] = useState('')
 
     const resetInput = () => {
         setInputDate('')
-        setDeliveryId(0)
+        setDeliveryId(1)
         setProductCode('')
     }
 
@@ -175,9 +175,9 @@ function ProductIndex({auth}) {
                                                 </div>
                                                 <div className='flex justify-between w-full gap-5'>
                                                     <div className='mb-4 w-full'>
-                                                        <InputLabel value="Plat Nomor" className='mb-2' htmlFor="numberPlates"/>
-                                                        <select id="numberPlates" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setDeliveryId(e.target.value)}>
-                                                            <option value={0} key="">Select Vehicle</option>
+                                                        <InputLabel value="Plat Nomor" className='mb-2' htmlFor="delivery_id"/>
+                                                        <select id="delivery_id" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setDeliveryId(parseInt(e.target.value))}>
+                                                            <option value="" key="">Select Vehicle</option>
                                                             {deliveries.map((p) => (
                                                                 <option value={p.id} key={p.id}>{p.number_plates}</option>
                                                             ))}
@@ -236,8 +236,8 @@ function ProductIndex({auth}) {
                                                 className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={d.id}>
                                                     <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">{d.input_date}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{d.delivery.number_plates}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{d.product.code}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{d.delivery[0].number_plates}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{d.product[0].code}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">
                                                         <div className='flex gap-3'>
                                                             <Button color="warning" onClick={() => handleEditModal(d.id)}>Edit</Button>
