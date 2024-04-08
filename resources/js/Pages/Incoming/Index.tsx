@@ -46,8 +46,9 @@ function ProductIndex({auth}) {
     }
 
     const [editIncomingData, setEditIncomingData] = useState({
+        id: 0,
         input_date: '',
-        number_plates: '',
+        delivery_id: 0,
         product_code: '',
     })
 
@@ -103,14 +104,14 @@ function ProductIndex({auth}) {
     let editIncomingIdData = async (productId) => {
         try {
             await axios.put(`/incomings/${productId}`, {
-                code : editIncomingData.input_date,
-                name : editIncomingData.number_plates,
-                quantity : editIncomingData.product_code
+                input_date : editIncomingData.input_date,
+                delivery_id : editIncomingData.delivery_id,
+                product_code : editIncomingData.product_code
             })
             .then(() => {
-                getIncomingsData()
                 resetInput()
                 setShowEditModal(false)
+                getIncomingsData()
             })
             .catch((error) => {
                 if(error.response) {
@@ -143,7 +144,7 @@ function ProductIndex({auth}) {
     return (
         <AuthenticatedLayout
         user={auth.user}
-        header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Product</h2>}
+        header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Incoming</h2>}
         >
         <Head title="Dashboard" />
 
@@ -157,7 +158,7 @@ function ProductIndex({auth}) {
                             <Modal show={showCreateModal} onClose={() => setShowCreateModal(false)}>
                                 <div className='p-5'>
                                     <div className='flex justify-between pb-4 border-b'>
-                                        <h1 className='text-medium text-xl'>Delete product</h1>
+                                        <h1 className='text-medium text-xl'>Create Incoming</h1>
                                         <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
                                     </div>
                                     <form onSubmit={createIncomingData}>
@@ -248,38 +249,60 @@ function ProductIndex({auth}) {
                                                                             <h1 className='text-medium text-xl'>Edit product</h1>
                                                                             <button onClick={() => setShowEditModal(!showEditModal)}>X</button>
                                                                         </div>
-                                                                        <div className='my-4 flex items-center justify-center'>
                                                                         <form onSubmit={editIncomingIdData}>
                                                                             <div className='my-4'>
                                                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                                                    <div className='flex justify-between w-full gap-5'>
-                                                                                        <div className='mb-4 w-1/2'>
-                                                                                            <InputLabel value="Kode" className='mb-2' htmlFor="kode" />
-                                                                                            <TextInput value={editIncomingData.input_date} onChange={(e) =>
-                                                                                                setEditIncomingData((prevData) => ({
+                                                                                    <div className='mb-4 w-full'>
+                                                                                            <InputLabel value="Input Date" className='mb-2' htmlFor="Input Date"/>
+                                                                                            <TextInput type="date" value={editIncomingData.input_date} onChange={(e) => setEditIncomingData((prevData) => ({
                                                                                                 ...prevData,
                                                                                                 input_date: e.target.value
-                                                                                                }))
-                                                                                            } className="w-full" id="kode" disabled={true}/>
-                                                                                        </div>
-                                                                                        <div className='mb-4 w-1/2'>
-                                                                                            <InputLabel value="Nama" className='mb-2' htmlFor="nama"/>
-                                                                                            <TextInput value={editIncomingData.number_plates} onChange={(e) =>
-                                                                                                setEditIncomingData((prevData) => ({
-                                                                                                ...prevData,
-                                                                                                number_plates: e.target.value
-                                                                                                }))
-                                                                                            } className="w-full" id="nama"/>
-                                                                                        </div>
+                                                                                            }))} className={errorInputDate ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
+                                                                                            {errorInputDate ? (
+                                                                                                <InputError message={errorInputDate}/>
+                                                                                            ) : (
+                                                                                                <>
+                                                                                                </>
+                                                                                            )}
                                                                                     </div>
-                                                                                    <div className='mb-4 w-full'>
-                                                                                        <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
-                                                                                        <TextInput value={editIncomingData.product_code} onChange={(e) =>
-                                                                                            setEditIncomingData((prevData) => ({
-                                                                                            ...prevData,
-                                                                                            product_code: e.target.value
-                                                                                            }))
-                                                                                        } className="w-full" id="jumlah"/>
+                                                                                    <div className='flex justify-between w-full gap-5'>
+
+                                                                                        <div className='mb-4 w-full'>
+                                                                                            <InputLabel value="Plat Nomor" className='mb-2' htmlFor="delivery_id"/>
+                                                                                            <select id="delivery_id" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setEditIncomingData((prevData) => ({
+                                                                                                ...prevData,
+                                                                                                delivery_id: parseInt(e.target.value)
+                                                                                            }))}>
+                                                                                                <option value="" key="">Select Vehicle</option>
+                                                                                                {deliveries.map((p) => (
+                                                                                                    <option value={p.id} key={p.id} selected={editIncomingData.delivery_id === p.id}>{p.number_plates}</option>
+                                                                                                ))}
+                                                                                            </select>
+                                                                                            {errorNumberPlates ? (
+                                                                                                <InputError message={errorNumberPlates}/>
+                                                                                            ) : (
+                                                                                                <>
+                                                                                                </>
+                                                                                            )}
+                                                                                        </div>
+                                                                                        <div className='mb-4 w-full'>
+                                                                                            <InputLabel value="Kode Produk" className='mb-2' htmlFor="productCode"/>
+                                                                                            <select className='w-full outline-none rounded-lg selection::border-slate-900' id="productCode" onChange={(e) => setEditIncomingData((prevData) => ({
+                                                                                                ...prevData,
+                                                                                                product_code: e.target.value
+                                                                                            }))}>
+                                                                                                <option value="" key="">Select Product</option>
+                                                                                                {product.map((p) => (
+                                                                                                    <option value={p.code} key={p.code} selected={editIncomingData.product_code === p.code}>{p.name}</option>
+                                                                                                ))}
+                                                                                            </select>
+                                                                                            {errorProductCode ? (
+                                                                                                <InputError message={errorProductCode}/>
+                                                                                            ) : (
+                                                                                                <>
+                                                                                                </>
+                                                                                            )}
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -289,7 +312,6 @@ function ProductIndex({auth}) {
                                                                             </div>
                                                                         </form>
                                                                         </div>
-                                                                    </div>
                                                                 </Modal>
                                                             )}
                                                             <Button color="danger" onClick={() => handleDeleteModal(d.id)}>Delete</Button>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreIncomingRequest;
+use App\Http\Requests\UpdateIncomingRequest;
 use App\Models\Incoming;
 use Illuminate\Http\Request;
 
@@ -46,7 +47,7 @@ class IncomingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Incoming $incoming)
+    public function update(UpdateIncomingRequest $request, Incoming $incoming)
     {
         return $incoming->update($request->validated());
     }
