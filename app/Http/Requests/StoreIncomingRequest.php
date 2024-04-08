@@ -23,8 +23,8 @@ class StoreIncomingRequest extends FormRequest
     {
         return [
             'input_date' => 'required|string',
-            'number_plates' => 'required|string',
-            'product_code' => 'required|string|in:product,code'
+            'delivery_id' => 'required|integer',
+            'product_code' => 'required|string'
         ];
     }
 }

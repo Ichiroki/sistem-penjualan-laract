@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDeliveriesRequest;
 use App\Http\Requests\UpdateDeliveriesRequest;
 use App\Models\Delivery;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 
 class DeliveriesController extends Controller
 {
@@ -30,7 +32,13 @@ class DeliveriesController extends Controller
 
     public function store(StoreDeliveriesRequest $request)
     {
-        return Delivery::create($request->validated());
+        return Delivery::create([
+            'id' => $request->id,
+            'number_plates' => $request->number_plates,
+            'vehicle_type' => $request->vehicle_type,
+            'product_code' => $request->product_code,
+            'target_delivery' => $request->target_delivery
+        ]);
     }
 
     public function show(Delivery $delivery)

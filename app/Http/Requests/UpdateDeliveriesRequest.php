@@ -22,6 +22,7 @@ class UpdateDeliveriesRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'number_plates' => 'required|string',
             'vehicle_type' => 'required|string',
             'product_code' => 'required|string',
             'target_delivery' => 'required|integer'

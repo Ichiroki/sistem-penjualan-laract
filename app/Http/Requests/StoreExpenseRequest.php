@@ -23,7 +23,7 @@ class StoreExpenseRequest extends FormRequest
     {
         return [
             'input_date' => 'required|date',
-            'number_plates' => 'required|string',
+            'delivery_id' => 'required',
             'product_code' => 'required|string',
             'quantity' => 'required|integer'
         ];

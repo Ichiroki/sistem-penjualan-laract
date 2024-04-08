@@ -36,18 +36,16 @@ function ProductIndex({auth}) {
     const [errorProductCode, setErrorProductCode] = useState('')
 
     const [inputDate, setInputDate] = useState('')
-    const [numberPlates, setNumberPlates] = useState('')
+    const [deliveryId, setDeliveryId] = useState(0)
     const [productCode, setProductCode] = useState('')
-
 
     const resetInput = () => {
         setInputDate('')
-        setNumberPlates('')
+        setDeliveryId(0)
         setProductCode('')
     }
 
     const [editIncomingData, setEditIncomingData] = useState({
-        id: 0,
         input_date: '',
         number_plates: '',
         product_code: '',
@@ -76,10 +74,11 @@ function ProductIndex({auth}) {
             axios.post('/incomings',
             {
                 input_date: inputDate,
-                number_plates: numberPlates,
+                delivery_id: deliveryId,
                 product_code: productCode
             })
-            .then(() => {
+            .then((res) => {
+                console.log(res.data)
                 resetInput()
                 getIncomingsData()
                 setShowCreateModal(false)
@@ -177,9 +176,10 @@ function ProductIndex({auth}) {
                                                 <div className='flex justify-between w-full gap-5'>
                                                     <div className='mb-4 w-full'>
                                                         <InputLabel value="Plat Nomor" className='mb-2' htmlFor="numberPlates"/>
-                                                        <select id="numberPlates" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setNumberPlates(e.target.value)}>
+                                                        <select id="numberPlates" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setDeliveryId(e.target.value)}>
+                                                            <option value={0} key="">Select Vehicle</option>
                                                             {deliveries.map((p) => (
-                                                                <option value={p.number_plates} key={p.number_plates}>{p.number_plates}</option>
+                                                                <option value={p.id} key={p.id}>{p.number_plates}</option>
                                                             ))}
                                                         </select>
                                                         {errorNumberPlates ? (
@@ -192,6 +192,7 @@ function ProductIndex({auth}) {
                                                     <div className='mb-4 w-full'>
                                                         <InputLabel value="Kode Produk" className='mb-2' htmlFor="productCode"/>
                                                         <select className='w-full outline-none rounded-lg selection::border-slate-900' id="productCode" onChange={(e) => setProductCode(e.target.value)}>
+                                                            <option value="" key="">Select Product</option>
                                                             {product.map((p) => (
                                                                 <option value={p.code} key={p.code}>{p.name}</option>
                                                             ))}

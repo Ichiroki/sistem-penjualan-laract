@@ -1,15 +1,16 @@
-import { Delivery } from '@/API/Delivery';
-import { Product } from '@/API/Product';
-import Button from '@/Components/Button';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import { Delivery } from '@/API/Delivery'
+import { Product } from '@/API/Product'
+import Button from '@/Components/Button'
+import InputError from '@/Components/InputError'
+import InputLabel from '@/Components/InputLabel'
 // import LoadingScreen from '@/Components/LoadingScreen'
-import Modal from '@/Components/Modal';
-import TextInput from '@/Components/TextInput';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import axios from 'axios';
-import { useState } from 'react';
+import Modal from '@/Components/Modal'
+import TextInput from '@/Components/TextInput'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import { Head } from '@inertiajs/react'
+import axios from 'axios'
+import { useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 function DeliveryIndex({auth}) {
     let i = 1
@@ -73,11 +74,13 @@ function DeliveryIndex({auth}) {
         try {
             await axios.post('/deliveries',
             {
+                id: uuidv4(),
                 number_plates: platKendaraan,
                 vehicle_type: jenisKendaraan,
                 product_code: kodeProduct,
                 target_delivery: targetPengiriman
-            }).then(() =>{
+            }).then((res) =>{
+                console.log(res.data)
                 getDeliveriesData()
                 resetInput()
                 setShowCreateModal(false)
@@ -138,7 +141,10 @@ function DeliveryIndex({auth}) {
                             <div className='flex justify-between mb-6'>
                                 <TextInput placeholder={'Search here...'} value={search} onChange={(e) => setSearch(e.target.value)} />
                                 <Button onClick={() => setShowCreateModal(!showCreateModal)}>Create</Button>
-                                <Modal show={showCreateModal} onClose={() => setShowCreateModal(false)}>
+                                <Modal show={showCreateModal} onClose={() => {
+                                    resetInput();
+                                    setShowCreateModal(false)
+                                }}>
                                     <div className='p-5'>
                                         <div className='flex justify-between pb-4 border-b'>
                                             <h1 className='text-medium text-xl'>Create Pengiriman</h1>
@@ -173,7 +179,10 @@ function DeliveryIndex({auth}) {
                                                 </div>
                                             </div>
                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
-                                                <Button color="light" type="button" onClick={() => setShowCreateModal(!showCreateModal)}>Close</Button>
+                                                <Button color="light" type="button" onClick={() =>{
+                                                    resetInput();
+                                                    setShowCreateModal(!showCreateModal)
+                                                }}>Close</Button>
                                                 <Button color="success" type="submit">Submit</Button>
                                             </div>
                                         </form>

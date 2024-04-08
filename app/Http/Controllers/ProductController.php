@@ -24,33 +24,29 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function showByCode($code) {
+        $product = Product::where('code', $code)->first();
+        if(!$product) {
+            return response()->json(['error' => 'bjir produknya gak ketemu'], 404);
+        }
+        return response()->json($product);
+    }
+
     public function store(StoreProductRequest $request)
     {
         return Product::create($request->validated());
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Product $product)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Product $product)
+    public function update(StoreProductRequest $request, Product $product)
     {
         return $product->update($request->validated());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Product $product)
     {
         return $product->delete();

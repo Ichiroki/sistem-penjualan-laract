@@ -1,9 +1,9 @@
 import Chart from "chart.js/auto";
 import { useEffect, useRef } from "react";
 
-function PieChart({ data, width }) {
-  const chartRef = useRef(null);
-  const chartInstance = useRef(null);
+function PieChart({ data, title = "Pie Chart" }) {
+  const chartRef: any = useRef(null);
+  const chartInstance: any = useRef(null);
 
   useEffect(() => {
     const ctx = chartRef.current.getContext("2d");
@@ -16,12 +16,24 @@ function PieChart({ data, width }) {
       type: "pie",
       data: data,
       options: {
-
+        responsive: true,
+        maintainAspectRatio: false,
+        aspectRatio: 1,
+        plugins: {
+            title: {
+                display: true,
+                text: title
+            },
+            legend: {
+              display: true,
+              position: 'right'
+            }
+        },
       },
     });
   }, [data]);
 
-  return <canvas ref={chartRef} className="w-24 h-24"/>;
+  return <canvas ref={chartRef} className=""/>;
 }
 
 export default PieChart;

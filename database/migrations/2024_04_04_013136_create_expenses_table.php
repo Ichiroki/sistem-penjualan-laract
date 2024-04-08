@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->dateTimeTz('input_date');
-            $table->string('delivery_id');
+            $table->integer('delivery_id');
             $table->string('product_code');
             $table->integer('quantity');
             $table->timestamps();

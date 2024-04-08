@@ -37,14 +37,14 @@ function ExpenseIndex({auth}) {
     const [errorQuantity, setErrorQuantity] = useState('')
 
     const [inputDate, setInputDate] = useState('')
-    const [numberPlates, setNumberPlates] = useState('')
+    const [deliveryId, setDeliveryId] = useState('')
     const [productCode, setProductCode] = useState('')
     const [quantity, setQuantity] = useState('')
 
 
     const resetInput = () => {
         setInputDate('')
-        setNumberPlates('')
+        setDeliveryId('')
         setProductCode('')
         setQuantity('')
     }
@@ -52,7 +52,7 @@ function ExpenseIndex({auth}) {
     const [editExpenseData, setEditExpenseData] = useState({
         id: 0,
         input_date: '',
-        number_plates: '',
+        delivery_id: '',
         product_code: '',
         quantity: '',
     })
@@ -80,7 +80,7 @@ function ExpenseIndex({auth}) {
             axios.post('/expenses',
             {
                 input_date: inputDate,
-                number_plates: numberPlates,
+                delivery_id: deliveryId,
                 product_code: productCode,
                 quantity
             })
@@ -111,7 +111,7 @@ function ExpenseIndex({auth}) {
         try {
             await axios.put(`/expenses/${productId}`, {
                 input_date : editExpenseData.input_date,
-                number_plates : editExpenseData.number_plates,
+                delivery_id : editExpenseData.delivery_id,
                 product_code : editExpenseData.product_code,
                 quantity : parseInt(editExpenseData.quantity)
             })
@@ -184,10 +184,10 @@ function ExpenseIndex({auth}) {
                                                     <div className='flex justify-between w-full gap-5'>
                                                         <div className='mb-4 w-full'>
                                                             <InputLabel value="Plat Nomor" className='mb-2' htmlFor="numberPlates"/>
-                                                            <select id="numberPlates" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setNumberPlates(e.target.value)}>
+                                                            <select id="numberPlates" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setDeliveryId(e.target.value)}>
                                                                 <option value="">Select deliveries</option>
                                                                 {deliveries.map((p) => (
-                                                                    <option value={p.number_plates} key={p.number_plates}>{p.number_plates}</option>
+                                                                    <option value={p.id} key={p.id}>{p.number_plates}</option>
                                                                 ))}
                                                             </select>
                                                             {errorNumberPlates ? (
@@ -292,7 +292,7 @@ function ExpenseIndex({auth}) {
                                                                                             }))}>
                                                                                                 <option value="">Select deliveries</option>
                                                                                                 {deliveries.map((p) => (
-                                                                                                    <option value={p.number_plates} key={p.number_plates} selected={editExpenseData.number_plates === p.number_plates}>{p.number_plates}</option>
+                                                                                                    <option value={p.id} key={p.id} selected={editExpenseData.id === p.id}>{p.id}</option>
                                                                                                 ))}
                                                                                             </select>
                                                                                             {errorNumberPlates ? (
