@@ -32,7 +32,7 @@ function ProductIndex({auth}) {
     } = Product()
 
     const [errorInputDate, setErrorInputDate] = useState('')
-    const [errorNumberPlates, setErrorNumberPlates] = useState('')
+    const [errorDeliveryId, setErrorDeliveryId] = useState('')
     const [errorProductCode, setErrorProductCode] = useState('')
 
     const [inputDate, setInputDate] = useState('')
@@ -91,7 +91,7 @@ function ProductIndex({auth}) {
                     console.log(error.response)
                     // Error message
                     setErrorInputDate(getError.input_date[0])
-                    setErrorNumberPlates(getError.number_plates[0])
+                    setErrorDeliveryId(getError.delivery_id[0])
                     setErrorProductCode(getError.product_code[0])
                     //
                 }
@@ -118,7 +118,7 @@ function ProductIndex({auth}) {
                     const getError = error.response.data.errors
                     console.log(error.response)
                     setErrorInputDate(getError.input_date[0])
-                    setErrorNumberPlates(getError.number_plates[0])
+                    setErrorDeliveryId(getError.delivery_id[0])
                     setErrorProductCode(getError.product_code[0])
                 }
             })
@@ -130,7 +130,7 @@ function ProductIndex({auth}) {
     let deleteIncomingData = async (productId) => {
         try {
             await axios.delete(`/incomings/${productId}`)
-            .then((res) => {
+            .then(() => {
                 const updateProductList = incomings.filter((p) => p.id !== productId)
                 setIncomings(updateProductList)
                 setDeleteProductId(null)
@@ -183,8 +183,8 @@ function ProductIndex({auth}) {
                                                                 <option value={p.id} key={p.id}>{p.number_plates}</option>
                                                             ))}
                                                         </select>
-                                                        {errorNumberPlates ? (
-                                                            <InputError message={errorNumberPlates}/>
+                                                        {errorDeliveryId ? (
+                                                            <InputError message={errorDeliveryId}/>
                                                         ) : (
                                                             <>
                                                             </>
@@ -278,8 +278,8 @@ function ProductIndex({auth}) {
                                                                                                     <option value={p.id} key={p.id} selected={editIncomingData.delivery_id === p.id}>{p.number_plates}</option>
                                                                                                 ))}
                                                                                             </select>
-                                                                                            {errorNumberPlates ? (
-                                                                                                <InputError message={errorNumberPlates}/>
+                                                                                            {errorDeliveryId ? (
+                                                                                                <InputError message={errorDeliveryId}/>
                                                                                             ) : (
                                                                                                 <>
                                                                                                 </>

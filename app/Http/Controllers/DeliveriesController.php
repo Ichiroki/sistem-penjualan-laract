@@ -30,6 +30,14 @@ class DeliveriesController extends Controller
         return response()->json($pengiriman);
     }
 
+    public function showByNumberPlates($number_plates) {
+        $product = Delivery::with('product')->where('number_plates', $number_plates)->first();
+        if(!$product) {
+            return response()->json(['error' => 'bjir pengirimannya gak ketemu'], 404);
+        }
+        return response()->json($product);
+    }
+
     public function store(StoreDeliveriesRequest $request)
     {
         return Delivery::create([

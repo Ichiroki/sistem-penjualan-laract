@@ -12,13 +12,11 @@ export function Incoming() {
         if(search) {
             await axios.get(`/incomings?search=${search}`)
             .then((res) => {
-                console.log(res.data)
                 setIncomings(res.data)
             })
         } else {
             await axios.get('/incomings')
             .then((res) => {
-                console.log(res.data)
                 setIncomings(res.data)
             })
         }
