@@ -1,65 +1,128 @@
 import { Delivery } from "@/API/Delivery";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import PieChart from "../PieChart";
+import Chart from "chart.js/auto";
+import { useEffect, useRef, useState } from "react";
+import Modal from "../Modal";
 
-function DeliveriesChart() {
-    const { deliveries } = Delivery()
-    const [numberPlates, setNumberPlates] = useState([])
-    const [numberPlatesData, setNumberPlatesData] = useState([])
+function ProductChart() {
+    const { deliveries } = Delivery();
+    const [numberPlates, setNumberPlates] = useState([]);
+    const [numberPlatesData, setNumberPlatesData] = useState([]);
+    const [show, setShow] = useState(false);
+
+    const [data, setData] = useState([]);
+
+    const chartRef = useRef<any>(null);
+    const chartInstance = useRef(null);
 
     useEffect(() => {
-        const uniqueData: any = [...new Set(deliveries.map(p => p.number_plates))]
-        setNumberPlates(uniqueData);
+        const uniqueCode: any = [...new Set(deliveries.map(p => p.number_plates))];
+        setNumberPlates(uniqueCode);
     }, [deliveries]);
 
-    let getDeliveriesDataByNumPlat = async (numberPlates) => {
-        try {
-            await axios.get(`/deliveries/${numberPlates}`)
-            .then((res) => {
-                const productCode = res.data.product
-                // console.log(productCode)
-                setNumberPlatesData((prevData): any => [...prevData, productCode])
-            })
-        } catch (e) {
-            console.error('Internal Server error, please wait' + e)
-        }
-    }
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const promises = numberPlates.map(np => axios.get(`/deliveries/${np}`));
+                const responses = await Promise.all(promises);
+                const newData: any = responses.map(res => res.data.target_delivery);
+                setNumberPlatesData(newData);
+            } catch (e) {
+                console.error('Internal Server error, please wait' + e);
+            }
+        };
+
+        fetchData();
+    }, [numberPlates]);
 
     useEffect(() => {
-        numberPlates.forEach(id => getDeliveriesDataByNumPlat(id))
-    }, [numberPlates])
+        const ctx = chartRef.current.getContext("2d");
 
-    const chartData = {
-        labels: numberPlates,
-        datasets: [
-            {
-                data: numberPlatesData,
-                backgroundColor: [
-                    '#06b6d4',
-                    '#fb7185',
-                    '#ffce56',
-                    '#4ade80',
-                    '#7c3aed',
-                    '#0e7490',
-                    '#d97706',
-                    '#f97316',
-                    '#059669'
-                ]
-            }
-        ]
-    };
+        if (chartInstance.current) {
+            chartInstance.current.destroy();
+        }
+
+        const chartData = {
+            labels: numberPlates,
+            datasets: [
+                {
+                    data: numberPlatesData,
+                    backgroundColor: [
+                        '#06b6d4',
+                        '#fb7185',
+                        '#ffce56',
+                        '#4ade80',
+                        '#7c3aed',
+                        '#0e7490',
+                        '#d97706',
+                        '#f97316',
+                        '#059669'
+                    ]
+                }
+            ]
+        }
+
+        const handleClick = async (event, elements) => {
+            if (elements && elements.length > 0) {
+                const clickedElement = elements[0]
+                const dataIndex = clickedElement.index
+                const clickedData = chartData.labels[dataIndex]
+                try {
+                        await axios.get(`deliveries/${clickedData}`)
+                        .then((res) => {
+                            setData(res.data)
+                            setShow(!show)
+                        })
+                    } catch(e) {
+                        console.log(e)
+                    }
+                }
+            };
+
+        chartInstance.current = new Chart(ctx, {
+            type: "pie",
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                aspectRatio: 1,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Jumlah Produk'
+                    },
+                    legend: {
+                        display: true,
+                        position: 'right'
+                    }
+                },
+                onClick: handleClick // Panggil event handler ketika potongan diklik
+            },
+        });
+    }, [numberPlates, numberPlatesData, data, show]);
 
     return (
-        <>
-            <div className="flex">
-                <div className='w-1/2'>
-                    <PieChart data={chartData} title='Jumlah Pengantaran Barang' endpoint={'deliveries'} />
-                </div>
-                <div></div>
+        <div className="flex">
+            <div className='w-1/2'>
+                <canvas ref={chartRef} className="" />
+                <Modal show={show} onClose={() => setShow(false)}>
+                    <div className='p-5'>
+                        <div className='flex justify-between pb-4 border-b'>
+                            <h1 className='text-medium text-xl'>Product Details</h1>
+                            <button onClick={() => setShow(!show)}>X</button>
+                        </div>
+                        <ul>
+                            <li>{data.number_plates}</li>
+                            <li>{data.target_delivery}</li>
+                            {/* <li>{data.quantity}</li> */}
+                        </ul>
+                    </div>
+                </Modal>
             </div>
-        </>
+            <div></div>
+        </div>
     );
 }
 
-export default DeliveriesChart;
+export default ProductChart;
+
