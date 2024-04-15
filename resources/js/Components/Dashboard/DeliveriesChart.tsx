@@ -19,13 +19,20 @@ function DeliveriesChart() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const newData = []; // Buat array kosong untuk menyimpan data target_delivery baru
+                const targetDeliveryMap = {}; // Objek untuk menyimpan jumlah target_delivery
                 await Promise.all(numberPlates.map(async (np) => {
                     const res = await axios.get(`/deliveries/${np}`);
                     res.data.forEach((r) => {
-                        newData.push(r.target_delivery); // Tambahkan target_delivery ke dalam array newData
+                        const key = `${r.number_plates}_${r.product_code}`; // Kombinasi number_plates dan product_code sebagai kunci
+                        if (targetDeliveryMap[key]) {
+                            targetDeliveryMap[key] += r.target_delivery; // Jika kunci sudah ada, tambahkan target_delivery
+                        } else {
+                            targetDeliveryMap[key] = r.target_delivery; // Jika kunci belum ada, buat kunci baru
+                        }
                     });
                 }));
+
+                const newData = Object.values(targetDeliveryMap); // Ambil nilai dari objek sebagai array
                 setNumberPlatesData(newData); // Tetapkan newData ke dalam state numberPlatesData setelah semua pemanggilan selesai
             } catch (e) {
                 console.error('Internal Server error, please wait', e);
