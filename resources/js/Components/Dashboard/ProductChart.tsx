@@ -1,8 +1,14 @@
-import { Product } from "@/API/Product";
-import axios from "axios";
-import Chart from "chart.js/auto";
-import { useEffect, useRef, useState } from "react";
-import Modal from "../Modal";
+import { Product } from "@/API/Product"
+import axios from "axios"
+import Chart from "chart.js/auto"
+import { useEffect, useRef, useState } from "react"
+import Modal from "../Modal"
+
+type ProductDataType = {
+    code: string
+    name: string
+    quantity: number
+}
 
 function ProductChart() {
     const { product } = Product();
@@ -10,10 +16,10 @@ function ProductChart() {
     const [codeData, setCodeData] = useState([]);
     const [show, setShow] = useState(false);
 
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<ProductDataType[]>([]);
 
     const chartRef = useRef<any>(null);
-    const chartInstance = useRef(null);
+    const chartInstance = useRef<any>(null);
 
     useEffect(() => {
         const uniqueCode: any = [...new Set(product.map(p => p.code))];
@@ -103,23 +109,20 @@ function ProductChart() {
 
     return (
         <div className="flex">
-            <div className='w-1/2'>
-                <canvas ref={chartRef} className="" />
-                <Modal show={show} onClose={() => setShow(false)}>
-                    <div className='p-5'>
-                        <div className='flex justify-between pb-4 border-b'>
-                            <h1 className='text-medium text-xl'>Product Details</h1>
-                            <button onClick={() => setShow(!show)}>X</button>
-                        </div>
-                        <ul>
-                            <li>{data.code}</li>
-                            <li>{data.name}</li>
-                            <li>{data.quantity}</li>
-                        </ul>
+            <canvas ref={chartRef} className="" />
+            <Modal show={show} onClose={() => setShow(false)}>
+                <div className='p-5'>
+                    <div className='flex justify-between pb-4 border-b'>
+                        <h1 className='text-medium text-xl'>Product Details</h1>
+                        <button onClick={() => setShow(!show)}>X</button>
                     </div>
-                </Modal>
-            </div>
-            <div></div>
+                    <ul>
+                        <li>{data.code}</li>
+                        <li>{data.name}</li>
+                        <li>{data.quantity}</li>
+                    </ul>
+                </div>
+            </Modal>
         </div>
     );
 }
