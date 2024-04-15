@@ -2,15 +2,11 @@ import { Delivery } from "@/API/Delivery";
 import axios from "axios";
 import Chart from "chart.js/auto";
 import { useEffect, useRef, useState } from "react";
-import Modal from "../Modal";
 
-function ProductChart() {
+function DeliveriesChart() {
     const { deliveries } = Delivery();
     const [numberPlates, setNumberPlates] = useState([]);
     const [numberPlatesData, setNumberPlatesData] = useState([]);
-    const [show, setShow] = useState(false);
-
-    const [data, setData] = useState([]);
 
     const chartRef = useRef<any>(null);
     const chartInstance = useRef(null);
@@ -23,12 +19,16 @@ function ProductChart() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const promises = numberPlates.map(np => axios.get(`/deliveries/${np}`));
-                const responses = await Promise.all(promises);
-                const newData: any = responses.map(res => res.data.target_delivery);
-                setNumberPlatesData(newData);
+                const newData = []; // Buat array kosong untuk menyimpan data target_delivery baru
+                await Promise.all(numberPlates.map(async (np) => {
+                    const res = await axios.get(`/deliveries/${np}`);
+                    res.data.forEach((r) => {
+                        newData.push(r.target_delivery); // Tambahkan target_delivery ke dalam array newData
+                    });
+                }));
+                setNumberPlatesData(newData); // Tetapkan newData ke dalam state numberPlatesData setelah semua pemanggilan selesai
             } catch (e) {
-                console.error('Internal Server error, please wait' + e);
+                console.error('Internal Server error, please wait', e);
             }
         };
 
@@ -68,19 +68,15 @@ function ProductChart() {
                 const dataIndex = clickedElement.index
                 const clickedData = chartData.labels[dataIndex]
                 try {
-                        await axios.get(`deliveries/${clickedData}`)
-                        .then((res) => {
-                            setData(res.data)
-                            setShow(!show)
-                        })
-                    } catch(e) {
-                        console.log(e)
-                    }
+                    window.location.href = `/delivery/detail/${clickedData}`
+                } catch(e) {
+                    console.log(e)
                 }
-            };
+            }
+        };
 
         chartInstance.current = new Chart(ctx, {
-            type: "pie",
+            type: "doughnut",
             data: chartData,
             options: {
                 responsive: true,
@@ -89,7 +85,7 @@ function ProductChart() {
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Jumlah Produk'
+                        text: 'Jumlah Pengiriman Produk'
                     },
                     legend: {
                         display: true,
@@ -99,30 +95,17 @@ function ProductChart() {
                 onClick: handleClick // Panggil event handler ketika potongan diklik
             },
         });
-    }, [numberPlates, numberPlatesData, data, show]);
+    }, [numberPlates, numberPlatesData]);
+
 
     return (
         <div className="flex">
             <div className='w-1/2'>
                 <canvas ref={chartRef} className="" />
-                <Modal show={show} onClose={() => setShow(false)}>
-                    <div className='p-5'>
-                        <div className='flex justify-between pb-4 border-b'>
-                            <h1 className='text-medium text-xl'>Product Details</h1>
-                            <button onClick={() => setShow(!show)}>X</button>
-                        </div>
-                        <ul>
-                            <li>{data.number_plates}</li>
-                            <li>{data.target_delivery}</li>
-                            {/* <li>{data.quantity}</li> */}
-                        </ul>
-                    </div>
-                </Modal>
             </div>
-            <div></div>
         </div>
     );
 }
 
-export default ProductChart;
+export default DeliveriesChart;
 

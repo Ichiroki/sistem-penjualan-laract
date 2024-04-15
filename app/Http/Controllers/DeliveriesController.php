@@ -20,6 +20,7 @@ class DeliveriesController extends Controller
                 $query->where('name', 'like', '%'.$search.'%');
             }])
             ->where('number_plates', 'like', '%'.$search.'%')
+            ->orWhere('product_code', 'like', '%'.$search.'%')
             ->orWhere('vehicle_type', 'like', '%'.$search.'%')
             ->get();
         } else {
@@ -31,12 +32,24 @@ class DeliveriesController extends Controller
     }
 
     public function showByNumberPlates($number_plates) {
-        $product = Delivery::with('product')->where('number_plates', $number_plates)->first();
+        $product = Delivery::with('product')
+        ->where('product_code', $number_plates)
+        ->orWhere('number_plates', $number_plates)
+        ->get();
         if(!$product) {
-            return response()->json(['error' => 'bjir pengirimannya gak ketemu'], 404);
+            return response()->json(['error' => 'bjir pengirimannya dari plat nomor ini gak ketemu'], 404);
         }
         return response()->json($product);
     }
+
+    // public function showByProductCode($product_code) {
+    //     $product = Delivery::with('product')
+    //     ->where('product_code', $product_code)->get();
+    //     if(!$product) {
+    //         return response()->json(['error' => 'bjir pengirimannya dari kode produk ini gak ketemu'], 404);
+    //     }
+    //     return response()->json($product);
+    // }
 
     public function store(StoreDeliveriesRequest $request)
     {
@@ -51,7 +64,7 @@ class DeliveriesController extends Controller
 
     public function show(Delivery $delivery)
     {
-        //
+
     }
 
     public function update(UpdateDeliveriesRequest $request, Delivery $delivery)

@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import PieChart from "../PieChart";
-import axios from "axios";
 import { Product } from "@/API/Product";
-import Modal from "../Modal";
+import axios from "axios";
 import Chart from "chart.js/auto";
+import { useEffect, useRef, useState } from "react";
+import Modal from "../Modal";
 
 function ProductChart() {
     const { product } = Product();
@@ -81,7 +80,7 @@ function ProductChart() {
             };
 
         chartInstance.current = new Chart(ctx, {
-            type: "pie",
+            type: "doughnut",
             data: chartData,
             options: {
                 responsive: true,

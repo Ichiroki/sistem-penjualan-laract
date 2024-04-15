@@ -12,10 +12,12 @@ Route::get('/', [ViewController::class, 'dashboard'])->middleware(['auth', 'veri
 
 Route::get('products/{code}', [ProductController::class, 'showByCode']);
 Route::get('deliveries/{number_plates}', [DeliveriesController::class, 'showByNumberPlates']);
+Route::get('deliveries/{product_code}', [DeliveriesController::class, 'showByProductCode']);
 
 Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
     Route::get('product', [ViewController::class, 'product'])->name('product');
     Route::get('delivery', [ViewController::class, 'delivery'])->name('delivery');
+    Route::get('delivery/detail/{data}', [ViewController::class, 'deliveryDetail'])->name('delivery.detail');
     Route::get('incoming', [ViewController::class, 'incoming'])->name('incoming');
     Route::get('expense', [ViewController::class, 'expense'])->name('expense');
 
