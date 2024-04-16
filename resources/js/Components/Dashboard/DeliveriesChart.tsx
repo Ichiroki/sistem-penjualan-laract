@@ -4,17 +4,15 @@ import Chart from "chart.js/auto";
 import { useEffect, useRef, useState } from "react";
 import Modal from "../Modal";
 import { Doughnut } from "react-chartjs-2";
+import Button from "../Button";
 
 function DeliveriesChart() {
     const { deliveries } = Delivery();
     const [numberPlates, setNumberPlates] = useState([]);
     const [numberPlatesData, setNumberPlatesData] = useState([]);
 
-    const [modalData, setModalData] = useState({
-        code: '',
-        name: '',
-        quantity: ''
-    })
+    const [code, setCode] = useState([])
+    const [codeData, setCodeData] = useState([])
 
     const [show, setShow] = useState(false)
 
@@ -22,8 +20,11 @@ function DeliveriesChart() {
     const chartInstance = useRef<any>(null);
 
     useEffect(() => {
-        const uniqueCode: any = [...new Set(deliveries.map(p => p.number_plates))];
-        setNumberPlates(uniqueCode);
+        const uniqueNumber: any = [...new Set(deliveries.map(p => p.number_plates))];
+        setNumberPlates(uniqueNumber);
+
+        const uniqueCode: any = [...new Set(deliveries.map(p => p.product_code))]
+        setCode(uniqueCode)
     }, [deliveries]);
 
     useEffect(() => {
@@ -82,41 +83,32 @@ function DeliveriesChart() {
 
         // membuat sistem clickable chart
         const handleClick = async (event, elements) => {
-
-            // cek apakah elements tersebut ada dan memiliki panjang lebih dari 0
             if (elements && elements.length > 0) {
+                const clickedElement = elements[0];
+                const dataIndex = clickedElement.index;
+                const clickedData = chartData.labels[dataIndex];
 
-                // pilih element paling awal
-                const clickedElement = elements[0]
-
-                // ambil index dari element yang terpilih
-                const dataIndex = clickedElement.index
-
-                // ambil nilai di dalam variabel labels
-                const clickedData = chartData.labels[dataIndex]
-
-                // lakukan promise terhadap client
                 try {
                     await axios.get(`/deliveries/${clickedData}`)
                     .then((res) => {
                         const getData = res.data
-                        console.log(getData)
 
-                        getData.forEach(e => {
-                            setModalData({
-                                code: e.product.code,
-                                name: e.product.name,
-                                quantity: e.product.quantity
-                            })
+                        const quantities = getData.map((prod) => {
+                            return prod.product.map((item) => item.quantity)
                         })
+
+                        const mergedQuantities = quantities.flat()
+
+                        console.log(mergedQuantities)
+
+                        setCodeData(mergedQuantities)
                         setShow(!show)
-                    })
-                } catch(e) {
-                    console.log(e)
+                    });
+                } catch (e) {
+                    console.log(e);
                 }
             }
-        };
-
+        }
 
         // membuat instance untuk pemanggilan chart sesuai dengan kebutuhan
         chartInstance.current = new Chart(ctx, {
@@ -141,13 +133,12 @@ function DeliveriesChart() {
         });
     }, [numberPlates, numberPlatesData]);
 
-
-    const chartInModalData = {
-        labels: ['1', '2', '3'],
+    const data = {
+        labels: code,
         datasets: [
             {
                 label: 'Quantity',
-                data: [modalData.code, modalData.name, modalData.quantity],
+                data: codeData,
                 backgroundColor: [
                     '#06b6d4',
                     '#fb7185',
@@ -161,8 +152,12 @@ function DeliveriesChart() {
                 ],
                 borderColor: '#a1a1a1',
                 borderWidth: 1,
-            }
-        ]
+            },
+        ],
+    };
+
+    const options = {
+        maintainAspectRatio: false
     }
 
     return (
@@ -171,7 +166,20 @@ function DeliveriesChart() {
                 {/* menggunakan tag html '<canvas></canvas>' untuk menampilkan chart beserta data yang dikirimkan */}
                 <canvas ref={chartRef} className="" />
                 <Modal show={show} onClose={() => setShow(!show)}>
-                    <Doughnut data={chartInModalData} />
+                    <div className="p-5">
+                        <div className='flex justify-between pb-4 border-b'>
+                            <h1 className='text-medium text-xl'>Deliveries Chart</h1>
+                            <button onClick={() => setShow(!show)}>X</button>
+                        </div>
+                        <div>
+                            <Doughnut data={data} width={250} height={250} options={options}/>
+                        </div>
+                        <div className="flex justify-end mt-6 border-t">
+                            <Button color="light" onClick={() => setShow(!show)}>
+                                Close
+                            </Button>
+                        </div>
+                    </div>
                 </Modal>
             </div>
         </>
