@@ -49,8 +49,7 @@ function DeliveryIndex({auth}) {
         setTargetPengiriman('')
     }
 
-    const handleEditModal = (pengirimanId: string) => {
-        console.log(pengirimanId)
+    const handleEditModal = (pengirimanId) => {
         const selectedPengiriman: any = deliveries.find((p) => p.id === pengirimanId)
         setEditPengirimanData(selectedPengiriman)
         setShowEditModal(!showEditModal)
@@ -62,7 +61,7 @@ function DeliveryIndex({auth}) {
     }
 
     const [editPengirimanData, setEditPengirimanData] = useState({
-        id: '',
+        id: 0,
         number_plates: '',
         vehicle_type: '',
         product_code: '',
@@ -208,7 +207,7 @@ function DeliveryIndex({auth}) {
                                                 <tbody>
                                                 {deliveries && deliveries.map((p) => (
                                                     <tr
-                                                    className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={p.number_plates}>
+                                                    className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={p.id}>
                                                         <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.number_plates}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.vehicle_type}</td>

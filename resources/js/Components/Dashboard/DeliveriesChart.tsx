@@ -6,13 +6,19 @@ import Modal from "../Modal";
 import { Doughnut } from "react-chartjs-2";
 import Button from "../Button";
 
+type codeDataType = {
+    code: string
+    name: string
+    target_delivery: number
+}
+
 function DeliveriesChart() {
     const { deliveries } = Delivery();
     const [numberPlates, setNumberPlates] = useState([]);
     const [numberPlatesData, setNumberPlatesData] = useState([]);
 
     const [code, setCode] = useState([])
-    const [codeData, setCodeData] = useState([])
+    const [codeData, setCodeData] = useState<codeDataType[]>([])
 
     const [show, setShow] = useState(false)
 
@@ -30,16 +36,19 @@ function DeliveriesChart() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const targetDeliveryMap = {}; // Objek untuk menyimpan jumlah target_delivery
+                let targetDeliveryMap = {}; // Objek untuk menyimpan jumlah target_delivery
                 await Promise.all(numberPlates.map(async (np) => {
-                    const res = await axios.get(`/deliveries/${np}`);
-                    res.data.forEach((r) => {
-                        const key = `${r.number_plates}_${r.product_code}`; // Kombinasi number_plates dan product_code sebagai kunci
-                        if (targetDeliveryMap[key]) {
-                            targetDeliveryMap[key] += r.target_delivery; // Jika kunci sudah ada, tambahkan target_delivery
-                        } else {
-                            targetDeliveryMap[key] = r.target_delivery; // Jika kunci belum ada, buat kunci baru
-                        }
+                    await axios.get(`/deliveries/${np}`)
+                    .then((res) => {
+
+                        res.data.forEach((r) => {
+                            const key = `${r.number_plates}`; // Kombinasi number_plates dan product_code sebagai kunci
+                            if (targetDeliveryMap[key] ) {
+                                targetDeliveryMap[key] += r.target_delivery; // Jika kunci sudah ada, tambahkan target_delivery
+                            } else {
+                                targetDeliveryMap[key] = r.target_delivery; // Jika kunci belum ada, buat kunci baru
+                            }
+                        });
                     });
                 }));
 
@@ -93,15 +102,19 @@ function DeliveriesChart() {
                     .then((res) => {
                         const getData = res.data
 
-                        const quantities = getData.map((prod) => {
-                            return prod.product.map((item) => item.quantity)
+                        console.log(getData)
+
+                        const quantities = getData.map((data) => {
+                            const target_delivery = parseFloat(data.target_delivery)
+
+                            return target_delivery
                         })
 
-                        const mergedQuantities = quantities.flat()
+                        const mergedArray = [].concat(...quantities)
 
-                        console.log(mergedQuantities)
+                        console.log(mergedArray)
 
-                        setCodeData(mergedQuantities)
+                        setCodeData(mergedArray)
                         setShow(!show)
                     });
                 } catch (e) {
@@ -131,13 +144,13 @@ function DeliveriesChart() {
                 onClick: handleClick // Panggil event handler ketika potongan diklik
             },
         });
-    }, [numberPlates, numberPlatesData]);
+    }, [numberPlates, numberPlatesData, code]);
 
     const data = {
         labels: code,
         datasets: [
             {
-                label: 'Quantity',
+                label: 'Target Delivery',
                 data: codeData,
                 backgroundColor: [
                     '#06b6d4',
@@ -164,7 +177,7 @@ function DeliveriesChart() {
         <>
             <div>
                 {/* menggunakan tag html '<canvas></canvas>' untuk menampilkan chart beserta data yang dikirimkan */}
-                <canvas ref={chartRef} className="" />
+                <canvas ref={chartRef}/>
                 <Modal show={show} onClose={() => setShow(!show)}>
                     <div className="p-5">
                         <div className='flex justify-between pb-4 border-b'>

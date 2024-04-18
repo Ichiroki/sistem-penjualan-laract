@@ -139,6 +139,26 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     <div className="pt-4 pb-1 border-t border-gray-200">
                         <div className="px-4">
                             <div className="font-medium text-base text-gray-800">
+                                Product
+                            </div>
+                        </div>
+
+                        <div className="mt-3 space-y-1">
+                            <ResponsiveNavLink href={route('product')} active={route().current('product')}>List</ResponsiveNavLink>
+                            <ResponsiveNavLink href={route('incoming')} active={route().current('incoming')}>Incoming</ResponsiveNavLink>
+                            <ResponsiveNavLink href={route('expense')} active={route().current('expense')}>Expense</ResponsiveNavLink>
+                        </div>
+                    </div>
+
+                    <div className="pt-2 pb-3 space-y-1 border-t">
+                        <ResponsiveNavLink href={route('delivery')} active={route().current('delivery')}>
+                            Delivery
+                        </ResponsiveNavLink>
+                    </div>
+
+                    <div className="pt-4 pb-1 border-t border-gray-200">
+                        <div className="px-4">
+                            <div className="font-medium text-base text-gray-800">
                                 {user.name}
                             </div>
                             <div className="font-medium text-sm text-gray-500">{user.email}</div>
