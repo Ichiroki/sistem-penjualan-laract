@@ -9,7 +9,8 @@ import Button from "../Button";
 type codeDataType = {
     code: string
     name: string
-    target_delivery: number
+    actual_delivery: number
+    percentage: number
 }
 
 function DeliveriesChart() {
@@ -102,19 +103,18 @@ function DeliveriesChart() {
                     .then((res) => {
                         const getData = res.data
 
-                        console.log(getData)
-
                         const quantities = getData.map((data) => {
-                            const target_delivery = parseFloat(data.target_delivery)
+                            const actual_delivery = parseFloat(data.actual_delivery)
+                            const percentage = parseFloat(data.percentage)
 
-                            return target_delivery
+                            return {actual_delivery, percentage}
                         })
 
-                        const mergedArray = [].concat(...quantities)
+                        // const mergedArray = [].concat(...quantities)
 
-                        console.log(mergedArray)
+                        setCodeData(quantities)
 
-                        setCodeData(mergedArray)
+                        // console.log(codeData)
                         setShow(!show)
                     });
                 } catch (e) {
@@ -146,31 +146,35 @@ function DeliveriesChart() {
         });
     }, [numberPlates, numberPlatesData, code]);
 
-    const data = {
+    const chartData = {
         labels: code,
-        datasets: [
-            {
-                label: 'Target Delivery',
-                data: codeData,
+        datasets: [{
+                label: 'Actual Delivery',
+                data: [{id: 'Actual Delivery', nested: {value: codeData.map(cd => cd.actual_delivery)}}],
                 backgroundColor: [
                     '#06b6d4',
                     '#fb7185',
                     '#ffce56',
                     '#4ade80',
-                    '#7c3aed',
-                    '#0e7490',
-                    '#d97706',
-                    '#f97316',
-                    '#059669'
                 ],
-                borderColor: '#a1a1a1',
-                borderWidth: 1,
-            },
+            }, {
+                label: 'Percentage',
+                data: [{id: 'Percentage', nested: {value: codeData.map(cd => cd.percentage)}}],
+                backgroundColor: [
+                    '#06b6d4',
+                    '#fb7185',
+                    '#ffce56',
+                    '#4ade80',
+                ]
+            }
         ],
     };
 
     const options = {
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        parsing: {
+            key: 'nested.value'
+        }
     }
 
     return (
@@ -185,7 +189,7 @@ function DeliveriesChart() {
                             <button onClick={() => setShow(!show)}>X</button>
                         </div>
                         <div>
-                            <Doughnut data={data} width={250} height={250} options={options}/>
+                            <Doughnut data={chartData} width={250} height={250} options={options}/>
                         </div>
                         <div className="flex justify-end mt-6 border-t">
                             <Button color="light" onClick={() => setShow(!show)}>
