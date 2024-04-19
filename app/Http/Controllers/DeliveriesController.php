@@ -49,7 +49,9 @@ class DeliveriesController extends Controller
             'number_plates' => $request->number_plates,
             'vehicle_type' => $request->vehicle_type,
             'product_code' => $request->product_code,
-            'target_delivery' => $request->target_delivery
+            'target_delivery' => $request->target_delivery,
+            'actual_delivery' => $request->actual_delivery,
+            'percentage' => ($request->target_delivery / $request->actual_delivery) * 100
         ]);
     }
 
