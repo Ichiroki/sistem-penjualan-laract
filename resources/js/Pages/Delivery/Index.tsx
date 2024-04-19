@@ -277,8 +277,8 @@ function DeliveryIndex({auth}) {
                                                                                                 ))}
                                                                                             </select>
                                                                                         </div>
-                                                                                        <div className='mb-4 w-full'>
-                                                                                            <div>
+                                                                                        <div className='mb-4 w-full flex justify-between gap-5'>
+                                                                                            <div className='w-1/2'>
                                                                                                 <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
                                                                                                 <TextInput value={editPengirimanData.target_delivery} onChange={(e) =>
                                                                                                     setEditPengirimanData((prevData) => ({
@@ -287,7 +287,7 @@ function DeliveryIndex({auth}) {
                                                                                                     }))
                                                                                                 } className="w-full" id="targetPengiriman"/>
                                                                                             </div>
-                                                                                            <div>
+                                                                                            <div className='w-1/2'>
                                                                                                 <InputLabel value="Actual Pengiriman" className='mb-2' htmlFor="actualPengiriman"/>
                                                                                                 <TextInput value={editPengirimanData.target_delivery} onChange={(e) =>
                                                                                                     setEditPengirimanData((prevData) => ({
