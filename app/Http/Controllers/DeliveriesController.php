@@ -53,11 +53,6 @@ class DeliveriesController extends Controller
         ]);
     }
 
-    public function show(Delivery $delivery)
-    {
-
-    }
-
     public function update(UpdateDeliveriesRequest $request, Delivery $delivery)
     {
         return $delivery->update($request->validated());
