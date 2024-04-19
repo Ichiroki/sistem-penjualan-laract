@@ -15,9 +15,10 @@ class ProductController extends Controller
         if($search) {
             $product = Product::where('code', 'like' , '%'.$search.'%')->orWhere('name', 'like', '%'.$search.'%')->get();
         } else {
-            $product = Product::all();
+            $product = Product::paginate(5);
         }
 
+        // dd($product);
         return response()->json($product);
     }
 

@@ -10,17 +10,9 @@ export function Product () {
     let getProductData = async () => {
         try {
             if(search) {
-                axios.get(`/products?search=${search}`).then((response) => {
-                    // console.log(response.data)
-                    setProduct(response.data)
-                })
-                console
+                axios.get(`/products?search=${search}`).then(response => setProduct(response.data))
             } else {
-                axios.get(`/products/`).then((response) => {
-                    // console.log(response.data)
-                    setProduct(response.data)
-                })
-                console
+                axios.get(`/products/`).then(response => setProduct(response.data.data))
             }
         } catch (e) {
             console.error('Internal Server error, please wait' + e)

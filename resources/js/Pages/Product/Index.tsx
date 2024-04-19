@@ -13,13 +13,7 @@ function ProductIndex({auth}) {
 
     let i = 1
 
-    const {
-        product,
-        setProduct,
-        search,
-        setSearch,
-        getProductData
-    } = Product()
+    const { product, setProduct, search, setSearch, getProductData } = Product()
 
     const [errorCode, setErrorCode] = useState('')
     const [errorName, setErrorName] = useState('')

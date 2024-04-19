@@ -29,6 +29,7 @@
         "@inertiajs/inertia-react": "^0.8.1",
         "chart.js": "^4.4.2",
         "react-chartjs-2": "^5.2.0",
+        "react-paginate": "^8.2.0",
         "uuid": "^9.0.1"
     }
 }
