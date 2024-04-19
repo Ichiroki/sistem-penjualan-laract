@@ -25,7 +25,9 @@ class UpdateDeliveriesRequest extends FormRequest
             'number_plates' => 'required|string',
             'vehicle_type' => 'required|string',
             'product_code' => 'required|string',
-            'target_delivery' => 'required|integer'
+            'target_delivery' => 'required|integer',
+            'actual_delivery' => 'required|integer',
+            'percentage' => 'nullable|decimal:0,100'
         ];
     }
 
@@ -36,7 +38,9 @@ class UpdateDeliveriesRequest extends FormRequest
             'vehicle_type.required' => 'Harap isi kolom tipe / nama kendaraan',
             'vehicle_type.string' => 'Mohon isi tipe / nama kendaraan menggunakan karakter alphabet',
             'target_delivery.required' => 'Harap isi kolom target pengiriman',
-            'target_delivery.integer' => 'Mohon isi target pengiriman menggunakan karakter numerik'
+            'target_delivery.integer' => 'Mohon isi target pengiriman menggunakan karakter numerik',
+            'actual_delivery.required' => 'Mohon isi barang yang baru terkirim',
+            'actual_delivery.integer' => 'Kolom ini harus menggunakan angka',
         ];
     }
 }

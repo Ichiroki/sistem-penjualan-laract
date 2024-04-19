@@ -98,7 +98,8 @@ function DeliveryIndex({auth}) {
                 number_plates : editPengirimanData.number_plates,
                 vehicle_type : editPengirimanData.vehicle_type,
                 product_code : editPengirimanData.product_code,
-                target_delivery : editPengirimanData.target_delivery
+                target_delivery : editPengirimanData.target_delivery,
+                actual_delivery : editPengirimanData.actual_delivery
             })
             .then(() => {
                 getDeliveriesData()
@@ -132,7 +133,7 @@ function DeliveryIndex({auth}) {
     return (
             <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Pengiriman</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Deliveries</h2>}
             >
             <Head title="Dashboard" />
 
@@ -166,9 +167,9 @@ function DeliveryIndex({auth}) {
                                                         </div>
                                                     </div>
                                                     <div className='mb-4 w-full'>
-                                                        <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
+                                                        <InputLabel value="Product Code" className='mb-2' htmlFor="productCode"/>
                                                         <select className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setKodeProduct(e.target.value)}>
-                                                            <option value="" key={""}>Select Product</option>
+                                                            <option value="" key={""} id="productCode">Select Product</option>
                                                             {product.map((p) => (
                                                                 <option value={p.code} key={p.code}>{p.code}</option>
                                                             ))}
@@ -223,10 +224,10 @@ function DeliveryIndex({auth}) {
                                                         <td className="whitespace-nowrap px-6 py-4">{p.number_plates}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.vehicle_type}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.product[0].name}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.target_delivery}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.actual_delivery}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.percentage}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">
+                                                        <td className="whitespace-nowrap px-6 py-4 text-center">{p.target_delivery}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4 text-center">{p.actual_delivery}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4 text-center">{p.percentage + ' %'}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4 text-center">
                                                             <div className='flex gap-3'>
                                                                 <Button color="warning" onClick={() => handleEditModal(p.id)}>Edit</Button>
                                                                 {editPengirimanData && editPengirimanData.id === p.id && (
@@ -266,7 +267,7 @@ function DeliveryIndex({auth}) {
                                                                                             </div>
                                                                                         </div>
                                                                                         <div className='mb-4 w-full'>
-                                                                                            <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
+                                                                                            <InputLabel value="productCode" className='mb-2' htmlFor="productCode"/>
                                                                                             <select className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setEditPengirimanData((prevData) => ({
                                                                                                 ...prevData,
                                                                                                 product_code: e.target.value
@@ -277,13 +278,24 @@ function DeliveryIndex({auth}) {
                                                                                             </select>
                                                                                         </div>
                                                                                         <div className='mb-4 w-full'>
-                                                                                            <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
-                                                                                            <TextInput value={editPengirimanData.target_delivery} onChange={(e) =>
-                                                                                                setEditPengirimanData((prevData) => ({
-                                                                                                ...prevData,
-                                                                                                target_delivery: e.target.value
-                                                                                                }))
-                                                                                            } className="w-full" id="nama"/>
+                                                                                            <div>
+                                                                                                <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
+                                                                                                <TextInput value={editPengirimanData.target_delivery} onChange={(e) =>
+                                                                                                    setEditPengirimanData((prevData) => ({
+                                                                                                    ...prevData,
+                                                                                                    target_delivery: e.target.value
+                                                                                                    }))
+                                                                                                } className="w-full" id="targetPengiriman"/>
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <InputLabel value="Actual Pengiriman" className='mb-2' htmlFor="actualPengiriman"/>
+                                                                                                <TextInput value={editPengirimanData.target_delivery} onChange={(e) =>
+                                                                                                    setEditPengirimanData((prevData) => ({
+                                                                                                    ...prevData,
+                                                                                                    actual_delivery: e.target.value
+                                                                                                    }))
+                                                                                                } className="w-full" id="actualDelivery"/>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>

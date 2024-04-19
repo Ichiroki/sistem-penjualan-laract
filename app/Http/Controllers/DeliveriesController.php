@@ -51,13 +51,20 @@ class DeliveriesController extends Controller
             'product_code' => $request->product_code,
             'target_delivery' => $request->target_delivery,
             'actual_delivery' => $request->actual_delivery,
-            'percentage' => ($request->target_delivery / $request->actual_delivery) * 100
+            'percentage' => ($request->actual_delivery / $request->target_delivery) * 100
         ]);
     }
 
     public function update(UpdateDeliveriesRequest $request, Delivery $delivery)
     {
-        return $delivery->update($request->validated());
+        return $delivery->update([
+            'number_plates' => $request->number_plates,
+            'veicle_type' => $request->vehicle_type,
+            'product_code' => $request->product_code,
+            'target_delivery' => $request->target_delivery,
+            'actual_delivery' => $request->actual_delivery,
+            'percentage' => ($request->actual_delivery / $request->target_delivery) * 100
+        ]);
     }
 
     public function destroy(Delivery $delivery)
