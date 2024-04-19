@@ -6,14 +6,26 @@ import Modal from '@/Components/Modal'
 import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
+
+type ProductType = {
+    code: string
+    name: string
+    quantity: number
+}
 
 function ProductIndex({auth}) {
 
     let i = 1
 
     const { product, setProduct, search, setSearch, getProductData } = Product()
+
+    let [productData, setProductData] = useState<ProductType[]>([])
+
+    useEffect(() => {
+        setProductData(product.data)
+    }, [productData])
 
     const [errorCode, setErrorCode] = useState('')
     const [errorName, setErrorName] = useState('')
@@ -204,7 +216,7 @@ function ProductIndex({auth}) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {product.map((p) => (
+                                                {productData.map((p) => (
                                                 <tr
                                                 className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={p.code}>
                                                     <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>

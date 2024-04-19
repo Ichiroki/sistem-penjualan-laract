@@ -12,7 +12,10 @@ export function Product () {
             if(search) {
                 axios.get(`/products?search=${search}`).then(response => setProduct(response.data))
             } else {
-                axios.get(`/products/`).then(response => setProduct(response.data.data))
+                axios.get(`/products/`).then(response => {
+                    console.log(response.data)
+                    setProduct(response.data)
+                })
             }
         } catch (e) {
             console.error('Internal Server error, please wait' + e)
