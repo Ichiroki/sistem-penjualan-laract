@@ -289,7 +289,7 @@ function DeliveryIndex({auth}) {
                                                                                             </div>
                                                                                             <div className='w-1/2'>
                                                                                                 <InputLabel value="Actual Pengiriman" className='mb-2' htmlFor="actualPengiriman"/>
-                                                                                                <TextInput value={editPengirimanData.target_delivery} onChange={(e) =>
+                                                                                                <TextInput value={editPengirimanData.actual_delivery} onChange={(e) =>
                                                                                                     setEditPengirimanData((prevData) => ({
                                                                                                     ...prevData,
                                                                                                     actual_delivery: e.target.value
