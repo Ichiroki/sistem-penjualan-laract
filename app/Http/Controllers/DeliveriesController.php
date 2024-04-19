@@ -42,15 +42,6 @@ class DeliveriesController extends Controller
         return response()->json($product);
     }
 
-    // public function showByProductCode($product_code) {
-    //     $product = Delivery::with('product')
-    //     ->where('product_code', $product_code)->get();
-    //     if(!$product) {
-    //         return response()->json(['error' => 'bjir pengirimannya dari kode produk ini gak ketemu'], 404);
-    //     }
-    //     return response()->json($product);
-    // }
-
     public function store(StoreDeliveriesRequest $request)
     {
         return Delivery::create([
