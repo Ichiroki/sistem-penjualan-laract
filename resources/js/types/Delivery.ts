@@ -7,4 +7,6 @@ export interface Delivery {
     product_code: string
     product: Product
     target_delivery: number
+    actual_delivery: number
+    percentage: number
 }

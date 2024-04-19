@@ -33,6 +33,7 @@ function DeliveryIndex({auth}) {
     const [jenisKendaraan, setJenisKendaraan] = useState('')
     const [kodeProduct, setKodeProduct] = useState('')
     const [targetPengiriman, setTargetPengiriman] = useState('')
+    const [actualPengiriman, setActualPengiriman] = useState('')
 
     const [showEditModal, setShowEditModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -66,6 +67,7 @@ function DeliveryIndex({auth}) {
         vehicle_type: '',
         product_code: '',
         target_delivery: '',
+        actual_delivery: ''
     })
 
     let createPengirimanData = async (e) => {
@@ -77,7 +79,8 @@ function DeliveryIndex({auth}) {
                 number_plates: platKendaraan,
                 vehicle_type: jenisKendaraan,
                 product_code: kodeProduct,
-                target_delivery: targetPengiriman
+                target_delivery: targetPengiriman,
+                actual_delivery: actualPengiriman
             }).then((res) =>{
                 console.log(res.data)
                 getDeliveriesData()
@@ -171,9 +174,15 @@ function DeliveryIndex({auth}) {
                                                             ))}
                                                         </select>
                                                     </div>
-                                                    <div className='mb-4 w-full'>
-                                                        <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
-                                                        <TextInput value={targetPengiriman} onChange={(e) => setTargetPengiriman(e.target.value)} className="w-full" id="targetPengiriman"/>
+                                                    <div className='mb-4 w-full flex justify-between gap-3'>
+                                                        <div className='w-1/2'>
+                                                            <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
+                                                            <TextInput value={targetPengiriman} onChange={(e) => setTargetPengiriman(e.target.value)} className="w-full" id="targetPengiriman"/>
+                                                        </div>
+                                                        <div className='w-1/2'>
+                                                            <InputLabel value="Actual Pengiriman" className='mb-2' htmlFor="actualPengiriman"/>
+                                                            <TextInput value={actualPengiriman} onChange={(e) => setActualPengiriman(e.target.value)} className="w-full" id="actualPengiriman"/>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -201,6 +210,8 @@ function DeliveryIndex({auth}) {
                                                     <th scope="col" className="px-6 py-4">Vehicle Type</th>
                                                     <th scope="col" className='px-6 py-4'>Product</th>
                                                     <th scope="col" className="px-6 py-4">Target Package</th>
+                                                    <th scope="col" className="px-6 py-4">Actual Package</th>
+                                                    <th scope="col" className="px-6 py-4">Percentage</th>
                                                     <th scope="col" className="px-6 py-4">Aksi</th>
                                                     </tr>
                                                 </thead>
@@ -213,6 +224,8 @@ function DeliveryIndex({auth}) {
                                                         <td className="whitespace-nowrap px-6 py-4">{p.vehicle_type}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.product[0].name}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.target_delivery}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{p.actual_delivery}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{p.percentage}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">
                                                             <div className='flex gap-3'>
                                                                 <Button color="warning" onClick={() => handleEditModal(p.id)}>Edit</Button>
