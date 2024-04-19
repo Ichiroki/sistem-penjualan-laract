@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('vehicle_type');
             $table->string('product_code');
             $table->integer('target_delivery');
+            $table->integer('actual_delivery');
+            $table->decimal('percentage');
             $table->timestamps();
 
             $table->foreign('product_code')->references('code')->on('products');

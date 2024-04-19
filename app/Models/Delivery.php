@@ -13,7 +13,9 @@ class Delivery extends Model
         'number_plates',
         'vehicle_type',
         'product_code',
-        'target_delivery'
+        'target_delivery',
+        'actual_delivery',
+        'percentage'
     ];
 
     public function product() {

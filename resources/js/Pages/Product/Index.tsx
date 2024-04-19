@@ -6,26 +6,14 @@ import Modal from '@/Components/Modal'
 import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
-import { useEffect, useState } from 'react'
 import axios from 'axios'
-
-type ProductType = {
-    code: string
-    name: string
-    quantity: number
-}
+import { useState } from 'react'
 
 function ProductIndex({auth}) {
 
     let i = 1
 
     const { product, setProduct, search, setSearch, getProductData } = Product()
-
-    let [productData, setProductData] = useState<ProductType[]>([])
-
-    useEffect(() => {
-        setProductData(product.data)
-    }, [productData])
 
     const [errorCode, setErrorCode] = useState('')
     const [errorName, setErrorName] = useState('')
@@ -73,7 +61,7 @@ function ProductIndex({auth}) {
             {
                 code, name, quantity
             })
-            .then((response) => {
+            .then(() => {
                 resetInput()
                 getProductData()
                 setShowCreateModal(false)
@@ -90,9 +78,7 @@ function ProductIndex({auth}) {
                     //
                 }
             })
-        } catch(e) {
-            console.error('Internal server error, please wait')
-        }
+        } catch(e) { console.error('Internal server error, please wait') }
     }
 
     let editProductIdData = async (productId) => {
@@ -116,23 +102,19 @@ function ProductIndex({auth}) {
                     setErrorQuantity(getError.quantity[0])
                 }
             })
-        } catch(e) {
-            console.error('Internal server error, please wait' + e)
-        }
+        } catch(e) { console.error('Internal server error, please wait' + e) }
     }
 
     let deleteProductData = async (productId) => {
         try {
             await axios.delete(`/products/${productId}`)
-            .then((res) => {
+            .then(() => {
                 const updateProductList = product.filter((p) => p.code !== productId)
                 setProduct(updateProductList)
                 setDeleteProductId(null)
                 setShowDeleteModal(false)
             })
-        } catch(e) {
-            console.error('Internal Server Error, Please Wait' + e)
-        }
+        } catch(e) { console.error('Internal Server Error, Please Wait' + e) }
     }
 
     return (
@@ -216,7 +198,7 @@ function ProductIndex({auth}) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {productData.map((p) => (
+                                                {product.map((p) => (
                                                 <tr
                                                 className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={p.code}>
                                                     <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
