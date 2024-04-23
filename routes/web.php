@@ -5,6 +5,7 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\IncomingController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\ViewController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,10 +23,10 @@ Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
     Route::get('vehicle', [ViewController::class, 'vehicle'])->name('vehicle');
 
     Route::apiResource('products', ProductController::class);
+    Route::apiResource('vehicles', VehicleController::class);
     Route::apiResource('deliveries', DeliveriesController::class);
     Route::apiResource('incomings', IncomingController::class);
     Route::apiResource('expenses', ExpenseController::class);
-
 });
 
 Route::middleware('auth')->group(function () {
