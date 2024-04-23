@@ -19,6 +19,7 @@ Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
     Route::get('delivery', [ViewController::class, 'delivery'])->name('delivery');
     Route::get('incoming', [ViewController::class, 'incoming'])->name('incoming');
     Route::get('expense', [ViewController::class, 'expense'])->name('expense');
+    Route::get('vehicle', [ViewController::class, 'vehicle'])->name('vehicle');
 
     Route::apiResource('products', ProductController::class);
     Route::apiResource('deliveries', DeliveriesController::class);
