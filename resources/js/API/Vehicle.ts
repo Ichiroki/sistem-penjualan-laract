@@ -12,7 +12,7 @@ export function Vehicles() {
             if(search) {
                 await axios.get(`/vehicles?search=${search}`).then((res) => { setVehicles(res.data) })
             } else {
-                await axios.get('/deliveries').then((res) => { setVehicles(res.data) })
+                await axios.get('/vehicles').then((res) => { setVehicles(res.data) })
             }
         } catch (e) { console.error('Internal Server error, please wait' + e) }
     }
