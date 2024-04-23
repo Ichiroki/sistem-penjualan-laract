@@ -8,7 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Vehicle extends Model
 {
+    protected $primaryKey = 'id';
+
+    public $keyType = 'string';
+
+    public $incrementing = false;
+
     protected $fillable = [
+        'id',
         'number_plates',
         'vehicle_type',
         'target'

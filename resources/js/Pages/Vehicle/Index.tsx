@@ -1,4 +1,3 @@
-import { Product } from '@/API/Product'
 import { Vehicles } from '@/API/Vehicle'
 import Button from '@/Components/Button'
 import InputError from '@/Components/InputError'
@@ -44,9 +43,9 @@ function VehicleIndex({auth}) {
 
     const [deleteVehicleId, setDeleteVehicleId] = useState(null)
 
-    const handleEditModal = (productId) => {
-        const selectedProduct: any = vehicles.find((v) => v.id === productId)
-        setEditVehicleData(selectedProduct)
+    const handleEditModal = (vehicleId) => {
+        const selectedVehicle: any = vehicles.find((v) => v.id === vehicleId)
+        setEditVehicleData(selectedVehicle)
         setShowEditModal(!showEditModal)
     }
 
@@ -124,7 +123,7 @@ function VehicleIndex({auth}) {
     return (
         <AuthenticatedLayout
         user={auth.user}
-        header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Product</h2>}
+        header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Vehicles</h2>}
         >
         <Head title="Dashboard" />
 
@@ -138,7 +137,7 @@ function VehicleIndex({auth}) {
                             <Modal show={showCreateModal} onClose={() => setShowCreateModal(false)}>
                                 <div className='p-5'>
                                     <div className='flex justify-between pb-4 border-b'>
-                                        <h1 className='text-medium text-xl'>Delete product</h1>
+                                        <h1 className='text-medium text-xl'>Delete vehicle</h1>
                                         <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
                                     </div>
                                     <form onSubmit={createVehicleData}>
@@ -156,8 +155,8 @@ function VehicleIndex({auth}) {
                                                         )}
                                                     </div>
                                                     <div className='mb-4 w-1/2'>
-                                                        <InputLabel value="Nama" className='mb-2' htmlFor="nama"/>
-                                                        <TextInput value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} className={errorVehicleType ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
+                                                        <InputLabel value="Vehicle Type" className='mb-2' htmlFor="vehicle_type"/>
+                                                        <TextInput value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} className={errorVehicleType ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="vehicle_type"/>
                                                         {errorVehicleType ? (
                                                             <InputError message={errorVehicleType}/>
                                                         ) : (
@@ -216,7 +215,7 @@ function VehicleIndex({auth}) {
                                                                 <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
                                                                     <div className='p-5'>
                                                                         <div className='flex justify-between pb-4 border-b'>
-                                                                            <h1 className='text-medium text-xl'>Edit product</h1>
+                                                                            <h1 className='text-medium text-xl'>Edit vehicle</h1>
                                                                             <button onClick={() => setShowEditModal(!showEditModal)}>X</button>
                                                                         </div>
                                                                         <div className='my-4 flex items-center justify-center'>
@@ -268,11 +267,11 @@ function VehicleIndex({auth}) {
                                                                 <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
                                                                     <div className='p-5'>
                                                                         <div className='flex justify-between pb-4 border-b'>
-                                                                            <h1 className='text-medium text-xl'>Delete product</h1>
+                                                                            <h1 className='text-medium text-xl'>Delete vehicle</h1>
                                                                             <button onClick={() => setShowDeleteModal(!showDeleteModal)}>X</button>
                                                                         </div>
                                                                         <div className='my-4 flex items-center justify-center'>
-                                                                            <p className='text-lg'>Are you sure want to delete this product ?</p>
+                                                                            <p className='text-lg'>Are you sure want to delete this vehicle ?</p>
                                                                         </div>
                                                                         <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                             <Button color="light" type="button" onClick={() => setShowDeleteModal(!showDeleteModal)}>Close</Button>

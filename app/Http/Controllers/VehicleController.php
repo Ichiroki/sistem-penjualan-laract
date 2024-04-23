@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreVehicleRequest;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class VehicleController extends Controller
 {
@@ -27,17 +29,16 @@ class VehicleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreVehicleRequest $request)
     {
-        //
-    }
+        $id = Str::uuid();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Vehicle $vehicle)
-    {
-        //
+        return Vehicle::create([
+            'id' => $id,
+            'number_plates' => $request->validated('number_plates'),
+            'vehicle_type' => $request->validated('vehicle_type'),
+            'target' => $request->validated('target')
+        ]);
     }
 
     /**
