@@ -1,4 +1,5 @@
 import { Product } from '@/API/Product'
+import { Vehicles } from '@/API/Vehicle'
 import Button from '@/Components/Button'
 import InputError from '@/Components/InputError'
 import InputLabel from '@/Components/InputLabel'
@@ -13,57 +14,60 @@ function VehicleIndex({auth}) {
 
     let i = 1
 
-    const { product, setProduct, search, setSearch, getProductData } = Product()
+    const { vehicles, setVehicles, search, setSearch, getVehiclesData } = Vehicles()
 
-    const [errorCode, setErrorCode] = useState('')
-    const [errorName, setErrorName] = useState('')
-    const [errorQuantity, setErrorQuantity] = useState('')
+    const [errorNumberPlates, setErrorNumberPlates] = useState('')
+    const [errorVehicleType, setErrorVehicleType] = useState('')
+    const [errorTarget, setErrorTarget] = useState('')
 
-    const [code, setCode] = useState('')
-    const [name, setName] = useState('')
-    const [quantity, setQuantity] = useState('')
+    const [numberPlates, setNumberPlates] = useState('')
+    const [vehicleType, setVehicleType] = useState('')
+    const [target, setTarget] = useState('')
 
 
     const resetInput = () => {
-        setCode('')
-        setName('')
-        setQuantity('')
+        setNumberPlates('')
+        setVehicleType('')
+        setTarget('')
     }
 
-    const [editProductData, setEditProductData] = useState({
-        code: '',
-        name: '',
-        quantity: '',
+    const [editVehicleData, setEditVehicleData] = useState({
+        id: '',
+        number_plates: '',
+        vehicle_type: '',
+        target: '',
     })
 
     const [showCreateModal, setShowCreateModal] = useState(false)
     const [showEditModal, setShowEditModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
 
-    const [deleteProductId, setDeleteProductId] = useState(null)
+    const [deleteVehicleId, setDeleteVehicleId] = useState(null)
 
     const handleEditModal = (productId) => {
-        const selectedProduct: any = product.find((p) => p.code === productId)
-        setEditProductData(selectedProduct)
+        const selectedProduct: any = vehicles.find((v) => v.id === productId)
+        setEditVehicleData(selectedProduct)
         setShowEditModal(!showEditModal)
     }
 
-    const handleDeleteModal = (productId) => {
-        setDeleteProductId(productId)
-        console.log(deleteProductId)
+    const handleDeleteModal = (vehicleId) => {
+        setDeleteVehicleId(vehicleId)
+        console.log(deleteVehicleId)
         setShowDeleteModal(!showDeleteModal)
     }
 
-    let createProductData = async (e) => {
+    let createVehicleData = async (e) => {
         e.preventDefault()
         try {
-            axios.post('/products',
+            axios.post('/vehicles',
             {
-                code, name, quantity
+                number_plates: numberPlates,
+                vehicle_type: vehicleType,
+                target
             })
             .then(() => {
                 resetInput()
-                getProductData()
+                getVehiclesData()
                 setShowCreateModal(false)
             })
             .catch((error) => {
@@ -72,24 +76,24 @@ function VehicleIndex({auth}) {
                     const getError = error.response.data.errors
                     console.log(error.response)
                     // Error message
-                    setErrorCode(getError.code[0])
-                    setErrorName(getError.name[0])
-                    setErrorQuantity(getError.quantity[0])
+                    setErrorNumberPlates(getError.number_plates[0])
+                    setErrorVehicleType(getError.vehicle_type[0])
+                    setErrorTarget(getError.target[0])
                     //
                 }
             })
         } catch(e) { console.error('Internal server error, please wait') }
     }
 
-    let editProductIdData = async (productId) => {
+    let editVehicleIdData = async (vehicleId) => {
         try {
-            await axios.put(`/products/${productId}`, {
-                code : editProductData.code,
-                name : editProductData.name,
-                quantity : editProductData.quantity
+            await axios.put(`/vehicles/${vehicleId}`, {
+                number_plates : editVehicleData.number_plates,
+                vehicle_type : editVehicleData.vehicle_type,
+                target : editVehicleData.target
             })
             .then(() => {
-                getProductData()
+                getVehiclesData()
                 resetInput()
                 setShowEditModal(false)
             })
@@ -97,21 +101,21 @@ function VehicleIndex({auth}) {
                 if(error.response) {
                     const getError = error.response.data.errors
                     console.log(error.response)
-                    setErrorCode(getError.code[0])
-                    setErrorName(getError.name[0])
-                    setErrorQuantity(getError.quantity[0])
+                    setErrorNumberPlates(getError.number_plates[0])
+                    setErrorVehicleType(getError.vehicle_type[0])
+                    setErrorTarget(getError.target[0])
                 }
             })
         } catch(e) { console.error('Internal server error, please wait' + e) }
     }
 
-    let deleteProductData = async (productId) => {
+    let deleteVehicleData = async (vehicleId) => {
         try {
-            await axios.delete(`/products/${productId}`)
+            await axios.delete(`/vehicles/${vehicleId}`)
             .then(() => {
-                const updateProductList = product.filter((p) => p.code !== productId)
-                setProduct(updateProductList)
-                setDeleteProductId(null)
+                const updateVehicleList = vehicles.filter((v) => v.id !== vehicleId)
+                setVehicles(updateVehicleList)
+                setDeleteVehicleId(null)
                 setShowDeleteModal(false)
             })
         } catch(e) { console.error('Internal Server Error, Please Wait' + e) }
@@ -137,15 +141,15 @@ function VehicleIndex({auth}) {
                                         <h1 className='text-medium text-xl'>Delete product</h1>
                                         <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
                                     </div>
-                                    <form onSubmit={createProductData}>
+                                    <form onSubmit={createVehicleData}>
                                         <div className='my-4'>
                                             <div className='flex items-center justify-between gap-3 flex-wrap'>
                                                 <div className='flex justify-between w-full gap-5'>
                                                     <div className='mb-4 w-1/2'>
-                                                        <InputLabel value="Kode" className='mb-2' htmlFor="kode" />
-                                                        <TextInput value={code} onChange={(e) => setCode(e.target.value)} className={errorCode ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="kode"/>
-                                                        {errorCode && errorCode !== '' ? (
-                                                            <InputError message={errorCode}/>
+                                                        <InputLabel value="Number Plates" className='mb-2' htmlFor="number_plates" />
+                                                        <TextInput value={numberPlates} onChange={(e) => setNumberPlates(e.target.value)} className={errorNumberPlates ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="number_plates"/>
+                                                        {errorNumberPlates && errorNumberPlates !== '' ? (
+                                                            <InputError message={errorNumberPlates}/>
                                                         ) : (
                                                             <>
                                                             </>
@@ -153,16 +157,16 @@ function VehicleIndex({auth}) {
                                                     </div>
                                                     <div className='mb-4 w-1/2'>
                                                         <InputLabel value="Nama" className='mb-2' htmlFor="nama"/>
-                                                        <TextInput value={name} onChange={(e) => setName(e.target.value)} className={errorName ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
-                                                        {errorName ? (
-                                                            <InputError message={errorName}/>
+                                                        <TextInput value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} className={errorVehicleType ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
+                                                        {errorVehicleType ? (
+                                                            <InputError message={errorVehicleType}/>
                                                         ) : (
                                                             <>
                                                             </>
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className='mb-4 w-full'>
+                                                {/* <div className='mb-4 w-full'>
                                                     <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
                                                     <TextInput value={quantity} onChange={(e) => setQuantity(e.target.value)} className="w-full" id="quantity"/>
                                                     {errorQuantity ? (
@@ -171,7 +175,7 @@ function VehicleIndex({auth}) {
                                                         <>
                                                         </>
                                                     )}
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
                                         <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
@@ -191,24 +195,24 @@ function VehicleIndex({auth}) {
                                             <thead className="border-b font-medium dark:border-neutral-500">
                                                 <tr>
                                                 <th scope="col" className="px-6 py-4">#</th>
-                                                <th scope="col" className="px-6 py-4">Kode</th>
-                                                <th scope="col" className="px-6 py-4">Nama</th>
-                                                <th scope="col" className="px-6 py-4">Jumlah</th>
+                                                <th scope="col" className="px-6 py-4">Plat Nomor</th>
+                                                <th scope="col" className="px-6 py-4">Nama Kendaraan</th>
+                                                {/* <th scope="col" className="px-6 py-4">Jumlah</th> */}
                                                 <th scope="col" className="px-6 py-4">Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {product.map((p) => (
+                                                {vehicles.map((v) => (
                                                 <tr
-                                                className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={p.code}>
+                                                className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={v.id}>
                                                     <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{p.code}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{p.name}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{p.quantity}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{v.number_plates}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{v.vehicle_type}</td>
+                                                    {/* <td className="whitespace-nowrap px-6 py-4">{p.target}</td> */}
                                                     <td className="whitespace-nowrap px-6 py-4">
                                                         <div className='flex gap-3'>
-                                                            <Button color="warning" onClick={() => handleEditModal(p.code)}>Edit</Button>
-                                                            {editProductData && editProductData.code === p.code && (
+                                                            <Button color="warning" onClick={() => handleEditModal(v.id)}>Edit</Button>
+                                                            {editVehicleData && editVehicleData.id === v.id && (
                                                                 <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
                                                                     <div className='p-5'>
                                                                         <div className='flex justify-between pb-4 border-b'>
@@ -216,35 +220,35 @@ function VehicleIndex({auth}) {
                                                                             <button onClick={() => setShowEditModal(!showEditModal)}>X</button>
                                                                         </div>
                                                                         <div className='my-4 flex items-center justify-center'>
-                                                                        <form onSubmit={editProductIdData}>
+                                                                        <form onSubmit={editVehicleIdData}>
                                                                             <div className='my-4'>
                                                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
                                                                                     <div className='flex justify-between w-full gap-5'>
                                                                                         <div className='mb-4 w-1/2'>
                                                                                             <InputLabel value="Kode" className='mb-2' htmlFor="kode" />
-                                                                                            <TextInput value={editProductData.code} onChange={(e) =>
-                                                                                                setEditProductData((prevData) => ({
+                                                                                            <TextInput value={editVehicleData.number_plates} onChange={(e) =>
+                                                                                                setEditVehicleData((prevData) => ({
                                                                                                 ...prevData,
-                                                                                                code: e.target.value
+                                                                                                number_plates: e.target.value
                                                                                                 }))
                                                                                             } className="w-full" id="kode" disabled={true}/>
                                                                                         </div>
                                                                                         <div className='mb-4 w-1/2'>
                                                                                             <InputLabel value="Nama" className='mb-2' htmlFor="nama"/>
-                                                                                            <TextInput value={editProductData.name} onChange={(e) =>
-                                                                                                setEditProductData((prevData) => ({
+                                                                                            <TextInput value={editVehicleData.vehicle_type} onChange={(e) =>
+                                                                                                setEditVehicleData((prevData) => ({
                                                                                                 ...prevData,
-                                                                                                name: e.target.value
+                                                                                                vehicle_type: e.target.value
                                                                                                 }))
                                                                                             } className="w-full" id="nama"/>
                                                                                         </div>
                                                                                     </div>
                                                                                     <div className='mb-4 w-full'>
                                                                                         <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
-                                                                                        <TextInput value={editProductData.quantity} onChange={(e) =>
-                                                                                            setEditProductData((prevData) => ({
+                                                                                        <TextInput value={editVehicleData.target} onChange={(e) =>
+                                                                                            setEditVehicleData((prevData) => ({
                                                                                             ...prevData,
-                                                                                            quantity: e.target.value
+                                                                                            target: e.target.value
                                                                                             }))
                                                                                         } className="w-full" id="jumlah"/>
                                                                                     </div>
@@ -252,15 +256,15 @@ function VehicleIndex({auth}) {
                                                                             </div>
                                                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                                 <Button color="light" type="button" onClick={() => setShowEditModal(!showEditModal)}>Close</Button>
-                                                                                <Button color="success" type="button" onClick={() => editProductIdData(p.code)}>Submit</Button>
+                                                                                <Button color="success" type="button" onClick={() => editVehicleIdData(v.id)}>Submit</Button>
                                                                             </div>
                                                                         </form>
                                                                         </div>
                                                                     </div>
                                                                 </Modal>
                                                             )}
-                                                            <Button color="danger" onClick={() => handleDeleteModal(p.code)}>Delete</Button>
-                                                            {deleteProductId && deleteProductId === p.code && (
+                                                            <Button color="danger" onClick={() => handleDeleteModal(v.id)}>Delete</Button>
+                                                            {deleteVehicleId && deleteVehicleId === v.id && (
                                                                 <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
                                                                     <div className='p-5'>
                                                                         <div className='flex justify-between pb-4 border-b'>
@@ -272,7 +276,7 @@ function VehicleIndex({auth}) {
                                                                         </div>
                                                                         <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                             <Button color="light" type="button" onClick={() => setShowDeleteModal(!showDeleteModal)}>Close</Button>
-                                                                            <Button color="danger" onClick={() => deleteProductData(p.code)}>Delete</Button>
+                                                                            <Button color="danger" onClick={() => deleteVehicleData(v.id)}>Delete</Button>
                                                                         </div>
                                                                     </div>
                                                                 </Modal>
