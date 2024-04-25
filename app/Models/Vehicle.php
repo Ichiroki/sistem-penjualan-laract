@@ -8,14 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Vehicle extends Model
 {
-    protected $primaryKey = 'id';
-
-    public $keyType = 'string';
-
-    public $incrementing = false;
+    use HasFactory;
 
     protected $fillable = [
-        'id',
         'number_plates',
         'vehicle_type',
         'target'
@@ -24,6 +19,4 @@ class Vehicle extends Model
     public function delivery() {
         return $this->hasMany(Delivery::class, 'id', 'target');
     }
-
-    use HasFactory;
 }

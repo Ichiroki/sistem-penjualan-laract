@@ -18,13 +18,13 @@ class DeliveriesController extends Controller
         if($search) {
             $pengiriman = Delivery::with(['product', function($query) use ($search) {
                 $query->where('name', 'like', '%'.$search.'%');
+            }])->with(['vehicle', function($query) use ($search) {
+                $query->where('number_plates', 'like', '%' . $search . '%')
+                ->orWhere('vehicle_type', 'like', '%' . $search . '%');
             }])
-            ->where('number_plates', 'like', '%'.$search.'%')
-            ->orWhere('product_code', 'like', '%'.$search.'%')
-            ->orWhere('vehicle_type', 'like', '%'.$search.'%')
             ->get();
         } else {
-            $pengiriman = Delivery::with(['product'])->latest()->get();
+            $pengiriman = Delivery::with(['vehicle', 'product'])->latest()->get();
         }
 
 
@@ -32,7 +32,7 @@ class DeliveriesController extends Controller
     }
 
     public function showByNumberPlates($number_plates) {
-        $product = Delivery::with('product')
+        $product = Delivery::with(['vehicle', 'product'])
         ->where('product_code', $number_plates)
         ->orWhere('number_plates', $number_plates)
         ->get();
@@ -45,7 +45,6 @@ class DeliveriesController extends Controller
     public function store(StoreDeliveriesRequest $request)
     {
         return Delivery::create([
-            'id' => Str::uuid(),
             'vehicle' => $request->vehicle,
             'product_code' => $request->product_code,
             'quantity' => $request->quantity,

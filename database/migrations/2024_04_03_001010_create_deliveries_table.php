@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->string('vehicle');
+            $table->integer('vehicle');
             $table->string('product_code');
             $table->integer('quantity');
             $table->integer('target_delivery');

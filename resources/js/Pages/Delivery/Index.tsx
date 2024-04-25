@@ -157,8 +157,8 @@ function DeliveryIndex({auth}) {
                                             <div className='my-4'>
                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
                                                     <div className='flex justify-between w-full gap-5'>
-                                                        <div className='mb-4 w-1/2'>
-                                                            <InputLabel value="Plat Kendaraan" className='mb-2' htmlFor="platKendaraan" />
+                                                        <div className='mb-4 w-full lg:w-1/2'>
+                                                            <InputLabel value="Vehicle" className='mb-2' htmlFor="vehicle" />
                                                             <select id="vehicle" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setVehicleId(e.target.value)}>
                                                                 <option value="">Select Vehicle</option>
                                                                 {vehicles.map((v) => (
@@ -176,6 +176,10 @@ function DeliveryIndex({auth}) {
                                                             ))}
                                                         </select>
                                                     </div>
+                                                        <div className='w-full lg:w-1/2'>
+                                                            <InputLabel value="Quantity" className='mb-2' htmlFor="quantity"/>
+                                                            <TextInput value={quantity} onChange={(e) => setQuantity(e.target.value)} className="w-full" id="quantity"/>
+                                                        </div>
                                                     <div className='mb-4 w-full flex justify-between gap-3'>
                                                         <div className='w-1/2'>
                                                             <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
@@ -222,8 +226,8 @@ function DeliveryIndex({auth}) {
                                                     <tr
                                                     className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={p.id}>
                                                         <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.number_plates}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.vehicle_type}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{p.vehicle[0].number_plates}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{p.vehicle[0].vehicle_type}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.product[0].name}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">{p.target_delivery}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">{p.actual_delivery}</td>

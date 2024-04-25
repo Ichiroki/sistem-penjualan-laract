@@ -13,11 +13,13 @@ export function Delivery() {
             await axios.get(`/deliveries?search=${search}`)
             .then((res) => {
                 setDeliveries(res.data)
+                console.log(res.data)
             })
         } else {
             await axios.get('/deliveries')
             .then((res) => {
                 setDeliveries(res.data)
+                console.log(res.data)
             })
         }
         } catch (e) {
