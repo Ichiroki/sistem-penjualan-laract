@@ -57,9 +57,9 @@ class DeliveriesController extends Controller
     public function update(UpdateDeliveriesRequest $request, Delivery $delivery)
     {
         return $delivery->update([
-            'number_plates' => $request->number_plates,
-            'veicle_type' => $request->vehicle_type,
+            'vehicle_id' => $request->vehicle_id,
             'product_code' => $request->product_code,
+            'quantity' => $request->quantity,
             'target_delivery' => $request->target_delivery,
             'actual_delivery' => $request->actual_delivery,
             'percentage' => ($request->actual_delivery / $request->target_delivery) * 100

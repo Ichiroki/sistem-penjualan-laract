@@ -6,6 +6,7 @@ export interface Delivery {
     vehicle: Vehicle
     product_code: string
     product: Product
+    quantity: number
     target_delivery: number
     actual_delivery: number
     percentage: number

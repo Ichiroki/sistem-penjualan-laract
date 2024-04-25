@@ -64,9 +64,9 @@ function DeliveryIndex({auth}) {
 
     const [editPengirimanData, setEditPengirimanData] = useState({
         id: 0,
-        number_plates: '',
-        vehicle_type: '',
+        vehicle_id: '',
         product_code: '',
+        quantity: 0,
         target_delivery: '',
         actual_delivery: ''
     })
@@ -76,7 +76,7 @@ function DeliveryIndex({auth}) {
         try {
             await axios.post('/deliveries',
             {
-                vehicle: parseInt(vehicleId),
+                vehicle_id: parseInt(vehicleId),
                 product_code: kodeProduct,
                 quantity,
                 target_delivery: targetPengiriman,
@@ -95,9 +95,9 @@ function DeliveryIndex({auth}) {
     let editPengirimanIdData = async (deliveryId) => {
         try {
             await axios.put(`/deliveries/${deliveryId}`, {
-                number_plates : editPengirimanData.number_plates,
-                vehicle_type : editPengirimanData.vehicle_type,
+                vehicle_id : editPengirimanData.vehicle_id,
                 product_code : editPengirimanData.product_code,
+                quantity: editPengirimanData.quantity,
                 target_delivery : editPengirimanData.target_delivery,
                 actual_delivery : editPengirimanData.actual_delivery
             })
@@ -176,10 +176,10 @@ function DeliveryIndex({auth}) {
                                                             ))}
                                                         </select>
                                                     </div>
-                                                        <div className='w-full lg:w-1/2'>
-                                                            <InputLabel value="Quantity" className='mb-2' htmlFor="quantity"/>
-                                                            <TextInput value={quantity} onChange={(e) => setQuantity(e.target.value)} className="w-full" id="quantity"/>
-                                                        </div>
+                                                    <div className='w-full lg:w-1/2'>
+                                                        <InputLabel value="Quantity" className='mb-2' htmlFor="quantity"/>
+                                                        <TextInput value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} className="w-full" id="quantity"/>
+                                                    </div>
                                                     <div className='mb-4 w-full flex justify-between gap-3'>
                                                         <div className='w-1/2'>
                                                             <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
@@ -246,33 +246,19 @@ function DeliveryIndex({auth}) {
                                                                             <form onSubmit={editPengirimanIdData}>
                                                                                 <div className='my-4'>
                                                                                     <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                                                        <div className='flex justify-between w-full gap-5'>
-                                                                                            <div className='mb-4 w-1/2'>
-                                                                                                <InputLabel value="Plat Kendaraaan" className='mb-2' htmlFor="numberPlates" />
-                                                                                                <TextInput value={editPengirimanData.number_plates} onChange={(e) =>
-                                                                                                    setEditPengirimanData((prevData) => ({
-                                                                                                    ...prevData,
-                                                                                                    number_plates: e.target.value
-                                                                                                    }))
-                                                                                                } className="w-full" id="numberPlates"/>
-                                                                                                {errorPlat ? (
-                                                                                                    <InputError message={errorPlat}/>
-                                                                                                ) : (
-                                                                                                    <></>
-                                                                                                )}
-                                                                                            </div>
-                                                                                            <div className='mb-4 w-1/2'>
-                                                                                                <InputLabel value="Nama" className='mb-2' htmlFor="nama"/>
-                                                                                                <TextInput value={editPengirimanData.vehicle_type} onChange={(e) =>
-                                                                                                    setEditPengirimanData((prevData) => ({
-                                                                                                    ...prevData,
-                                                                                                    vehicle_type: e.target.value
-                                                                                                    }))
-                                                                                                } className="w-full" id="nama"/>
-                                                                                            </div>
+                                                                                        <div className='mb-4 w-full lg:w-1/2'>
+                                                                                            <InputLabel value="Vehicle" className='mb-2' htmlFor="vehicle"/>
+                                                                                            <select className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setEditPengirimanData((prevData) => ({
+                                                                                                ...prevData,
+                                                                                                vehicle_id: e.target.value
+                                                                                            }))}>
+                                                                                                {vehicles.map((v) => (
+                                                                                                    <option value={v.id} key={v.id} selected={parseInt(editPengirimanData.vehicle_id) === v.id}>{v.number_plates}</option>
+                                                                                                ))}
+                                                                                            </select>
                                                                                         </div>
                                                                                         <div className='mb-4 w-full'>
-                                                                                            <InputLabel value="productCode" className='mb-2' htmlFor="productCode"/>
+                                                                                            <InputLabel value="Product Code" className='mb-2' htmlFor="productCode"/>
                                                                                             <select className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setEditPengirimanData((prevData) => ({
                                                                                                 ...prevData,
                                                                                                 product_code: e.target.value
@@ -281,6 +267,13 @@ function DeliveryIndex({auth}) {
                                                                                                     <option value={p.code} key={p.code} selected={editPengirimanData.product_code === p.code}>{p.name}</option>
                                                                                                 ))}
                                                                                             </select>
+                                                                                        </div>
+                                                                                        <div className='w-full lg:w-1/2'>
+                                                                                            <InputLabel value="Quantity" className='mb-2' htmlFor="quantity"/>
+                                                                                            <TextInput value={editPengirimanData.quantity} onChange={(e) => setEditPengirimanData((prevData) => ({
+                                                                                                ...prevData,
+                                                                                                quantity: parseInt(e.target.value)
+                                                                                            }))} className="w-full" id="quantity"/>
                                                                                         </div>
                                                                                         <div className='mb-4 w-full flex justify-between gap-5'>
                                                                                             <div className='w-1/2'>

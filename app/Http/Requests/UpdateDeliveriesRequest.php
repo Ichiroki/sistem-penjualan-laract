@@ -22,21 +22,22 @@ class UpdateDeliveriesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number_plates' => 'required|string',
-            'vehicle_type' => 'required|string',
+            'vehicle_id' => 'required|numeric',
             'product_code' => 'required|string',
-            'target_delivery' => 'required|integer',
-            'actual_delivery' => 'required|integer',
+            'quantity' => 'required|numeric',
+            'target_delivery' => 'required|numeric',
+            'actual_delivery' => 'required|numeric',
             'percentage' => 'nullable|decimal:0,100'
         ];
     }
 
     public function messages() {
         return [
-            'number_plates.required' => 'Harap isi kolom plat nomor',
-            'number_paltes.string' => 'Mohon isi plat nomor menggunakan karakter gabungan numerik dan alphabet',
-            'vehicle_type.required' => 'Harap isi kolom tipe / nama kendaraan',
-            'vehicle_type.string' => 'Mohon isi tipe / nama kendaraan menggunakan karakter alphabet',
+            'vehicle_id.required' => 'Harap isi kolom kendaraan',
+            'vehicle_id.numeric' => 'Kolom vehicle wajib berupa angka',
+            'product_code' => 'Harap isi kolom produk',
+            'quantity.required' => 'Harap isi kolom kuantitas produk',
+            'quantity.numeric' => 'Kolom kuantitas wajib berupa angka',
             'target_delivery.required' => 'Harap isi kolom target pengiriman',
             'target_delivery.integer' => 'Mohon isi target pengiriman menggunakan karakter numerik',
             'actual_delivery.required' => 'Mohon isi barang yang baru terkirim',
