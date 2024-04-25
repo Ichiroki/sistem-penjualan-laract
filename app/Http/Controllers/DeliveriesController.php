@@ -45,7 +45,7 @@ class DeliveriesController extends Controller
     public function store(StoreDeliveriesRequest $request)
     {
         return Delivery::create([
-            'id' => $request->id,
+            'id' => Str::uuid(),
             'number_plates' => $request->number_plates,
             'vehicle_type' => $request->vehicle_type,
             'product_code' => $request->product_code,

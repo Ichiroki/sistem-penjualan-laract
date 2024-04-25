@@ -14,7 +14,6 @@ class StoreDeliveriesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|string',
             'number_plates' => 'required|string',
             'vehicle_type' => 'required|string',
             'product_code' => 'required|string',
