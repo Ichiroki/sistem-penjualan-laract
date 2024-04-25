@@ -134,57 +134,55 @@ function VehicleIndex({auth}) {
                         <div className='flex justify-between mb-6'>
                             <TextInput placeholder={'Search here...'} value={search} onChange={(e) => setSearch(e.target.value)} />
                             <Button onClick={() => setShowCreateModal(!showCreateModal)}>Create</Button>
-                            <Modal show={showCreateModal} onClose={() => setShowCreateModal(false)}>
-                                <div className='p-5'>
-                                    <div className='flex justify-between pb-4 border-b'>
-                                        <h1 className='text-medium text-xl'>Delete vehicle</h1>
-                                        <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
-                                    </div>
-                                    <form onSubmit={createVehicleData}>
-                                        <div className='my-4'>
-                                            <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                <div className='flex justify-between w-full gap-5'>
-                                                    <div className='mb-4 w-1/2'>
-                                                        <InputLabel value="Number Plates" className='mb-2' htmlFor="number_plates" />
-                                                        <TextInput value={numberPlates} onChange={(e) => setNumberPlates(e.target.value)} className={errorNumberPlates ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="number_plates"/>
-                                                        {errorNumberPlates && errorNumberPlates !== '' ? (
-                                                            <InputError message={errorNumberPlates}/>
-                                                        ) : (
-                                                            <>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                    <div className='mb-4 w-1/2'>
-                                                        <InputLabel value="Vehicle Type" className='mb-2' htmlFor="vehicle_type"/>
-                                                        <TextInput value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} className={errorVehicleType ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="vehicle_type"/>
-                                                        {errorVehicleType ? (
-                                                            <InputError message={errorVehicleType}/>
-                                                        ) : (
-                                                            <>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                {/* <div className='mb-4 w-full'>
-                                                    <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
-                                                    <TextInput value={quantity} onChange={(e) => setQuantity(e.target.value)} className="w-full" id="quantity"/>
-                                                    {errorQuantity ? (
-                                                        <InputError message={errorQuantity}/>
+                        </div>
+                        <Modal show={showCreateModal} onClose={() => setShowCreateModal(false)}>
+                            <div className='p-5'>
+                                <div className='flex justify-between pb-4 border-b'>
+                                    <h1 className='text-medium text-xl'>Delete vehicle</h1>
+                                    <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
+                                </div>
+                                <form onSubmit={createVehicleData}>
+                                    <div className='my-4'>
+                                            <div className='flex flex-col lg:flex-row justify-between gap-5'>
+                                                <div className='mb-4 lg:w-1/2'>
+                                                    <InputLabel value="Number Plates" className='mb-2' htmlFor="number_plates" />
+                                                    <TextInput value={numberPlates} onChange={(e) => setNumberPlates(e.target.value)} className={errorNumberPlates ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="number_plates"/>
+                                                    {errorNumberPlates && errorNumberPlates !== '' ? (
+                                                        <InputError message={errorNumberPlates}/>
                                                     ) : (
                                                         <>
                                                         </>
                                                     )}
-                                                </div> */}
+                                                </div>
+                                                <div className='mb-4 lg:w-1/2'>
+                                                    <InputLabel value="Vehicle Type" className='mb-2' htmlFor="vehicle_type"/>
+                                                    <TextInput value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} className={errorVehicleType ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="vehicle_type"/>
+                                                    {errorVehicleType ? (
+                                                        <InputError message={errorVehicleType}/>
+                                                    ) : (
+                                                        <>
+                                                        </>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
-                                            <Button color="light" type="button" onClick={() => setShowCreateModal(!showCreateModal)}>Close</Button>
-                                            <Button color="success" type="submit">Submit</Button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </Modal>
-                        </div>
+                                            {/* <div className='mb-4 w-full'>
+                                                <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
+                                                <TextInput value={quantity} onChange={(e) => setQuantity(e.target.value)} className="w-full" id="quantity"/>
+                                                {errorQuantity ? (
+                                                    <InputError message={errorQuantity}/>
+                                                ) : (
+                                                    <>
+                                                    </>
+                                                )}
+                                            </div> */}
+                                    </div>
+                                    <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
+                                        <Button color="light" type="button" onClick={() => setShowCreateModal(!showCreateModal)}>Close</Button>
+                                        <Button color="success" type="submit">Submit</Button>
+                                    </div>
+                                </form>
+                            </div>
+                        </Modal>
                         <div className=''>
                             <div className="flex flex-col">
                                 <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
