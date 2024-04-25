@@ -14,14 +14,15 @@ return new class extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->string('number_plates');
-            $table->string('vehicle_type');
+            $table->string('vehicle');
             $table->string('product_code');
+            $table->integer('quantity');
             $table->integer('target_delivery');
             $table->integer('actual_delivery');
             $table->decimal('percentage');
             $table->timestamps();
 
+            $table->foreign('vehicle')->references('id')->on('vehicles');
             $table->foreign('product_code')->references('code')->on('products');
         });
     }

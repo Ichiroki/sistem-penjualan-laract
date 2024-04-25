@@ -10,9 +10,9 @@ class Delivery extends Model
     use HasFactory;
 
     protected $fillable = [
-        'number_plates',
-        'vehicle_type',
+        'vehicle',
         'product_code',
+        'quantity',
         'target_delivery',
         'actual_delivery',
         'percentage'
@@ -20,5 +20,9 @@ class Delivery extends Model
 
     public function product() {
         return $this->hasMany(Product::class, 'code', 'product_code');
+    }
+
+    public function vehicle() {
+        return $this->belongsTo(Vehicle::class, 'id', 'vehicle');
     }
 }
