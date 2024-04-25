@@ -216,7 +216,7 @@ function VehicleIndex({auth}) {
                                                                             <h1 className='text-medium text-xl'>Edit vehicle</h1>
                                                                             <button onClick={() => setShowEditModal(!showEditModal)}>X</button>
                                                                         </div>
-                                                                        <div className='my-4 flex items-center justify-center'>
+                                                                        <div className='my-4'>
                                                                         <form onSubmit={editVehicleIdData}>
                                                                             <div className='my-4'>
                                                                                 <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
@@ -227,7 +227,7 @@ function VehicleIndex({auth}) {
                                                                                             ...prevData,
                                                                                             number_plates: e.target.value
                                                                                             }))
-                                                                                        } className="w-full" id="number_plates" disabled={true}/>
+                                                                                        } className="w-full" id="number_plates"/>
                                                                                     </div>
                                                                                     <div className='mb-4 lg:w-1/2'>
                                                                                         <InputLabel value="Vehicle Type" className='mb-2' htmlFor="vehicle_type"/>

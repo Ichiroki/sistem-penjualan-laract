@@ -22,8 +22,8 @@ return new class extends Migration
             $table->decimal('percentage');
             $table->timestamps();
 
-            $table->foreign('vehicle_id')->references('id')->on('vehicles');
-            $table->foreign('product_code')->references('code')->on('products');
+            $table->foreign('vehicle_id')->references('id')->on('vehicles')->onUpdate('cascade');
+            $table->foreign('product_code')->references('code')->on('products')->onUpdate('cascade');
         });
     }
 
