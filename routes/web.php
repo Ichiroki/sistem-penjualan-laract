@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\DeliveriesController;
-use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\IncomingController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;

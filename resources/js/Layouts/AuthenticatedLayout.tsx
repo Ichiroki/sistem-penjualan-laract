@@ -55,9 +55,6 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                         <Dropdown.Link href={route('incoming')}>
                                             Incoming
                                         </Dropdown.Link>
-                                        <Dropdown.Link href={route('expense')}>
-                                            Expense
-                                        </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
                                 <NavLink href={route('vehicle')} active={route().current('vehicle')}>
@@ -149,7 +146,6 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <div className="mt-3 space-y-1">
                             <ResponsiveNavLink href={route('product')} active={route().current('product')}>List</ResponsiveNavLink>
                             <ResponsiveNavLink href={route('incoming')} active={route().current('incoming')}>Incoming</ResponsiveNavLink>
-                            <ResponsiveNavLink href={route('expense')} active={route().current('expense')}>Expense</ResponsiveNavLink>
                         </div>
                     </div>
 
