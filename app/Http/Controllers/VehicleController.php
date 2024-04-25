@@ -55,6 +55,6 @@ class VehicleController extends Controller
      */
     public function destroy(Vehicle $vehicle)
     {
-        //
+        return $vehicle->delete();
     }
 }
