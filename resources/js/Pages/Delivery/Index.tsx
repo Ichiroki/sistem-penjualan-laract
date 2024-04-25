@@ -1,5 +1,6 @@
 import { Delivery } from '@/API/Delivery'
 import { Product } from '@/API/Product'
+import { Vehicles } from '@/API/Vehicle'
 import Button from '@/Components/Button'
 import InputError from '@/Components/InputError'
 import InputLabel from '@/Components/InputLabel'
@@ -10,7 +11,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
 import { useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
 
 function DeliveryIndex({auth}) {
     let i = 1
@@ -27,11 +27,15 @@ function DeliveryIndex({auth}) {
         product,
     } = Product()
 
+    const {
+        vehicles
+    } = Vehicles()
+
     const [showCreateModal, setShowCreateModal] = useState(false)
 
-    const [platKendaraan, setPlatKendaraan] = useState('')
-    const [jenisKendaraan, setJenisKendaraan] = useState('')
+    const [vehicleId, setVehicleId] = useState('')
     const [kodeProduct, setKodeProduct] = useState('')
+    const [quantity, setQuantity] = useState(0)
     const [targetPengiriman, setTargetPengiriman] = useState('')
     const [actualPengiriman, setActualPengiriman] = useState('')
 
@@ -40,13 +44,10 @@ function DeliveryIndex({auth}) {
 
     const [deletePengirimanId, setDeletePengirimanId] = useState(null)
 
-    const [errorPlat, setErrorPlat] = useState('')
-    const [errorType, setErrorType] = useState('')
-
     const resetInput = () => {
-        setPlatKendaraan('')
-        setJenisKendaraan('')
+        setVehicleId('')
         setKodeProduct('')
+        setQuantity(0)
         setTargetPengiriman('')
     }
 
@@ -75,10 +76,9 @@ function DeliveryIndex({auth}) {
         try {
             await axios.post('/deliveries',
             {
-                id: uuidv4(),
-                number_plates: platKendaraan,
-                vehicle_type: jenisKendaraan,
+                vehicle: vehicleId,
                 product_code: kodeProduct,
+                quantity,
                 target_delivery: targetPengiriman,
                 actual_delivery: actualPengiriman
             }).then((res) =>{
@@ -159,11 +159,12 @@ function DeliveryIndex({auth}) {
                                                     <div className='flex justify-between w-full gap-5'>
                                                         <div className='mb-4 w-1/2'>
                                                             <InputLabel value="Plat Kendaraan" className='mb-2' htmlFor="platKendaraan" />
-                                                            <TextInput value={platKendaraan} onChange={(e) => setPlatKendaraan(e.target.value)} className="w-full" id="platKendaraan"/>
-                                                        </div>
-                                                        <div className='mb-4 w-1/2'>
-                                                            <InputLabel value="Jenis Kendaraan" className='mb-2' htmlFor="jenisKendaraan"/>
-                                                            <TextInput value={jenisKendaraan} onChange={(e) => setJenisKendaraan(e.target.value)} className="w-full" id="jenisKendaraan"/>
+                                                            <select id="vehicle" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setVehicleId(e.target.value)}>
+                                                                <option value="">Select Vehicle</option>
+                                                                {vehicles.map((v) => (
+                                                                    <option value={v.id}>{v.number_plates}</option>
+                                                                ))}
+                                                            </select>
                                                         </div>
                                                     </div>
                                                     <div className='mb-4 w-full'>
