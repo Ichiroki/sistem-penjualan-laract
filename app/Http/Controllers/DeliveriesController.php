@@ -46,9 +46,9 @@ class DeliveriesController extends Controller
     {
         return Delivery::create([
             'id' => Str::uuid(),
-            'number_plates' => $request->number_plates,
-            'vehicle_type' => $request->vehicle_type,
+            'vehicle' => $request->vehicle,
             'product_code' => $request->product_code,
+            'quantity' => $request->quantity,
             'target_delivery' => $request->target_delivery,
             'actual_delivery' => $request->actual_delivery,
             'percentage' => ($request->actual_delivery / $request->target_delivery) * 100
