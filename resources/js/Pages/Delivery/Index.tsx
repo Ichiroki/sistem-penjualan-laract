@@ -35,7 +35,7 @@ function DeliveryIndex({auth}) {
 
     const [vehicleId, setVehicleId] = useState('')
     const [kodeProduct, setKodeProduct] = useState('')
-    const [quantity, setQuantity] = useState(0)
+    const [quantity, setQuantity] = useState('')
     const [targetPengiriman, setTargetPengiriman] = useState('')
     const [actualPengiriman, setActualPengiriman] = useState('')
 
@@ -47,7 +47,7 @@ function DeliveryIndex({auth}) {
     const resetInput = () => {
         setVehicleId('')
         setKodeProduct('')
-        setQuantity(0)
+        setQuantity('')
         setTargetPengiriman('')
     }
 
@@ -156,7 +156,7 @@ function DeliveryIndex({auth}) {
                                         <form onSubmit={createPengirimanData}>
                                             <div className='my-4'>
                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                    <div className='flex justify-between w-full gap-5'>
+                                                    <div className='flex  flex-col lg:flex-row justify-between w-full gap-5'>
                                                         <div className='mb-4 w-full lg:w-1/2'>
                                                             <InputLabel value="Vehicle" className='mb-2' htmlFor="vehicle" />
                                                             <select id="vehicle" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setVehicleId(e.target.value)}>
@@ -166,19 +166,19 @@ function DeliveryIndex({auth}) {
                                                                 ))}
                                                             </select>
                                                         </div>
+                                                        <div className='mb-4 w-full lg:w-1/2'>
+                                                            <InputLabel value="Product Code" className='mb-2' htmlFor="productCode"/>
+                                                            <select className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setKodeProduct(e.target.value)}>
+                                                                <option value="" key={""} id="productCode">Select Product</option>
+                                                                {product.map((p) => (
+                                                                    <option value={p.code} key={p.code}>{p.code}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
                                                     </div>
                                                     <div className='mb-4 w-full'>
-                                                        <InputLabel value="Product Code" className='mb-2' htmlFor="productCode"/>
-                                                        <select className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setKodeProduct(e.target.value)}>
-                                                            <option value="" key={""} id="productCode">Select Product</option>
-                                                            {product.map((p) => (
-                                                                <option value={p.code} key={p.code}>{p.code}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-                                                    <div className='w-full lg:w-1/2'>
                                                         <InputLabel value="Quantity" className='mb-2' htmlFor="quantity"/>
-                                                        <TextInput value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} className="w-full" id="quantity"/>
+                                                        <TextInput value={quantity} onChange={(e) => setQuantity(e.target.value)} className="w-full" id="quantity"/>
                                                     </div>
                                                     <div className='mb-4 w-full flex justify-between gap-3'>
                                                         <div className='w-1/2'>
