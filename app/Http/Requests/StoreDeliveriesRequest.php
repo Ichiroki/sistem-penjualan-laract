@@ -14,7 +14,7 @@ class StoreDeliveriesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'vehicle' => 'required|string',
+            'vehicle_id' => 'required|numeric',
             'product_code' => 'required|string',
             'quantity' => 'required|numeric',
             'target_delivery' => 'required|numeric',
@@ -25,7 +25,8 @@ class StoreDeliveriesRequest extends FormRequest
 
     public function messages() {
         return [
-            'vehicle.required' => 'Harap isi kolom kendaraan',
+            'vehicle_id.required' => 'Harap isi kolom kendaraan',
+            'vehicle_id.numeric' => 'Kolom vehicle wajib berupa angka',
             'product_code' => 'Harap isi kolom produk',
             'quantity.required' => 'Harap isi kolom kuantitas produk',
             'quantity.numeric' => 'Kolom kuantitas wajib berupa angka',

@@ -3,7 +3,7 @@ import { Vehicle } from "./Vehicle"
 
 export interface Delivery {
     id: number
-    vehicle: Vehicle[]
+    vehicle: Vehicle
     product_code: string
     product: Product
     target_delivery: number

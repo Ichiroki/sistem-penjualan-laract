@@ -45,7 +45,7 @@ class DeliveriesController extends Controller
     public function store(StoreDeliveriesRequest $request)
     {
         return Delivery::create([
-            'vehicle' => $request->vehicle,
+            'vehicle_id' => $request->vehicle_id,
             'product_code' => $request->product_code,
             'quantity' => $request->quantity,
             'target_delivery' => $request->target_delivery,

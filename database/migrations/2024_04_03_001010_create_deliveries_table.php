@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->integer('vehicle');
+            $table->unsignedBigInteger('vehicle_id');
             $table->string('product_code');
             $table->integer('quantity');
             $table->integer('target_delivery');
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('percentage');
             $table->timestamps();
 
-            $table->foreign('vehicle')->references('id')->on('vehicles');
+            $table->foreign('vehicle_id')->references('id')->on('vehicles');
             $table->foreign('product_code')->references('code')->on('products');
         });
     }

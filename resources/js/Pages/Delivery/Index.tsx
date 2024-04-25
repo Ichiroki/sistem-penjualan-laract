@@ -76,7 +76,7 @@ function DeliveryIndex({auth}) {
         try {
             await axios.post('/deliveries',
             {
-                vehicle: vehicleId,
+                vehicle: parseInt(vehicleId),
                 product_code: kodeProduct,
                 quantity,
                 target_delivery: targetPengiriman,
@@ -226,8 +226,8 @@ function DeliveryIndex({auth}) {
                                                     <tr
                                                     className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={p.id}>
                                                         <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.vehicle[0].number_plates}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.vehicle[0].vehicle_type}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{p.vehicle.number_plates}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{p.vehicle.vehicle_type}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.product[0].name}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">{p.target_delivery}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">{p.actual_delivery}</td>

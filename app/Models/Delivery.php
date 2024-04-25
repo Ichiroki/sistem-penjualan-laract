@@ -2,16 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Delivery extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
 
     protected $fillable = [
-        'vehicle',
+        'vehicle_id',
         'product_code',
         'quantity',
         'target_delivery',
@@ -24,6 +23,6 @@ class Delivery extends Model
     }
 
     public function vehicle() {
-        return $this->belongsTo(Vehicle::class, 'id', 'vehicle');
+        return $this->belongsTo(Vehicle::class);
     }
 }
