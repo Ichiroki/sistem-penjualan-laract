@@ -219,37 +219,35 @@ function VehicleIndex({auth}) {
                                                                         <div className='my-4 flex items-center justify-center'>
                                                                         <form onSubmit={editVehicleIdData}>
                                                                             <div className='my-4'>
-                                                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                                                    <div className='flex justify-between w-full gap-5'>
-                                                                                        <div className='mb-4 w-1/2'>
-                                                                                            <InputLabel value="Kode" className='mb-2' htmlFor="kode" />
-                                                                                            <TextInput value={editVehicleData.number_plates} onChange={(e) =>
-                                                                                                setEditVehicleData((prevData) => ({
-                                                                                                ...prevData,
-                                                                                                number_plates: e.target.value
-                                                                                                }))
-                                                                                            } className="w-full" id="kode" disabled={true}/>
-                                                                                        </div>
-                                                                                        <div className='mb-4 w-1/2'>
-                                                                                            <InputLabel value="Nama" className='mb-2' htmlFor="nama"/>
-                                                                                            <TextInput value={editVehicleData.vehicle_type} onChange={(e) =>
-                                                                                                setEditVehicleData((prevData) => ({
-                                                                                                ...prevData,
-                                                                                                vehicle_type: e.target.value
-                                                                                                }))
-                                                                                            } className="w-full" id="nama"/>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className='mb-4 w-full'>
-                                                                                        <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
-                                                                                        <TextInput value={editVehicleData.target} onChange={(e) =>
+                                                                                <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                                                    <div className='mb-4 lg:w-1/2'>
+                                                                                        <InputLabel value="Number Plates" className='mb-2' htmlFor="number_plates" />
+                                                                                        <TextInput value={editVehicleData.number_plates} onChange={(e) =>
                                                                                             setEditVehicleData((prevData) => ({
                                                                                             ...prevData,
-                                                                                            target: e.target.value
+                                                                                            number_plates: e.target.value
                                                                                             }))
-                                                                                        } className="w-full" id="jumlah"/>
+                                                                                        } className="w-full" id="number_plates" disabled={true}/>
+                                                                                    </div>
+                                                                                    <div className='mb-4 lg:w-1/2'>
+                                                                                        <InputLabel value="Vehicle Type" className='mb-2' htmlFor="vehicle_type"/>
+                                                                                        <TextInput value={editVehicleData.vehicle_type} onChange={(e) =>
+                                                                                            setEditVehicleData((prevData) => ({
+                                                                                            ...prevData,
+                                                                                            vehicle_type: e.target.value
+                                                                                            }))
+                                                                                        } className="w-full" id="vehicle_type"/>
                                                                                     </div>
                                                                                 </div>
+                                                                                {/* <div className='mb-4 w-full'>
+                                                                                    <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
+                                                                                    <TextInput value={editVehicleData.target} onChange={(e) =>
+                                                                                        setEditVehicleData((prevData) => ({
+                                                                                        ...prevData,
+                                                                                        target: e.target.value
+                                                                                        }))
+                                                                                    } className="w-full" id="jumlah"/>
+                                                                                </div> */}
                                                                             </div>
                                                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                                 <Button color="light" type="button" onClick={() => setShowEditModal(!showEditModal)}>Close</Button>
