@@ -43,7 +43,8 @@ function DeliveriesChart() {
                     .then((res) => {
 
                         res.data.forEach((r) => {
-                            const key = `${r.number_plates}`; // Kombinasi number_plates dan product_code sebagai kunci
+                            console.log(r)
+                            const key = `${r.vehicle.number_plates}`; // Kombinasi number_plates
                             if (targetDeliveryMap[key] ) {
                                 targetDeliveryMap[key] += r.target_delivery; // Jika kunci sudah ada, tambahkan target_delivery
                             } else {

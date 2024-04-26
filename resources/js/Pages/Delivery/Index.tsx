@@ -67,7 +67,6 @@ function DeliveryIndex({auth}) {
         id: 0,
         vehicle_id: '',
         product_code: '',
-        // quantity: 0,
         target_delivery: '',
         actual_delivery: ''
     })
@@ -232,7 +231,7 @@ function DeliveryIndex({auth}) {
                                                         <td className="whitespace-nowrap px-6 py-4">{p.product[0].name}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">{p.target_delivery}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">{p.actual_delivery}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4 text-center">{p.percentage + ' %'}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4 text-center">{Math.ceil(p.percentage) + ' %'}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">
                                                             <div className='flex gap-3'>
                                                                 <Button color="warning" onClick={() => handleEditModal(p.id)}>Edit</Button>
@@ -268,13 +267,6 @@ function DeliveryIndex({auth}) {
                                                                                                     <option value={p.code} key={p.code} selected={editPengirimanData.product_code === p.code}>{p.name}</option>
                                                                                                 ))}
                                                                                             </select>
-                                                                                        </div>
-                                                                                        <div className='w-full lg:w-1/2'>
-                                                                                            <InputLabel value="Quantity" className='mb-2' htmlFor="quantity"/>
-                                                                                            <TextInput value={editPengirimanData.quantity} onChange={(e) => setEditPengirimanData((prevData) => ({
-                                                                                                ...prevData,
-                                                                                                quantity: parseInt(e.target.value)
-                                                                                            }))} className="w-full" id="quantity"/>
                                                                                         </div>
                                                                                         <div className='mb-4 w-full flex justify-between gap-5'>
                                                                                             <div className='w-1/2'>
