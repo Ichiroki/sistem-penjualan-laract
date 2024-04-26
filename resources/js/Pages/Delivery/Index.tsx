@@ -2,9 +2,7 @@ import { Delivery } from '@/API/Delivery'
 import { Product } from '@/API/Product'
 import { Vehicles } from '@/API/Vehicle'
 import Button from '@/Components/Button'
-import InputError from '@/Components/InputError'
 import InputLabel from '@/Components/InputLabel'
-// import LoadingScreen from '@/Components/LoadingScreen'
 import Modal from '@/Components/Modal'
 import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
@@ -35,7 +33,6 @@ function DeliveryIndex({auth}) {
 
     const [vehicleId, setVehicleId] = useState('')
     const [kodeProduct, setKodeProduct] = useState('')
-    // const [quantity, setQuantity] = useState('')
     const [targetPengiriman, setTargetPengiriman] = useState('')
     const [actualPengiriman, setActualPengiriman] = useState('')
 
@@ -47,7 +44,6 @@ function DeliveryIndex({auth}) {
     const resetInput = () => {
         setVehicleId('')
         setKodeProduct('')
-        // setQuantity('')
         setTargetPengiriman('')
         setActualPengiriman('')
     }
@@ -78,7 +74,6 @@ function DeliveryIndex({auth}) {
             {
                 vehicle_id: parseInt(vehicleId),
                 product_code: kodeProduct,
-                // quantity,
                 target_delivery: targetPengiriman,
                 actual_delivery: actualPengiriman
             }).then((res) =>{
@@ -97,7 +92,6 @@ function DeliveryIndex({auth}) {
             await axios.put(`/deliveries/${deliveryId}`, {
                 vehicle_id : editPengirimanData.vehicle_id,
                 product_code : editPengirimanData.product_code,
-                // quantity: editPengirimanData.quantity,
                 target_delivery : editPengirimanData.target_delivery,
                 actual_delivery : editPengirimanData.actual_delivery
             })
@@ -176,10 +170,6 @@ function DeliveryIndex({auth}) {
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    {/* <div className='mb-4 w-full'>
-                                                        <InputLabel value="Quantity" className='mb-2' htmlFor="quantity"/>
-                                                        <TextInput type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="w-full" id="quantity"/>
-                                                    </div> */}
                                                     <div className='mb-4 w-full flex justify-between gap-3'>
                                                         <div className='w-1/2'>
                                                             <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
