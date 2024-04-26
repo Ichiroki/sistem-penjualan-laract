@@ -18,6 +18,11 @@ class Product extends Model
     protected $fillable = [
         'code',
         'name',
-        'quantity'
+        'quantity',
+        'delivery'
     ];
+
+    public function delivery() {
+        return $this->belongsTo(Delivery::class);
+    }
 }

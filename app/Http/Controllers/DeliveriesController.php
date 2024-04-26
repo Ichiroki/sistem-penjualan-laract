@@ -47,7 +47,7 @@ class DeliveriesController extends Controller
     {
         $product = Product::where('code', $request->product_code)->first();
         $quantity = $product->quantity;
-        // dd($quantity);
+
         return Delivery::create([
             'vehicle_id' => $request->vehicle_id,
             'product_code' => $request->product_code,

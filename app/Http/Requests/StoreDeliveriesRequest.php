@@ -16,7 +16,6 @@ class StoreDeliveriesRequest extends FormRequest
         return [
             'vehicle_id' => 'required|numeric',
             'product_code' => 'required|string',
-            // 'quantity' => 'required|numeric',
             'target_delivery' => 'required|numeric',
             'actual_delivery' => 'required|numeric',
             'percentage' => 'nullable|decimal:0,100'
@@ -28,8 +27,6 @@ class StoreDeliveriesRequest extends FormRequest
             'vehicle_id.required' => 'Harap isi kolom kendaraan',
             'vehicle_id.numeric' => 'Kolom vehicle wajib berupa angka',
             'product_code' => 'Harap isi kolom produk',
-            // 'quantity.required' => 'Harap isi kolom kuantitas produk',
-            // 'quantity.numeric' => 'Kolom kuantitas wajib berupa angka',
             'target_delivery.required' => 'Harap isi kolom target pengiriman',
             'target_delivery.integer' => 'Mohon isi target pengiriman menggunakan karakter numerik',
             'actual_delivery.required' => 'Mohon isi barang yang baru terkirim',
