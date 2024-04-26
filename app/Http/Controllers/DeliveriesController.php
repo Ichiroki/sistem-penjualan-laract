@@ -46,17 +46,18 @@ class DeliveriesController extends Controller
     public function store(StoreDeliveriesRequest $request)
     {
         $product = Product::where('code', $request->product_code)->first();
-        $quantity = $product->quantity;
+        $quantity = $product->quantity - $request->target_delivery;
+
+        $product->update(['quantity' => $quantity]);
 
         return Delivery::create([
             'vehicle_id' => $request->vehicle_id,
             'product_code' => $request->product_code,
-            'quantity' => $quantity - $request->target_delivery,
+            'quantity' => $quantity,
             'target_delivery' => $request->target_delivery,
             'actual_delivery' => $request->actual_delivery,
             'percentage' => ($request->actual_delivery / $request->target_delivery) * 100
         ]);
-
     }
 
     public function update(UpdateDeliveriesRequest $request, Delivery $delivery)
