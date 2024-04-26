@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDeliveriesRequest;
 use App\Http\Requests\UpdateDeliveriesRequest;
 use App\Models\Delivery;
+use App\Models\Product;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
@@ -44,14 +45,18 @@ class DeliveriesController extends Controller
 
     public function store(StoreDeliveriesRequest $request)
     {
+        $product = Product::where('code', $request->product_code)->first();
+        $quantity = $product->quantity;
+        // dd($quantity);
         return Delivery::create([
             'vehicle_id' => $request->vehicle_id,
             'product_code' => $request->product_code,
-            'quantity' => $request->quantity,
+            'quantity' => $quantity - $request->target_delivery,
             'target_delivery' => $request->target_delivery,
             'actual_delivery' => $request->actual_delivery,
             'percentage' => ($request->actual_delivery / $request->target_delivery) * 100
         ]);
+
     }
 
     public function update(UpdateDeliveriesRequest $request, Delivery $delivery)

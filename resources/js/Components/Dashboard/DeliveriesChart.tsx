@@ -27,7 +27,7 @@ function DeliveriesChart() {
     const chartInstance = useRef<any>(null);
 
     useEffect(() => {
-        const uniqueNumber: any = [...new Set(deliveries.map(p => p.number_plates))];
+        const uniqueNumber: any = [...new Set(deliveries.map(p => p.vehicle.number_plates))];
         setNumberPlates(uniqueNumber);
 
         const uniqueCode: any = [...new Set(deliveries.map(p => p.product_code))]
