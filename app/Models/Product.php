@@ -19,10 +19,5 @@ class Product extends Model
         'code',
         'name',
         'quantity',
-        'delivery'
     ];
-
-    public function delivery() {
-        return $this->belongsTo(Delivery::class);
-    }
 }

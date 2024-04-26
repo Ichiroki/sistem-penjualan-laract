@@ -15,10 +15,7 @@ return new class extends Migration
             $table->string('code')->primary();
             $table->string('name');
             $table->integer('quantity');
-            $table->unsignedBigInteger('delivery')->nullable();
             $table->timestamps();
-
-            $table->foreign('delivery')->references('id')->on('deliveries')->onUpdate('cascade');
         });
     }
 

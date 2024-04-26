@@ -62,10 +62,15 @@ class DeliveriesController extends Controller
 
     public function update(UpdateDeliveriesRequest $request, Delivery $delivery)
     {
+        $product = Product::where('code', $request->product_code)->first();
+        $quantity = $product->quantity - $request->target_delivery;
+
+        $product->update(['quantity' => $quantity]);
+
         return $delivery->update([
             'vehicle_id' => $request->vehicle_id,
             'product_code' => $request->product_code,
-            'quantity' => $request->quantity,
+            'quantity' => $quantity,
             'target_delivery' => $request->target_delivery,
             'actual_delivery' => $request->actual_delivery,
             'percentage' => ($request->actual_delivery / $request->target_delivery) * 100
