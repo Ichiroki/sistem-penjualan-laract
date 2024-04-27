@@ -7,8 +7,8 @@ import { Doughnut } from "react-chartjs-2";
 import Button from "../Button";
 
 type codeDataType = {
-    code: string
-    name: string
+    code?: string
+    name?: string
     actual_delivery: number
     percentage: number
 }
@@ -44,7 +44,6 @@ function DeliveriesChart() {
                         .then((res) => {
                             res.data.forEach((r) => {
                                 const key = `${r.vehicle.number_plates}`; // Kombinasi number_plates
-                                console.log(key)
                                 if (targetDeliveryMap[key]) {
                                     // Jika kunci sudah ada, tambahkan target_delivery
                                     targetDeliveryMap[key] += r.target_delivery;
@@ -78,6 +77,7 @@ function DeliveriesChart() {
             labels: numberPlates,
             datasets: [
                 {
+                    label: 'Target Pengiriman',
                     data: numberPlatesData,
                     backgroundColor: [
                         '#06b6d4',
@@ -100,31 +100,25 @@ function DeliveriesChart() {
                 const clickedElement = elements[0];
                 const dataIndex = clickedElement.index;
                 const clickedData = chartData.labels[dataIndex];
-
                 try {
                     await axios.get(`/deliveries/${clickedData}`)
                     .then((res) => {
                         const getData = res.data
-
-                        const quantities = getData.map((data) => {
+                        let newData: codeDataType[] = []; // array baru untuk menyimpan data yang diterima dari server
+                        getData.forEach((data) => {
                             const actual_delivery = parseFloat(data.actual_delivery)
                             const percentage = parseFloat(data.percentage)
-
-                            return {actual_delivery, percentage}
-                        })
-
-                        // const mergedArray = [].concat(...quantities)
-
-                        setCodeData(quantities)
-
-                        // console.log(codeData)
-                        setShow(!show)
+                            newData.push({ actual_delivery, percentage }); // menambahkan data baru ke dalam array newData
+                        });
+                        setCodeData(newData); // set newData ke dalam state codeData
+                        setShow(!show);
                     });
                 } catch (e) {
                     console.log(e);
                 }
             }
         }
+
 
         // membuat instance untuk pemanggilan chart sesuai dengan kebutuhan
         chartInstance.current = new Chart(ctx, {
@@ -148,6 +142,12 @@ function DeliveriesChart() {
             },
         });
     }, [numberPlates, numberPlatesData, code]);
+
+
+    const handleClose = () => {
+        setShow(false)
+        setCodeData([])
+    }
 
     const chartData = {
         labels: code,
@@ -185,17 +185,17 @@ function DeliveriesChart() {
             <div>
                 {/* menggunakan tag html '<canvas></canvas>' untuk menampilkan chart beserta data yang dikirimkan */}
                 <canvas ref={chartRef}/>
-                <Modal show={show} onClose={() => setShow(!show)}>
+                <Modal show={show} onClose={() => handleClose()}>
                     <div className="p-5">
                         <div className='flex justify-between pb-4 border-b'>
                             <h1 className='text-medium text-xl'>Deliveries Chart</h1>
-                            <button onClick={() => setShow(!show)}>X</button>
+                            <button onClick={() => handleClose()}>X</button>
                         </div>
                         <div>
                             <Doughnut data={chartData} width={250} height={250} options={options}/>
                         </div>
                         <div className="flex justify-end mt-6 border-t">
-                            <Button color="light" onClick={() => setShow(!show)}>
+                            <Button color="light" onClick={() => handleClose()}>
                                 Close
                             </Button>
                         </div>
