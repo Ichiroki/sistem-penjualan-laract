@@ -34,10 +34,14 @@ class DeliveriesController extends Controller
 
     public function showByNumberPlates($number_plates) {
         $product = Delivery::with(['vehicle', 'product'])
-        ->where('product_code', $number_plates)
-        ->orWhere('number_plates', $number_plates)
+        ->whereHas('vehicle', function($query) use ($number_plates) {
+            $query->where('number_plates', 'like', '%' . $number_plates . '%');
+        })
+        ->orWhereHas('product', function ($query) use ($number_plates) {
+            $query->where('code', 'like', '%' . $number_plates . '%');
+        })
         ->get();
-        if(!$product) {
+        if($product->isEmpty()) {
             return response()->json(['error' => 'bjir pengirimannya dari plat nomor ini gak ketemu'], 404);
         }
         return response()->json($product);

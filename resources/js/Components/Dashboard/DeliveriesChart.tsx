@@ -38,23 +38,24 @@ function DeliveriesChart() {
         const fetchData = async () => {
             try {
                 let targetDeliveryMap = {}; // Objek untuk menyimpan jumlah target_delivery
+
                 await Promise.all(numberPlates.map(async (np) => {
                     await axios.get(`/deliveries/${np}`)
-                    .then((res) => {
-
-                        res.data.forEach((r) => {
-                            console.log(r)
-                            const key = `${r.vehicle.number_plates}`; // Kombinasi number_plates
-                            if (targetDeliveryMap[key] ) {
-                                targetDeliveryMap[key] += r.target_delivery; // Jika kunci sudah ada, tambahkan target_delivery
-                            } else {
-                                targetDeliveryMap[key] = r.target_delivery; // Jika kunci belum ada, buat kunci baru
-                            }
+                        .then((res) => {
+                            res.data.forEach((r) => {
+                                const key = `${r.vehicle.number_plates}`; // Kombinasi number_plates
+                                console.log(key)
+                                if (targetDeliveryMap[key]) {
+                                    // Jika kunci sudah ada, tambahkan target_delivery
+                                    targetDeliveryMap[key] += r.target_delivery;
+                                } else {
+                                    // Jika kunci belum ada, buat kunci baru
+                                    targetDeliveryMap[key] = r.target_delivery;
+                                }
+                            });
                         });
-                    });
                 }));
-
-                const newData : never[] = Object.values(targetDeliveryMap); // Ambil nilai dari objek sebagai array
+                const newData: never[] = Object.values(targetDeliveryMap); // Ambil nilai dari objek sebagai array
                 setNumberPlatesData(newData); // Tetapkan newData ke dalam state numberPlatesData setelah semua pemanggilan selesai
             } catch (e) {
                 console.error('Internal Server error, please wait', e);
@@ -63,6 +64,7 @@ function DeliveriesChart() {
 
         fetchData();
     }, [numberPlates]);
+
 
     useEffect(() => {
         const ctx = chartRef.current.getContext("2d");

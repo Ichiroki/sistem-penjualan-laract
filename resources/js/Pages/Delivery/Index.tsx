@@ -2,6 +2,7 @@ import { Delivery } from '@/API/Delivery'
 import { Product } from '@/API/Product'
 import { Vehicles } from '@/API/Vehicle'
 import Button from '@/Components/Button'
+import InputError from '@/Components/InputError'
 import InputLabel from '@/Components/InputLabel'
 import Modal from '@/Components/Modal'
 import TextInput from '@/Components/TextInput'
@@ -35,6 +36,11 @@ function DeliveryIndex({auth}) {
     const [kodeProduct, setKodeProduct] = useState('')
     const [targetPengiriman, setTargetPengiriman] = useState('')
     const [actualPengiriman, setActualPengiriman] = useState('')
+
+    const [errorVehicleId, setErrorVehicleId] = useState('')
+    const [errorProductCode, setErrorProductCode] = useState('')
+    const [errorTargetDelivery, setErrorTargetDelivery] = useState('')
+    const [errorActualDelivery, setErrorActualDelivery] = useState('')
 
     const [showEditModal, setShowEditModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -81,6 +87,14 @@ function DeliveryIndex({auth}) {
                 getDeliveriesData()
                 resetInput()
                 setShowCreateModal(false)
+            }).catch((e) => {
+                if(e.response) {
+                    const getError = e.response.data.errors
+                    setErrorVehicleId(getError.vehicle_id)
+                    setErrorProductCode(getError.product_code)
+                    setErrorTargetDelivery(getError.vehicle_id)
+                    setErrorActualDelivery(getError.actual_delivery)
+                }
             })
         } catch(e) {
             console.error('Internal server error, please wait')
@@ -152,13 +166,19 @@ function DeliveryIndex({auth}) {
                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
                                                     <div className='flex  flex-col lg:flex-row justify-between w-full gap-5'>
                                                         <div className='mb-4 w-full lg:w-1/2'>
+                                                            <select id="vehicle" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setTargetPengiriman(e.target.value)}>
                                                             <InputLabel value="Vehicle" className='mb-2' htmlFor="vehicle" />
-                                                            <select id="vehicle" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setVehicleId(e.target.value)}>
                                                                 <option value="">Select Vehicle</option>
                                                                 {vehicles.map((v) => (
                                                                     <option value={v.id}>{v.number_plates}</option>
                                                                 ))}
                                                             </select>
+                                                            {errorVehicleId ? (
+                                                                <InputError message={errorVehicleId}/>
+                                                            ) : (
+                                                                <>
+                                                                </>
+                                                            )}
                                                         </div>
                                                         <div className='mb-4 w-full lg:w-1/2'>
                                                             <InputLabel value="Product Code" className='mb-2' htmlFor="productCode"/>
@@ -168,16 +188,34 @@ function DeliveryIndex({auth}) {
                                                                     <option value={p.code} key={p.code}>{p.code}</option>
                                                                 ))}
                                                             </select>
+                                                            {errorProductCode ? (
+                                                                <InputError message={errorProductCode}/>
+                                                            ) : (
+                                                                <>
+                                                                </>
+                                                            )}
                                                         </div>
                                                     </div>
                                                     <div className='mb-4 w-full flex justify-between gap-3'>
                                                         <div className='w-1/2'>
                                                             <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
                                                             <TextInput type="number" value={targetPengiriman} onChange={(e) => setTargetPengiriman(e.target.value)} className="w-full" id="targetPengiriman"/>
+                                                            {errorTargetDelivery ? (
+                                                                <InputError message={errorTargetDelivery}/>
+                                                            ) : (
+                                                                <>
+                                                                </>
+                                                            )}
                                                         </div>
                                                         <div className='w-1/2'>
                                                             <InputLabel value="Actual Pengiriman" className='mb-2' htmlFor="actualPengiriman"/>
                                                             <TextInput type="number" value={actualPengiriman} onChange={(e) => setActualPengiriman(e.target.value)} className="w-full" id="actualPengiriman"/>
+                                                            {errorActualDelivery ? (
+                                                                <InputError message={errorActualDelivery}/>
+                                                            ) : (
+                                                                <>
+                                                                </>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>

@@ -10,17 +10,9 @@ export function Delivery() {
     let getDeliveriesData = async () => {
         try {
         if(search) {
-            await axios.get(`/deliveries?search=${search}`)
-            .then((res) => {
-                setDeliveries(res.data)
-                console.log(res.data)
-            })
+            await axios.get(`/deliveries?search=${search}`).then((res) => { setDeliveries(res.data) })
         } else {
-            await axios.get('/deliveries')
-            .then((res) => {
-                setDeliveries(res.data)
-                console.log(res.data)
-            })
+            await axios.get('/deliveries').then((res) => { setDeliveries(res.data) })
         }
         } catch (e) {
             console.error('Internal Server error, please wait' + e)
