@@ -166,7 +166,7 @@ function DeliveryIndex({auth}) {
                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
                                                     <div className='flex  flex-col lg:flex-row justify-between w-full gap-5'>
                                                         <div className='mb-4 w-full lg:w-1/2'>
-                                                            <select id="vehicle" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setTargetPengiriman(e.target.value)}>
+                                                            <select id="vehicle" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setVehicleId(e.target.value)}>
                                                             <InputLabel value="Vehicle" className='mb-2' htmlFor="vehicle" />
                                                                 <option value="">Select Vehicle</option>
                                                                 {vehicles.map((v) => (
