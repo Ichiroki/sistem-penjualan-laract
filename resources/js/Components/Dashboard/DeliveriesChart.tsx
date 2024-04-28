@@ -14,11 +14,13 @@ type codeDataType = {
 }
 
 function DeliveriesChart() {
-    const { deliveries } = Delivery();
-    const [numberPlates, setNumberPlates] = useState([]);
-    const [numberPlatesData, setNumberPlatesData] = useState([]);
+    const { deliveries } = Delivery()
+    const [numberPlates, setNumberPlates] = useState([])
+    const [numberPlatesData, setNumberPlatesData] = useState([])
 
-    const [code, setCode] = useState([])
+    const prevNumberPlatesData = useRef([])
+
+    const [code, setCode] = useState<codeDataType[]>([])
     const [codeData, setCodeData] = useState<codeDataType[]>([])
 
     const [show, setShow] = useState(false)
@@ -30,39 +32,45 @@ function DeliveriesChart() {
         const uniqueNumber: any = [...new Set(deliveries.map(p => p.vehicle.number_plates))];
         setNumberPlates(uniqueNumber);
 
-        const uniqueCode: any = [...new Set(deliveries.map(p => p.product_code))]
-        setCode(uniqueCode)
+        // const uniqueCode: any = [...new Set(deliveries.map(p => p.product_code))]
+        // setCode(uniqueCode)
     }, [deliveries]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let targetDeliveryMap = {}; // Objek untuk menyimpan jumlah target_delivery
+                let targetDeliveryMap = {} // Objek untuk menyimpan jumlah target_delivery
 
                 await Promise.all(numberPlates.map(async (np) => {
                     await axios.get(`/deliveries/${np}`)
                         .then((res) => {
                             res.data.forEach((r) => {
-                                const key = `${r.vehicle.number_plates}`; // Kombinasi number_plates
+                                const key = `${r.vehicle.number_plates}` // Kombinasi number_plates
                                 if (targetDeliveryMap[key]) {
                                     // Jika kunci sudah ada, tambahkan target_delivery
-                                    targetDeliveryMap[key] += r.target_delivery;
+                                    targetDeliveryMap[key] += r.target_delivery
                                 } else {
                                     // Jika kunci belum ada, buat kunci baru
-                                    targetDeliveryMap[key] = r.target_delivery;
+                                    targetDeliveryMap[key] = r.target_delivery
                                 }
                             });
                         });
                 }));
-                const newData: never[] = Object.values(targetDeliveryMap); // Ambil nilai dari objek sebagai array
+                const newData: never[] = Object.values(targetDeliveryMap) // Ambil nilai dari objek sebagai array
                 setNumberPlatesData(newData); // Tetapkan newData ke dalam state numberPlatesData setelah semua pemanggilan selesai
             } catch (e) {
                 console.error('Internal Server error, please wait', e);
             }
         };
 
-        fetchData();
-    }, [numberPlates]);
+        fetchData()
+    }, [numberPlates])
+
+    useEffect(() => {
+        if (prevNumberPlatesData.current !== numberPlatesData) {
+            prevNumberPlatesData.current = numberPlatesData
+        }
+    }, [numberPlatesData])
 
 
     useEffect(() => {
@@ -104,14 +112,18 @@ function DeliveriesChart() {
                     await axios.get(`/deliveries/${clickedData}`)
                     .then((res) => {
                         const getData = res.data
-                        let newData: codeDataType[] = []; // array baru untuk menyimpan data yang diterima dari server
+                        let newData: codeDataType[] = [] // array baru untuk menyimpan data yang diterima dari server
+
+                        let uniqueCode: any = [...new Set(deliveries.map((d) => d.product_code))]
+
                         getData.forEach((data) => {
                             const actual_delivery = parseFloat(data.actual_delivery)
                             const percentage = parseFloat(data.percentage)
-                            newData.push({ actual_delivery, percentage }); // menambahkan data baru ke dalam array newData
+                            newData.push({ actual_delivery, percentage }) // menambahkan data baru ke dalam array newData
                         });
-                        setCodeData(newData); // set newData ke dalam state codeData
-                        setShow(!show);
+                        setCodeData(newData) // set newData ke dalam state codeData
+                        setCode(uniqueCode)
+                        setShow(!show)
                     });
                 } catch (e) {
                     console.log(e);
@@ -141,12 +153,13 @@ function DeliveriesChart() {
                 onClick: handleClick // Panggil event handler ketika potongan diklik
             },
         });
-    }, [numberPlates, numberPlatesData, code]);
+    }, [numberPlates, numberPlatesData]);
 
 
     const handleClose = () => {
         setShow(false)
         setCodeData([])
+        setCode([])
     }
 
     const chartData = {
