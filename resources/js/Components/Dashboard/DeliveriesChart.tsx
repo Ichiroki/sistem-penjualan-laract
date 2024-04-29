@@ -166,7 +166,7 @@ function DeliveriesChart() {
         labels: code,
         datasets: [{
                 label: 'Actual Delivery',
-                data: [{id: 'Actual Delivery', nested: {value: codeData.map(cd => cd.actual_delivery)}}],
+                data: codeData.map(cd => cd.actual_delivery),
                 backgroundColor: [
                     '#06b6d4',
                     '#fb7185',
@@ -175,7 +175,7 @@ function DeliveriesChart() {
                 ],
             }, {
                 label: 'Percentage',
-                data: [{id: 'Percentage', nested: {value: codeData.map(cd => cd.percentage)}}],
+                data: codeData.map(cd => cd.percentage),
                 backgroundColor: [
                     '#06b6d4',
                     '#fb7185',
@@ -188,9 +188,6 @@ function DeliveriesChart() {
 
     const options = {
         maintainAspectRatio: false,
-        parsing: {
-            key: 'nested.value'
-        }
     }
 
     return (
