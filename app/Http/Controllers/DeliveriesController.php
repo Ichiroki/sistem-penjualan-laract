@@ -16,18 +16,18 @@ class DeliveriesController extends Controller
     {
         $search = $request->query('search');
 
-        if($search) {
-            $pengiriman = Delivery::with(['product', function($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%');
-            }])->with(['vehicle', function($query) use ($search) {
-                $query->where('number_plates', 'like', '%' . $search . '%')
-                ->orWhere('vehicle_type', 'like', '%' . $search . '%');
-            }])
-            ->get();
+        if ($search) {
+            $pengiriman = Delivery::with(['vehicle', 'product'])
+                ->whereHas('vehicle', function ($query) use ($search) {
+                    $query->where('number_plates', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('product', function ($query) use ($search) {
+                    $query->where('code', 'like', '%' . $search . '%')->orWhere('name', 'like', '%' . $search . '%');
+                })
+                ->get();
         } else {
             $pengiriman = Delivery::with(['vehicle', 'product'])->latest()->get();
         }
-
 
         return response()->json($pengiriman);
     }

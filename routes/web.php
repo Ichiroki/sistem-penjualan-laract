@@ -12,7 +12,6 @@ Route::get('/', [ViewController::class, 'dashboard'])->middleware(['auth', 'veri
 
 Route::get('products/{code}', [ProductController::class, 'showByCode']);
 Route::get('deliveries/{number_plates}', [DeliveriesController::class, 'showByNumberPlates']);
-Route::get('deliveries/{product_code}', [DeliveriesController::class, 'showByProductCode']);
 
 Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
     Route::get('product', [ViewController::class, 'product'])->name('product');
