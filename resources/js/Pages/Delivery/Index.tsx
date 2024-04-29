@@ -42,6 +42,8 @@ function DeliveryIndex({auth}) {
     const [errorTargetDelivery, setErrorTargetDelivery] = useState('')
     const [errorActualDelivery, setErrorActualDelivery] = useState('')
 
+    const [selectedProduct, setSelectedProduct] = useState([])
+
     const [showEditModal, setShowEditModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
 
@@ -167,7 +169,10 @@ function DeliveryIndex({auth}) {
                                                     <div className='flex  flex-col lg:flex-row justify-between w-full gap-5'>
                                                         <div className='mb-4 w-full lg:w-1/2'>
                                                             <InputLabel value="Vehicle" className='mb-2' htmlFor="vehicle"/>
-                                                            <select id="vehicle" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setVehicleId(e.target.value)}>
+                                                            <select
+                                                            className='w-full outline-none rounded-lg selection::border-slate-900'
+                                                            onChange={e => setVehicleId(e.target.value)}
+                                                            >
                                                             <InputLabel value="Vehicle" className='mb-2' htmlFor="vehicle" />
                                                                 <option value="">Select Vehicle</option>
                                                                 {vehicles.map((v) => (
@@ -243,7 +248,8 @@ function DeliveryIndex({auth}) {
                                                     <th scope="col" className="px-6 py-4">#</th>
                                                     <th scope="col" className="px-6 py-4">Number Plates</th>
                                                     <th scope="col" className="px-6 py-4">Vehicle Type</th>
-                                                    <th scope="col" className='px-6 py-4'>Product</th>
+                                                    <th scope="col" className='px-6 py-4'>Product Code</th>
+                                                    <th scope="col" className='px-6 py-4'>Product Name</th>
                                                     <th scope="col" className="px-6 py-4">Target Package</th>
                                                     <th scope="col" className="px-6 py-4">Actual Package</th>
                                                     <th scope="col" className="px-6 py-4">Percentage</th>
@@ -257,6 +263,7 @@ function DeliveryIndex({auth}) {
                                                         <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.vehicle.number_plates}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.vehicle.vehicle_type}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{p.product[0].code}</td>
                                                         <td className="whitespace-nowrap px-6 py-4">{p.product[0].name}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">{p.target_delivery}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">{p.actual_delivery}</td>
