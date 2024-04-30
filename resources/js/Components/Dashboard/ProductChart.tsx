@@ -4,19 +4,22 @@ import Chart from "chart.js/auto"
 import { useEffect, useRef, useState } from "react"
 import Modal from "../Modal"
 
-type ProductDataType = {
-    code: string
-    name: string
-    quantity: number
+interface ProductDataType {
+    code?: string
+    name?: string
+    quantity?: number
 }
 
 function ProductChart() {
     const { product } = Product();
     const [code, setCode] = useState([]);
+
+    const [prodName, setProdName] = useState([])
+
     const [codeData, setCodeData] = useState([]);
     const [show, setShow] = useState(false);
 
-    const [data, setData] = useState<ProductDataType[]>([]);
+    const [data, setData] = useState<ProductDataType | undefined>(undefined);
 
     const chartRef = useRef<any>(null);
     const chartInstance = useRef<any>(null);
@@ -24,6 +27,9 @@ function ProductChart() {
     useEffect(() => {
         const uniqueCode: any = [...new Set(product.map(p => p.code))];
         setCode(uniqueCode);
+
+        const uniqueName: any = [...new Set(product.map(p => p.name))]
+        setProdName(uniqueName)
     }, [product]);
 
     useEffect(() => {
@@ -49,7 +55,7 @@ function ProductChart() {
         }
 
         const chartData = {
-            labels: code,
+            labels: prodName,
             datasets: [
                 {
                     data: codeData,
@@ -76,6 +82,7 @@ function ProductChart() {
                 try {
                         await axios.get(`products/${clickedData}`)
                         .then((res) => {
+                            console.log(res.data)
                             setData(res.data)
                             setShow(!show)
                         })
@@ -117,9 +124,9 @@ function ProductChart() {
                         <button onClick={() => setShow(!show)}>X</button>
                     </div>
                     <ul>
-                        <li>{data.code}</li>
-                        <li>{data.name}</li>
-                        <li>{data.quantity}</li>
+                        <li>Code: {data?.code}</li>
+                        <li>Name: {data?.name}</li>
+                        <li>Quantity: {data?.quantity}</li>
                     </ul>
                 </div>
             </Modal>

@@ -23,7 +23,7 @@ class ProductController extends Controller
     }
 
     public function showByCode($code) {
-        $product = Product::where('code', $code)->first();
+        $product = Product::where('code', $code)->orWhere('name', $code)->first();
         if(!$product) {
             return response()->json(['error' => 'bjir produknya gak ketemu'], 404);
         }

@@ -30,13 +30,13 @@ class ProductSeeder extends Seeder
 
         Product::create([
             'code' => 'NLE-1943',
-            'name' => 'Botol 1000ml',
+            'name' => 'Botol 1500ml',
             'quantity' => 1000
         ]);
 
         Product::create([
             'code' => 'NLE-4556',
-            'name' => 'Torrent 2000ml',
+            'name' => 'Galon 19 L',
             'quantity' => 1000
         ]);
     }

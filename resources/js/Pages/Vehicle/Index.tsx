@@ -31,7 +31,7 @@ function VehicleIndex({auth}) {
     }
 
     const [editVehicleData, setEditVehicleData] = useState({
-        id: '',
+        id: 0,
         number_plates: '',
         vehicle_type: '',
         target: '',

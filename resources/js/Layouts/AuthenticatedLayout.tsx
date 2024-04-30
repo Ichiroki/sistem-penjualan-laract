@@ -150,6 +150,12 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </div>
 
                     <div className="pt-2 pb-3 space-y-1 border-t">
+                        <ResponsiveNavLink href={route('vehicle')} active={route().current('vehicle')}>
+                            Vehicle
+                        </ResponsiveNavLink>
+                    </div>
+
+                    <div className="pt-2 pb-3 space-y-1 border-t">
                         <ResponsiveNavLink href={route('delivery')} active={route().current('delivery')}>
                             Delivery
                         </ResponsiveNavLink>

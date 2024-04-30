@@ -48,6 +48,7 @@ function ProductIndex({auth}) {
     const [editIncomingData, setEditIncomingData] = useState({
         id: 0,
         input_date: '',
+        number_plates: '',
         delivery_id: 0,
         product_code: '',
     })

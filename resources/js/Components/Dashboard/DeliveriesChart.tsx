@@ -23,6 +23,8 @@ function DeliveriesChart() {
     const [code, setCode] = useState<codeDataType[]>([])
     const [codeData, setCodeData] = useState<codeDataType[]>([])
 
+    const [prodName, setProdName] = useState([])
+
     const [show, setShow] = useState(false)
 
     const chartRef = useRef<any>(null);
@@ -32,8 +34,11 @@ function DeliveriesChart() {
         const uniqueNumber: any = [...new Set(deliveries.map(p => p.vehicle.number_plates))];
         setNumberPlates(uniqueNumber);
 
-        // const uniqueCode: any = [...new Set(deliveries.map(p => p.product_code))]
-        // setCode(uniqueCode)
+        const uniqueCode: any = [...new Set(deliveries.map(p => p.product_code))]
+        setCode(uniqueCode)
+
+        const uniqueName: any = [...new Set(deliveries.map(p => p.product[0].name))]
+        setProdName(uniqueName)
     }, [deliveries]);
 
     useEffect(() => {
@@ -114,7 +119,7 @@ function DeliveriesChart() {
                         const getData = res.data
                         let newData: codeDataType[] = [] // array baru untuk menyimpan data yang diterima dari server
 
-                        let uniqueCode: any = [...new Set(deliveries.map((d) => d.product_code))]
+                        // let uniqueCode: any = [...new Set(deliveries.map((d) => d.product_code))]
 
                         getData.forEach((data) => {
                             const actual_delivery = parseFloat(data.actual_delivery)
@@ -122,7 +127,7 @@ function DeliveriesChart() {
                             newData.push({ actual_delivery, percentage }) // menambahkan data baru ke dalam array newData
                         });
                         setCodeData(newData) // set newData ke dalam state codeData
-                        setCode(uniqueCode)
+                        // setCode(uniqueCode)
                         setShow(!show)
                     });
                 } catch (e) {
@@ -130,7 +135,6 @@ function DeliveriesChart() {
                 }
             }
         }
-
 
         // membuat instance untuk pemanggilan chart sesuai dengan kebutuhan
         chartInstance.current = new Chart(ctx, {
@@ -163,7 +167,7 @@ function DeliveriesChart() {
     }
 
     const chartData = {
-        labels: code,
+        labels: prodName,
         datasets: [{
                 label: 'Actual Delivery',
                 data: codeData.map(cd => cd.actual_delivery),

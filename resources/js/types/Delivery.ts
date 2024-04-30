@@ -5,6 +5,7 @@ export interface Delivery {
     id: number
     vehicle: Vehicle
     product_code: string
+    number_plates: string
     product: Product
     quantity: number
     target_delivery: number
