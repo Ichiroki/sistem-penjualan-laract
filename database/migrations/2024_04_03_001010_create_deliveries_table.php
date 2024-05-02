@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('vehicle_id');
+            $table->foreignId('vehicle_id')->constrained()->nullable('vehicles', 'vehicle_delivery_id');
             $table->string('product_code');
             $table->integer('quantity');
             $table->integer('target_delivery');
@@ -22,7 +22,6 @@ return new class extends Migration
             $table->decimal('percentage');
             $table->timestamps();
 
-            $table->foreign('vehicle_id')->references('id')->on('vehicles')->onUpdate('cascade');
             $table->foreign('product_code')->references('code')->on('products')->onUpdate('cascade');
         });
     }

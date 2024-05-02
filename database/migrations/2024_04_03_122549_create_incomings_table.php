@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('incomings', function (Blueprint $table) {
             $table->id();
             $table->dateTimeTz('input_date');
-            $table->integer('delivery_id');
+            $table->unsignedBigInteger('delivery_id');
             $table->string('product_code');
             $table->timestamps();
 

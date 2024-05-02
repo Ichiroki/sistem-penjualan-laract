@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('number_plates');
             $table->string('vehicle_type');
-            $table->unsignedBigInteger('target')->nullable();
+            // $table->foreignId('target')->constrained('deliveries')->nullable();
             $table->timestamps();
 
-            $table->foreign('target')->references('id')->on('deliveries');
+            // $table->foreign('target')->references('id')->on('deliveries');
         });
     }
 
