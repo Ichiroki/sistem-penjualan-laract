@@ -91,11 +91,13 @@ function DeliveryIndex({auth}) {
                 setShowCreateModal(false)
             }).catch((e) => {
                 if(e.response) {
+                    console.log(e.response)
                     const getError = e.response.data.errors
-                    setErrorVehicleId(getError.vehicle_id)
-                    setErrorProductCode(getError.product_code)
-                    setErrorTargetDelivery(getError.vehicle_id)
-                    setErrorActualDelivery(getError.actual_delivery)
+
+                    setErrorVehicleId(getError.vehicle_id[0])
+                    setErrorProductCode(getError.product_code[0])
+                    setErrorTargetDelivery(getError.target_delivery[0])
+                    setErrorActualDelivery(getError.actual_delivery[0])
                 }
             })
         } catch(e) {

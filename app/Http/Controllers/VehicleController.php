@@ -38,7 +38,6 @@ class VehicleController extends Controller
             'id' => $id,
             'number_plates' => $request->validated('number_plates'),
             'vehicle_type' => $request->validated('vehicle_type'),
-            'target' => $request->validated('target')
         ]);
     }
 

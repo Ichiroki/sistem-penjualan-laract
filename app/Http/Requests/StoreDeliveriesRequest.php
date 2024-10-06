@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDeliveriesRequest extends FormRequest
@@ -32,5 +33,15 @@ class StoreDeliveriesRequest extends FormRequest
             'actual_delivery.required' => 'Mohon isi barang yang baru terkirim',
             'actual_delivery.integer' => 'Kolom ini harus menggunakan angka',
         ];
+    }
+
+
+    public function withValidator($validator) {
+        $validator->after(function($valid) {
+            $product = Product::where('code', $this->product_code)->first();
+            if($this->target_delivery >= $product->quantity) {
+                $valid->errors()->add('target_delivery', 'Produk yang dipilih tidak memiliki jumlah yang cukup');
+            }
+        });
     }
 }

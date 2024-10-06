@@ -31,6 +31,8 @@ function ProductIndex({auth}) {
         product
     } = Product()
 
+    console.log(incomings)
+
     const [errorInputDate, setErrorInputDate] = useState('')
     const [errorDeliveryId, setErrorDeliveryId] = useState('')
     const [errorProductCode, setErrorProductCode] = useState('')
@@ -89,7 +91,7 @@ function ProductIndex({auth}) {
                 console.log(error)
                 if(error.response) {
                     const getError = error.response.data.errors
-                    console.log(error.response)
+
                     // Error message
                     setErrorInputDate(getError.input_date[0])
                     setErrorDeliveryId(getError.delivery_id[0])
@@ -238,7 +240,7 @@ function ProductIndex({auth}) {
                                                 className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={d.id}>
                                                     <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">{d.input_date}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{d.delivery[0].number_plates}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{d.delivery[0].vehicle.number_plates}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">{d.product[0].code}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">
                                                         <div className='flex gap-3'>

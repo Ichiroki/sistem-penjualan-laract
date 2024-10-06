@@ -17,24 +17,20 @@ function VehicleIndex({auth}) {
 
     const [errorNumberPlates, setErrorNumberPlates] = useState('')
     const [errorVehicleType, setErrorVehicleType] = useState('')
-    const [errorTarget, setErrorTarget] = useState('')
 
     const [numberPlates, setNumberPlates] = useState('')
     const [vehicleType, setVehicleType] = useState('')
-    const [target, setTarget] = useState('')
 
 
     const resetInput = () => {
         setNumberPlates('')
         setVehicleType('')
-        setTarget('')
     }
 
     const [editVehicleData, setEditVehicleData] = useState({
         id: 0,
         number_plates: '',
         vehicle_type: '',
-        target: '',
     })
 
     const [showCreateModal, setShowCreateModal] = useState(false)
@@ -62,7 +58,6 @@ function VehicleIndex({auth}) {
             {
                 number_plates: numberPlates,
                 vehicle_type: vehicleType,
-                target
             })
             .then(() => {
                 resetInput()
@@ -77,7 +72,6 @@ function VehicleIndex({auth}) {
                     // Error message
                     setErrorNumberPlates(getError.number_plates[0])
                     setErrorVehicleType(getError.vehicle_type[0])
-                    setErrorTarget(getError.target[0])
                     //
                 }
             })
@@ -89,7 +83,6 @@ function VehicleIndex({auth}) {
             await axios.put(`/vehicles/${vehicleId}`, {
                 number_plates : editVehicleData.number_plates,
                 vehicle_type : editVehicleData.vehicle_type,
-                target : editVehicleData.target
             })
             .then(() => {
                 getVehiclesData()
@@ -102,7 +95,6 @@ function VehicleIndex({auth}) {
                     console.log(error.response)
                     setErrorNumberPlates(getError.number_plates[0])
                     setErrorVehicleType(getError.vehicle_type[0])
-                    setErrorTarget(getError.target[0])
                 }
             })
         } catch(e) { console.error('Internal server error, please wait' + e) }
@@ -165,16 +157,6 @@ function VehicleIndex({auth}) {
                                                     )}
                                                 </div>
                                             </div>
-                                            {/* <div className='mb-4 w-full'>
-                                                <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
-                                                <TextInput value={quantity} onChange={(e) => setQuantity(e.target.value)} className="w-full" id="quantity"/>
-                                                {errorQuantity ? (
-                                                    <InputError message={errorQuantity}/>
-                                                ) : (
-                                                    <>
-                                                    </>
-                                                )}
-                                            </div> */}
                                     </div>
                                     <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                         <Button color="light" type="button" onClick={() => setShowCreateModal(!showCreateModal)}>Close</Button>
@@ -194,7 +176,6 @@ function VehicleIndex({auth}) {
                                                 <th scope="col" className="px-6 py-4">#</th>
                                                 <th scope="col" className="px-6 py-4">Plat Nomor</th>
                                                 <th scope="col" className="px-6 py-4">Nama Kendaraan</th>
-                                                {/* <th scope="col" className="px-6 py-4">Jumlah</th> */}
                                                 <th scope="col" className="px-6 py-4">Aksi</th>
                                                 </tr>
                                             </thead>
@@ -205,7 +186,6 @@ function VehicleIndex({auth}) {
                                                     <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">{v.number_plates}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">{v.vehicle_type}</td>
-                                                    {/* <td className="whitespace-nowrap px-6 py-4">{p.target}</td> */}
                                                     <td className="whitespace-nowrap px-6 py-4">
                                                         <div className='flex gap-3'>
                                                             <Button color="warning" onClick={() => handleEditModal(v.id)}>Edit</Button>
@@ -239,15 +219,6 @@ function VehicleIndex({auth}) {
                                                                                         } className="w-full" id="vehicle_type"/>
                                                                                     </div>
                                                                                 </div>
-                                                                                {/* <div className='mb-4 w-full'>
-                                                                                    <InputLabel value="Jumlah" className='mb-2' htmlFor="jumlah"/>
-                                                                                    <TextInput value={editVehicleData.target} onChange={(e) =>
-                                                                                        setEditVehicleData((prevData) => ({
-                                                                                        ...prevData,
-                                                                                        target: e.target.value
-                                                                                        }))
-                                                                                    } className="w-full" id="jumlah"/>
-                                                                                </div> */}
                                                                             </div>
                                                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                                 <Button color="light" type="button" onClick={() => setShowEditModal(!showEditModal)}>Close</Button>

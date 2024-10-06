@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreIncomingRequest;
 use App\Http\Requests\UpdateIncomingRequest;
 use App\Models\Incoming;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class IncomingController extends Controller
@@ -22,7 +23,7 @@ class IncomingController extends Controller
             ->orWhere('product_code', 'like', '%'.$search.'%')
             ->get();
         } else {
-            $incoming = Incoming::with(['delivery', 'product'])->get();
+            $incoming = Incoming::with(['delivery', 'delivery.vehicle', 'product'])->get();
         }
 
         return response()->json($incoming);
