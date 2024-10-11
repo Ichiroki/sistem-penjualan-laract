@@ -10,12 +10,16 @@ class Delivery extends Model
     use HasFactory;
 
     protected $fillable = [
-        'vehicle_id',
-        'product_code',
-        'quantity',
-        'target_delivery',
-        'actual_delivery',
-        'percentage'
+        'delivery_invoice',
+        'delivery_name',
+        'customer_name',
+        'customer_address',
+        'delivery_cost',
+        'number_plates',
+        'date_delivery',
+        'time_delivery',
+        'batch_number',
+        'products'
     ];
 
     public function product() {

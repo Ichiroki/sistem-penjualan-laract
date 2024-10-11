@@ -12,16 +12,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('deliveries', function (Blueprint $table) {
+        Schema::create('detail_delivery', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vehicle_id')->constrained()->nullable('vehicles', 'vehicle_delivery_id');
-            $table->string('product_code');
             $table->integer('quantity');
-            $table->integer('target_delivery');
-            $table->integer('actual_delivery');
-            $table->decimal('percentage');
+            $table->decimal('price_per_unit');
+            $table->string('product_code');
+            $table->decimal('subtotal');
+            $table->string('delivery_invoice');
             $table->timestamps();
 
+            $table->foreign('delivery_invoice')->references('delivery_invoice')->on('master_delivery');
             $table->foreign('product_code')->references('code')->on('products')->onUpdate('cascade');
         });
     }

@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('master_delivery', function (Blueprint $table) {
             $table->id();
+            $table->string('delivery_invoice')->unique();
+            $table->string('delivery_name');
+            $table->string('customer_name');
+            $table->string('customer_address');
+            $table->string('delivery_cost');
+            $table->string('number_plates');
+            $table->date('date_delivery');
+            $table->time('time_delivery');
+            $table->string('batch_number');
             $table->timestamps();
         });
     }

@@ -6,19 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
+/**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('incomings', function (Blueprint $table) {
+        Schema::create('detail_incoming', function (Blueprint $table) {
             $table->id();
             $table->dateTimeTz('input_date');
-            $table->unsignedBigInteger('delivery_id');
             $table->string('product_code');
+            $table->integer('quantity');
+            $table->decimal('price_per_unit');
+            $table->decimal('subtotal');
+            $table->string('incoming_invoice');
             $table->timestamps();
 
-            $table->foreign('delivery_id')->references('id')->on('deliveries');
+            $table->foreign('incoming_invoice')->references('incoming_invoice')->on('master_incoming');
             $table->foreign('product_code')->references('code')->on('products');
         });
     }

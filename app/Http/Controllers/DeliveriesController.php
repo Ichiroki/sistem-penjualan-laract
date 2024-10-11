@@ -8,6 +8,7 @@ use App\Models\Delivery;
 use App\Models\Product;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
 class DeliveriesController extends Controller
@@ -49,41 +50,54 @@ class DeliveriesController extends Controller
 
     public function store(StoreDeliveriesRequest $request)
     {
-        $product = Product::where('code', $request->product_code)->first();
+        DB::beginTransaction();
+        try {
+            $delivery = Delivery::create([
+                'delivery_invoice' => $request->delivery_invoice,
+                'delivery_name' => $request->delivery_name,
+                'customer_name' => $request->customer_name,
+                'customer_address' => $request->customer_address,
+                'delivery_cost' => $request->delivery_cost,
+                'number_plates' => $request->number_plates,
+                'date_delivery' => $request->date_delivery,
+                'time_delivery' => $request->time_delivery,
+                'batch_number' => $request->batch_number
+            ]);
 
-        if(!$product) {
-            return response()->json(404);
+            forEach($request->products as $product) {
+                DB::table('detail_delivery')->create([
+                    'delivery_invoice' => $delivery->delivery_invoice,
+                    'product_id' => $product['product_id'],
+                    'quantity' => $product['quantity']
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json(['message' => 'Delivery created successfully'], 201);
+        } catch(\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['error' => 'Failed to create delivery', 'details' => $e->getMessage()], 500);
         }
-        $quantity = $product->quantity - $request->target_delivery;
-
-        $product->update(['quantity' => $quantity]);
-
-        Delivery::create([
-            'vehicle_id' => $request->vehicle_id,
-            'product_code' => $request->product_code,
-            'quantity' => $quantity,
-            'target_delivery' => $request->target_delivery,
-            'actual_delivery' => $request->actual_delivery,
-            'percentage' => ($request->actual_delivery / $request->target_delivery) * 100
-        ]);
 
     }
 
     public function update(UpdateDeliveriesRequest $request, Delivery $delivery)
     {
-        $product = Product::where('code', $request->product_code)->first();
-        $quantity = $product->quantity - $request->target_delivery;
+        // $product = Product::where('code', $request->product_code)->first();
+        // $quantity = $product->quantity - $request->target_delivery;
 
-        $product->update(['quantity' => $quantity]);
+        // $product->update(['quantity' => $quantity]);
 
-        return $delivery->update([
-            'vehicle_id' => $request->vehicle_id,
-            'product_code' => $request->product_code,
-            'quantity' => $quantity,
-            'target_delivery' => $request->target_delivery,
-            'actual_delivery' => $request->actual_delivery,
-            'percentage' => ($request->actual_delivery / $request->target_delivery) * 100
-        ]);
+        // return $delivery->update([
+        //     'vehicle_id' => $request->vehicle_id,
+        //     'product_code' => $request->product_code,
+        //     'quantity' => $quantity,
+        //     'target_delivery' => $request->target_delivery,
+        //     'actual_delivery' => $request->actual_delivery,
+        //     'percentage' => ($request->actual_delivery / $request->target_delivery) * 100
+        // ]);
     }
 
     public function destroy(Delivery $delivery)

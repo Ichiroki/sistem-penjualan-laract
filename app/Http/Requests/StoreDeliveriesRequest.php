@@ -15,26 +15,41 @@ class StoreDeliveriesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'vehicle_id' => 'required|numeric',
-            'product_code' => 'required|string',
-            'target_delivery' => 'required|numeric',
-            'actual_delivery' => 'required|numeric',
-            'percentage' => 'nullable|decimal:0,100'
+            'delivery_invoice' => 'required|string',
+            'delivery_name' => 'required|string',
+            'customer_name' => 'required|string',
+            'customer_address' => 'required|string',
+            'delivery_Cost' => 'required|string',
+            'number_plates' => 'required|string',
+            'date_delivery' => 'required|date',
+            'time_delivery' => 'required|string|timezone:Indonesia',
+            'batch_number' => 'nullable|decimal:0,100'
         ];
     }
 
     public function messages() {
         return [
-            'vehicle_id.required' => 'Harap isi kolom kendaraan',
-            'vehicle_id.numeric' => 'Kolom vehicle wajib berupa angka',
-            'product_code' => 'Harap isi kolom produk',
-            'target_delivery.required' => 'Harap isi kolom target pengiriman',
-            'target_delivery.integer' => 'Mohon isi target pengiriman menggunakan karakter numerik',
-            'actual_delivery.required' => 'Mohon isi barang yang baru terkirim',
-            'actual_delivery.integer' => 'Kolom ini harus menggunakan angka',
+            'delivery_invoice.required' => 'Harap isi kolom invoice pengiriman',
+            'delivery_invoice.string' => 'Kolom ini wajib menggunakan karakter alphabet',
+            'delivery_name.required' => 'Harap isi kolom nama pengirim',
+            'delivery_name.string' => 'Kolom ini wajib menggunakan karakter alphabet',
+            'customer_name.required' => 'Harap isi kolom nama kustomer',
+            'customer_name.string' => 'Kolom ini wajib menggunakan karakter alphabet',
+            'customer_address.required' => 'Harap isi kolom alamat kustomer',
+            'customer_address.string' => 'Kolom ini wajib menggunakan karakter alphabet',
+            'delivery_cost.required' => 'Harap isi kolom alamat biaya pengiriman',
+            'delivery_cost.string' => 'Kolom ini wajib menggunakan karakter alphabet',
+            'number_plates.required' => 'Harap isi kolom alamat plat nomor',
+            'number_plates.string' => 'Kolom ini wajib menggunakan karakter alphabet',
+            'date_delivery.required' => 'Harap isi kolom alamat tanggal pengiriman',
+            'date_delivery.string' => 'Kolom ini wajib menggunakan karakter alphabet',
+            'time_delivery.required' => 'Harap isi kolom jam pengiriman',
+            'time_delivery.string' => 'Kolom ini wajib menggunakan karakter alphabet',
+            'time_delivery.timezone' => 'Kolom ini wajib menggunakan zona Waktu Indonesia Barat',
+            'batch_number.required' => 'Harap isi kolom alamat kustomer',
+            'batch_number.string' => 'Kolom ini wajib menggunakan karakter alphabet',
         ];
     }
-
 
     public function withValidator($validator) {
         $validator->after(function($valid) {
