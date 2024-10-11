@@ -47,7 +47,6 @@ function VehicleIndex({auth}) {
 
     const handleDeleteModal = (vehicleId) => {
         setDeleteVehicleId(vehicleId)
-        console.log(deleteVehicleId)
         setShowDeleteModal(!showDeleteModal)
     }
 
@@ -68,7 +67,6 @@ function VehicleIndex({auth}) {
                 console.log(error)
                 if(error.response) {
                     const getError = error.response.data.errors
-                    console.log(error.response)
                     // Error message
                     setErrorNumberPlates(getError.number_plates[0])
                     setErrorVehicleType(getError.vehicle_type[0])
@@ -92,7 +90,6 @@ function VehicleIndex({auth}) {
             .catch((error) => {
                 if(error.response) {
                     const getError = error.response.data.errors
-                    console.log(error.response)
                     setErrorNumberPlates(getError.number_plates[0])
                     setErrorVehicleType(getError.vehicle_type[0])
                 }

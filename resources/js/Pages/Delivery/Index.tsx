@@ -85,7 +85,6 @@ function DeliveryIndex({auth}) {
                 target_delivery: targetPengiriman,
                 actual_delivery: actualPengiriman
             }).then((res) =>{
-                console.log(res.data)
                 getDeliveriesData()
                 resetInput()
                 setShowCreateModal(false)

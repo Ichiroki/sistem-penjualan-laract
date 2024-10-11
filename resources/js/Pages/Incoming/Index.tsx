@@ -31,8 +31,6 @@ function ProductIndex({auth}) {
         product
     } = Product()
 
-    console.log(incomings)
-
     const [errorInputDate, setErrorInputDate] = useState('')
     const [errorDeliveryId, setErrorDeliveryId] = useState('')
     const [errorProductCode, setErrorProductCode] = useState('')
@@ -82,7 +80,6 @@ function ProductIndex({auth}) {
                 product_code: productCode
             })
             .then((res) => {
-                console.log(res.data)
                 resetInput()
                 getIncomingsData()
                 setShowCreateModal(false)
@@ -183,7 +180,7 @@ function ProductIndex({auth}) {
                                                         <select id="delivery_id" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setDeliveryId(parseInt(e.target.value))}>
                                                             <option value="" key="">Select Vehicle</option>
                                                             {deliveries.map((p) => (
-                                                                <option value={p.id} key={p.id}>{p.number_plates}</option>
+                                                                <option value={p.id} key={p.id}>{p.vehicle.number_plates}</option>
                                                             ))}
                                                         </select>
                                                         {errorDeliveryId ? (
@@ -239,7 +236,7 @@ function ProductIndex({auth}) {
                                                 <tr
                                                 className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={d.id}>
                                                     <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{d.input_date}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{d.input_date.slice(0, 10)}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">{d.delivery[0].vehicle.number_plates}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">{d.product[0].code}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">
@@ -278,7 +275,7 @@ function ProductIndex({auth}) {
                                                                                             }))}>
                                                                                                 <option value="" key="">Select Vehicle</option>
                                                                                                 {deliveries.map((p) => (
-                                                                                                    <option value={p.id} key={p.id} selected={editIncomingData.delivery_id === p.id}>{p.number_plates}</option>
+                                                                                                    <option value={p.id} key={p.id} selected={editIncomingData.delivery_id === p.id}>{p.vehicle.number_plates}</option>
                                                                                                 ))}
                                                                                             </select>
                                                                                             {errorDeliveryId ? (

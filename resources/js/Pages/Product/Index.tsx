@@ -50,7 +50,6 @@ function ProductIndex({auth}) {
 
     const handleDeleteModal = (productId) => {
         setDeleteProductId(productId)
-        console.log(deleteProductId)
         setShowDeleteModal(!showDeleteModal)
     }
 
@@ -67,7 +66,6 @@ function ProductIndex({auth}) {
                 setShowCreateModal(false)
             })
             .catch((error) => {
-                console.log(error)
                 if(error.response) {
                     const getError = error.response.data.errors
                     console.log(error.response)

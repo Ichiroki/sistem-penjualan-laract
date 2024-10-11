@@ -82,7 +82,6 @@ function ProductChart() {
                 try {
                         await axios.get(`products/${clickedData}`)
                         .then((res) => {
-                            console.log(res.data)
                             setData(res.data)
                             setShow(!show)
                         })
