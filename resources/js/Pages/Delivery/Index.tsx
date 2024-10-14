@@ -2,17 +2,28 @@ import { Delivery } from '@/API/Delivery'
 import { Product } from '@/API/Product'
 import { Vehicles } from '@/API/Vehicle'
 import Button from '@/Components/Button'
-import InputError from '@/Components/InputError'
 import InputLabel from '@/Components/InputLabel'
 import Modal from '@/Components/Modal'
 import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
-import { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+
+interface Product {
+    id: number
+    code?: string
+    quantity?: number
+}
 
 function DeliveryIndex({auth}) {
     let i = 1
+    let now = new Date().toISOString().slice(0, 10)
+    let date = new Date()
+
+    let hours = date.getHours()
+    let minutes = date.getMinutes()
+    let seconds = date.getSeconds()
 
     const {
         deliveries,
@@ -32,10 +43,20 @@ function DeliveryIndex({auth}) {
 
     const [showCreateModal, setShowCreateModal] = useState(false)
 
-    const [vehicleId, setVehicleId] = useState('')
-    const [kodeProduct, setKodeProduct] = useState('')
-    const [targetPengiriman, setTargetPengiriman] = useState('')
-    const [actualPengiriman, setActualPengiriman] = useState('')
+    const [invoice, setInvoice] = useState('')
+    const [namaPengirim, setNamaPengirim] = useState('')
+    const [namaKustomer, setNamaKustomer] = useState('')
+    const [alamatKustomer, setAlamatKustomer] = useState('')
+    const [biayaPengiriman, setBiayaPengiriman] = useState('')
+    const [platNomor, setPlatNomor] = useState('')
+    const [tglPengiriman, setTglPengiriman] = useState('')
+    const [waktuPengiriman, setWaktuPengiriman] = useState('')
+    const [batchNumber, setBatchNumber] = useState('')
+    const [quantity, setQuantity] = useState(0)
+    const [price, setPrice] = useState(0)
+    const [subtotal, setSubtotal] = useState(0)
+
+    const [products, setProducts] = useState([{ id: 1, code: '', quantity: '' }]);
 
     const [errorVehicleId, setErrorVehicleId] = useState('')
     const [errorProductCode, setErrorProductCode] = useState('')
@@ -50,10 +71,23 @@ function DeliveryIndex({auth}) {
     const [deletePengirimanId, setDeletePengirimanId] = useState(null)
 
     const resetInput = () => {
-        setVehicleId('')
-        setKodeProduct('')
-        setTargetPengiriman('')
-        setActualPengiriman('')
+        setInvoice('')
+        setNamaPengirim('')
+        setNamaKustomer('')
+        setAlamatKustomer('')
+        setBiayaPengiriman('')
+        setPlatNomor('')
+        setTglPengiriman('')
+        setWaktuPengiriman('')
+        setBatchNumber('')
+        setQuantity(0)
+        setProducts([])
+        setPrice(0)
+        setSubtotal(0)
+    }
+
+    const handleProductChange = (updatedProducts) => {
+        setProducts(updatedProducts)
     }
 
     const handleEditModal = (pengirimanId) => {
@@ -80,11 +114,21 @@ function DeliveryIndex({auth}) {
         try {
             await axios.post('/deliveries',
             {
-                vehicle_id: parseInt(vehicleId),
-                product_code: kodeProduct,
-                target_delivery: targetPengiriman,
-                actual_delivery: actualPengiriman
+                delivery_invoice: invoice,
+                delivery_name: namaPengirim,
+                customer_name: namaKustomer,
+                customer_address: alamatKustomer,
+                delivery_cost: biayaPengiriman,
+                number_plates: platNomor,
+                date_delivery: tglPengiriman,
+                time_delivery: waktuPengiriman,
+                batch_number: batchNumber,
+                quantity: quantity,
+                products,
+                price_per_unit: price,
+                subtotal
             }).then((res) =>{
+                console.log(res)
                 getDeliveriesData()
                 resetInput()
                 setShowCreateModal(false)
@@ -141,6 +185,90 @@ function DeliveryIndex({auth}) {
         }
     }
 
+    const DynamicProductForm = ({ productOptions, onProductsChange }) => {
+        const inputRefs = useRef({});
+
+        useEffect(() => {
+            products.forEach(p => {
+                inputRefs.current[p.id] = inputRefs.current[p.id] || React.createRef();
+            });
+        }, [products]);
+
+        const handleInputChange = (id, field, value) => {
+            const updatedProducts = products.map((product) =>
+                product.id === id ? { ...product, [field]: value } : product
+            );
+            onProductsChange(updatedProducts);
+
+            setTimeout(() => {
+                if (inputRefs.current[id] && inputRefs.current[id].current) {
+                    inputRefs.current[id].current.focus();
+                }
+            }, 0);
+        };
+
+        const addProduct = () => {
+            const newProduct = { id: products.length + 1, code: '', quantity: '' };
+            onProductsChange([...products, newProduct]);
+        };
+
+        const removeProduct = (id) => {
+            const updatedProducts = products.filter((product) => product.id !== id);
+            onProductsChange(updatedProducts);
+        };
+
+        return (
+            <>
+                {products.map((p, index) => (
+                    <div key={p.id} className="mb-4 w-full gap-5">
+                        <div className="w-full flex flex-col lg:flex-row justify-between items-center gap-3">
+                            <div className="lg:w-1/2 w-full">
+                                <label htmlFor={`Product-${p.id}`} className="mb-2 block">
+                                    Product {index + 1}
+                                </label>
+                                <select
+                                    id={`Product-${p.id}`}
+                                    className="w-full outline-none rounded-lg"
+                                    value={p.code}
+                                    onChange={(e) => handleInputChange(p.id, 'code', e.target.value)}
+                                >
+                                    <option value="">Select Product</option>
+                                    {productOptions.map((product) => (
+                                        <option key={product.code} value={product.code}>
+                                            {product.name} ({product.code})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="lg:w-1/2 w-full">
+                                <label htmlFor={`Quantity-${p.id}`} className="mb-2 block">
+                                    Quantity
+                                </label>
+                                <input
+                                    type='number'
+                                    id={`Quantity-${p.id}`}
+                                    className="w-full border rounded-lg"
+                                    value={p.quantity}
+                                    onChange={(e) => handleInputChange(p.id, 'quantity', e.target.value)}
+                                    ref={inputRefs.current[p.id]}
+                                />
+                            </div>
+                        </div>
+                        {products.length > 1 && (
+                            <button onClick={() => removeProduct(p.id)} className="mt-2 text-red-500">
+                                Remove
+                            </button>
+                        )}
+                    </div>
+                ))}
+                <button onClick={addProduct} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+                    Add Product
+                </button>
+            </>
+        );
+    };
+
     return (
             <AuthenticatedLayout
             user={auth.user}
@@ -165,66 +293,69 @@ function DeliveryIndex({auth}) {
                                             <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
                                         </div>
                                         <form onSubmit={createPengirimanData}>
-                                            <div className='my-4'>
+                                            <div className='my-4 overflow-y-scroll scrollbar-hide h-96'>
                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                    <div className='flex  flex-col lg:flex-row justify-between w-full gap-5'>
-                                                        <div className='mb-4 w-full lg:w-1/2'>
-                                                            <InputLabel value="Vehicle" className='mb-2' htmlFor="vehicle"/>
-                                                            <select
-                                                            className='w-full outline-none rounded-lg selection::border-slate-900'
-                                                            onChange={e => setVehicleId(e.target.value)}
-                                                            >
-                                                            <InputLabel value="Vehicle" className='mb-2' htmlFor="vehicle" />
-                                                                <option value="">Select Vehicle</option>
-                                                                {vehicles.map((v) => (
-                                                                    <option value={v.id}>{v.number_plates}</option>
-                                                                ))}
-                                                            </select>
-                                                            {errorVehicleId ? (
-                                                                <InputError message={errorVehicleId}/>
-                                                            ) : (
-                                                                <>
-                                                                </>
-                                                            )}
+                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Delivery Invoice" className='mb-2' htmlFor="delivery_invoice"/>
+                                                            <TextInput id="delivery_invoice" className='w-full' onChange={(e) => setInvoice(e.target.value)}/>
                                                         </div>
-                                                        <div className='mb-4 w-full lg:w-1/2'>
-                                                            <InputLabel value="Product Code" className='mb-2' htmlFor="productCode"/>
-                                                            <select className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setKodeProduct(e.target.value)}>
-                                                                <option value="" key={""} id="productCode">Select Product</option>
-                                                                {product.map((p) => (
-                                                                    <option value={p.code} key={p.code}>{p.code}</option>
-                                                                ))}
-                                                            </select>
-                                                            {errorProductCode ? (
-                                                                <InputError message={errorProductCode}/>
-                                                            ) : (
-                                                                <>
-                                                                </>
-                                                            )}
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Delivery Name" className='mb-2' htmlFor="delivery_name"/>
+                                                            <TextInput id="delivery_name" className='w-full' onChange={(e) => setNamaPengirim(e.target.value)}/>
                                                         </div>
                                                     </div>
-                                                    <div className='mb-4 w-full flex justify-between gap-3'>
-                                                        <div className='w-1/2'>
-                                                            <InputLabel value="Target Pengiriman" className='mb-2' htmlFor="targetPengiriman"/>
-                                                            <TextInput type="number" value={targetPengiriman} onChange={(e) => setTargetPengiriman(e.target.value)} className="w-full" id="targetPengiriman"/>
-                                                            {errorTargetDelivery ? (
-                                                                <InputError message={errorTargetDelivery}/>
-                                                            ) : (
-                                                                <>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                        <div className='w-1/2'>
-                                                            <InputLabel value="Actual Pengiriman" className='mb-2' htmlFor="actualPengiriman"/>
-                                                            <TextInput type="number" value={actualPengiriman} onChange={(e) => setActualPengiriman(e.target.value)} className="w-full" id="actualPengiriman"/>
-                                                            {errorActualDelivery ? (
-                                                                <InputError message={errorActualDelivery}/>
-                                                            ) : (
-                                                                <>
-                                                                </>
-                                                            )}
+                                                </div>
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Customer Name" className='mb-2' htmlFor="customer_name"/>
+                                                            <TextInput id="customer_name" className='w-full' onChange={(e) => setNamaKustomer(e.target.value)}/>
                                                         </div>
                                                     </div>
+                                                </div>
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Customer Address" className='mb-2' htmlFor="customer_address"/>
+                                                            <textarea onChange={(e) => {setAlamatKustomer(e.target.value)}}className='block font-medium text-sm text-gray-700 w-full outline-none border-gray-300 rounded-lg'></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Delivery Cost" className='mb-2' htmlFor="delivery_cost"/>
+                                                            <TextInput id="delivery_cost" className='w-full' onChange={(e) => setBiayaPengiriman(e.target.value)}/>
+                                                        </div>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Number Plates" className='mb-2' htmlFor="plat_nomor"/>
+                                                            <TextInput id="plat_nomor" className='w-full' onChange={(e) => setNamaPengirim(e.target.value)}/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Date Delivery" className='mb-2' htmlFor="date_delivery"/>
+                                                            <TextInput id="date_delivery" readOnly={true} className='w-full' onChange={(e) => setBiayaPengiriman(e.target.value)} value={now}/>
+                                                        </div>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Time Delivery" className='mb-2' htmlFor="jam_pengiriman"/>
+                                                            <TextInput id="jam_pengiriman" className='w-full' onChange={(e) => setNamaPengirim(e.target.value)} value={`${hours} : ${minutes} : ${seconds}`}/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Batch Number" className='mb-2' htmlFor="batch_number"/>
+                                                            <TextInput id="batch_number" className='w-full' onChange={(e) => setBatchNumber(e.target.value)}/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                    <DynamicProductForm productOptions={product} onProductsChange={handleProductChange}/>
                                                 </div>
                                             </div>
                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
@@ -323,6 +454,14 @@ function DeliveryIndex({auth}) {
                                                                                                     actual_delivery: e.target.value
                                                                                                     }))
                                                                                                 } className="w-full" id="actualDelivery"/>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div className='mb-4 w-full flex justify-between gap-5'>
+                                                                                            <div className='w-1/2'>
+                                                                                                <InputLabel value="Batch Number" className='mb-2' htmlFor="batch_number"/>
+                                                                                                <TextInput value={editPengirimanData.target_delivery} onChange={(e) =>
+                                                                                                    setBatchNumber(e.target.value)
+                                                                                                } className="w-full" id="batch_number"/>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>

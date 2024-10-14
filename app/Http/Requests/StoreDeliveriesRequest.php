@@ -23,7 +23,11 @@ class StoreDeliveriesRequest extends FormRequest
             'number_plates' => 'required|string',
             'date_delivery' => 'required|date',
             'time_delivery' => 'required|string|timezone:Indonesia',
-            'batch_number' => 'nullable|decimal:0,100'
+            'batch_number' => 'required|string',
+            'quantity' => "required|integer",
+            'products' => 'required',
+            'price_per_unit' => 'required|decimal',
+            'subtotal' => 'required|decimal'
         ];
     }
 
@@ -48,6 +52,13 @@ class StoreDeliveriesRequest extends FormRequest
             'time_delivery.timezone' => 'Kolom ini wajib menggunakan zona Waktu Indonesia Barat',
             'batch_number.required' => 'Harap isi kolom alamat kustomer',
             'batch_number.string' => 'Kolom ini wajib menggunakan karakter alphabet',
+            'quantity.required' => 'Harap isi kolom alamat kustomer',
+            'quantity.integer' => 'Kolom ini wajib menggunakan angka',
+            'products.required' => 'Harap isi kolom produk yang akan dikirimkan (setidaknya satu produk)',
+            'price_per_unit.required' => 'Kolom ini wajib menggunakan karakter alphabet',
+            'price_per_unit.decimal' => 'Kolom ini wajib menggunakan angka',
+            'subtotal.required' => 'Kolom ini wajib menggunakan angka',
+            'subtotal.decimal' => 'Kolom ini wajib menggunakan angka',
         ];
     }
 

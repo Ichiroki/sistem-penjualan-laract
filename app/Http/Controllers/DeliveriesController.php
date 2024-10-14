@@ -68,7 +68,9 @@ class DeliveriesController extends Controller
                 DB::table('detail_delivery')->create([
                     'delivery_invoice' => $delivery->delivery_invoice,
                     'product_id' => $product['product_id'],
-                    'quantity' => $product['quantity']
+                    'quantity' => $request->quantity,
+                    'price_per_unit' => $request->price_per_unit,
+                    'subtotal' => $request->subtotal
                 ]);
             }
 
