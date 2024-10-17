@@ -19,15 +19,9 @@ class StoreDeliveriesRequest extends FormRequest
             'delivery_name' => 'required|string',
             'customer_name' => 'required|string',
             'customer_address' => 'required|string',
-            'delivery_Cost' => 'required|string',
             'number_plates' => 'required|string',
-            'date_delivery' => 'required|date',
-            'time_delivery' => 'required|string|timezone:Indonesia',
             'batch_number' => 'required|string',
-            'quantity' => "required|integer",
             'products' => 'required',
-            'price_per_unit' => 'required|decimal',
-            'subtotal' => 'required|decimal'
         ];
     }
 
@@ -41,32 +35,27 @@ class StoreDeliveriesRequest extends FormRequest
             'customer_name.string' => 'Kolom ini wajib menggunakan karakter alphabet',
             'customer_address.required' => 'Harap isi kolom alamat kustomer',
             'customer_address.string' => 'Kolom ini wajib menggunakan karakter alphabet',
-            'delivery_cost.required' => 'Harap isi kolom alamat biaya pengiriman',
-            'delivery_cost.string' => 'Kolom ini wajib menggunakan karakter alphabet',
             'number_plates.required' => 'Harap isi kolom alamat plat nomor',
             'number_plates.string' => 'Kolom ini wajib menggunakan karakter alphabet',
-            'date_delivery.required' => 'Harap isi kolom alamat tanggal pengiriman',
-            'date_delivery.string' => 'Kolom ini wajib menggunakan karakter alphabet',
-            'time_delivery.required' => 'Harap isi kolom jam pengiriman',
-            'time_delivery.string' => 'Kolom ini wajib menggunakan karakter alphabet',
-            'time_delivery.timezone' => 'Kolom ini wajib menggunakan zona Waktu Indonesia Barat',
             'batch_number.required' => 'Harap isi kolom alamat kustomer',
             'batch_number.string' => 'Kolom ini wajib menggunakan karakter alphabet',
-            'quantity.required' => 'Harap isi kolom alamat kustomer',
-            'quantity.integer' => 'Kolom ini wajib menggunakan angka',
             'products.required' => 'Harap isi kolom produk yang akan dikirimkan (setidaknya satu produk)',
-            'price_per_unit.required' => 'Kolom ini wajib menggunakan karakter alphabet',
-            'price_per_unit.decimal' => 'Kolom ini wajib menggunakan angka',
-            'subtotal.required' => 'Kolom ini wajib menggunakan angka',
-            'subtotal.decimal' => 'Kolom ini wajib menggunakan angka',
         ];
     }
 
     public function withValidator($validator) {
         $validator->after(function($valid) {
-            $product = Product::where('code', $this->product_code)->first();
-            if($this->target_delivery >= $product->quantity) {
-                $valid->errors()->add('target_delivery', 'Produk yang dipilih tidak memiliki jumlah yang cukup');
+            foreach ($this->products as $product) {
+                $findProd = Product::where('code', $product['code'])->first();
+
+                if (!$findProd) {
+                    $valid->errors()->add('products', "Produk dengan kode {$product['code']} tidak ditemukan.");
+                    continue;
+                }
+
+                if ((int) $product['quantity'] > $findProd->quantity) {
+                    $valid->errors()->add('target_delivery', "Produk {$product['code']} tidak memiliki stok yang cukup.");
+                }
             }
         });
     }

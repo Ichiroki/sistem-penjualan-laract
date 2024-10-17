@@ -9,6 +9,8 @@ class Delivery extends Model
 {
     use HasFactory;
 
+    protected $table = 'master_delivery';
+
     protected $fillable = [
         'delivery_invoice',
         'delivery_name',

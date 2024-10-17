@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+date_default_timezone_set('Asia/Jakarta');
+
 use App\Http\Requests\StoreDeliveriesRequest;
 use App\Http\Requests\UpdateDeliveriesRequest;
 use App\Models\Delivery;
@@ -51,26 +53,27 @@ class DeliveriesController extends Controller
     public function store(StoreDeliveriesRequest $request)
     {
         DB::beginTransaction();
+
+        $now = date('Y-m-d');
+        $time = date('H:i:s');
+
         try {
             $delivery = Delivery::create([
                 'delivery_invoice' => $request->delivery_invoice,
                 'delivery_name' => $request->delivery_name,
                 'customer_name' => $request->customer_name,
                 'customer_address' => $request->customer_address,
-                'delivery_cost' => $request->delivery_cost,
                 'number_plates' => $request->number_plates,
-                'date_delivery' => $request->date_delivery,
-                'time_delivery' => $request->time_delivery,
-                'batch_number' => $request->batch_number
+                'date_delivery' => $now,
+                'time_delivery' => $time,
+                'batch_number' => $request->batch_number,
             ]);
 
             forEach($request->products as $product) {
-                DB::table('detail_delivery')->create([
+                DB::table('detail_delivery')->insert([
                     'delivery_invoice' => $delivery->delivery_invoice,
-                    'product_id' => $product['product_id'],
-                    'quantity' => $request->quantity,
-                    'price_per_unit' => $request->price_per_unit,
-                    'subtotal' => $request->subtotal
+                    'product_code' => $product['code'],
+                    'quantity' => $product['quantity']
                 ]);
             }
 

@@ -8,7 +8,7 @@ import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 
 interface Product {
     id: number
@@ -18,12 +18,6 @@ interface Product {
 
 function DeliveryIndex({auth}) {
     let i = 1
-    let now = new Date().toISOString().slice(0, 10)
-    let date = new Date()
-
-    let hours = date.getHours()
-    let minutes = date.getMinutes()
-    let seconds = date.getSeconds()
 
     const {
         deliveries,
@@ -47,23 +41,19 @@ function DeliveryIndex({auth}) {
     const [namaPengirim, setNamaPengirim] = useState('')
     const [namaKustomer, setNamaKustomer] = useState('')
     const [alamatKustomer, setAlamatKustomer] = useState('')
-    const [biayaPengiriman, setBiayaPengiriman] = useState('')
     const [platNomor, setPlatNomor] = useState('')
-    const [tglPengiriman, setTglPengiriman] = useState('')
-    const [waktuPengiriman, setWaktuPengiriman] = useState('')
     const [batchNumber, setBatchNumber] = useState('')
-    const [quantity, setQuantity] = useState(0)
-    const [price, setPrice] = useState(0)
-    const [subtotal, setSubtotal] = useState(0)
 
-    const [products, setProducts] = useState([{ id: 1, code: '', quantity: '' }]);
+    const [productField, setProductField] = useState([{
+        id:'',
+        code: '',
+        quantity: '',
+    }])
 
     const [errorVehicleId, setErrorVehicleId] = useState('')
     const [errorProductCode, setErrorProductCode] = useState('')
     const [errorTargetDelivery, setErrorTargetDelivery] = useState('')
     const [errorActualDelivery, setErrorActualDelivery] = useState('')
-
-    const [selectedProduct, setSelectedProduct] = useState([])
 
     const [showEditModal, setShowEditModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -75,19 +65,8 @@ function DeliveryIndex({auth}) {
         setNamaPengirim('')
         setNamaKustomer('')
         setAlamatKustomer('')
-        setBiayaPengiriman('')
         setPlatNomor('')
-        setTglPengiriman('')
-        setWaktuPengiriman('')
         setBatchNumber('')
-        setQuantity(0)
-        setProducts([])
-        setPrice(0)
-        setSubtotal(0)
-    }
-
-    const handleProductChange = (updatedProducts) => {
-        setProducts(updatedProducts)
     }
 
     const handleEditModal = (pengirimanId) => {
@@ -118,15 +97,9 @@ function DeliveryIndex({auth}) {
                 delivery_name: namaPengirim,
                 customer_name: namaKustomer,
                 customer_address: alamatKustomer,
-                delivery_cost: biayaPengiriman,
                 number_plates: platNomor,
-                date_delivery: tglPengiriman,
-                time_delivery: waktuPengiriman,
                 batch_number: batchNumber,
-                quantity: quantity,
-                products,
-                price_per_unit: price,
-                subtotal
+                products: productField,
             }).then((res) =>{
                 console.log(res)
                 getDeliveriesData()
@@ -174,7 +147,7 @@ function DeliveryIndex({auth}) {
     let deletePengirimanData = async (pengirimanId) => {
         try {
             await axios.delete(`/deliveries/${deletePengirimanId}`)
-            .then((res) => {
+            .then(() => {
                 const updatePengirimanList = deliveries.filter((p) => p.id !== pengirimanId)
                 setDeliveries(updatePengirimanList)
                 setDeletePengirimanId(null)
@@ -185,89 +158,24 @@ function DeliveryIndex({auth}) {
         }
     }
 
-    const DynamicProductForm = ({ productOptions, onProductsChange }) => {
-        const inputRefs = useRef({});
+    const addFields = () => {
+        let newFields = { id:'', code: '', quantity: '' }
 
-        useEffect(() => {
-            products.forEach(p => {
-                inputRefs.current[p.id] = inputRefs.current[p.id] || React.createRef();
-            });
-        }, [products]);
+        setProductField([...productField, newFields])
+    }
 
-        const handleInputChange = (id, field, value) => {
-            const updatedProducts = products.map((product) =>
-                product.id === id ? { ...product, [field]: value } : product
-            );
-            onProductsChange(updatedProducts);
+    const handleFormChange = (index: number, event: ChangeEvent<HTMLInputElement>|ChangeEvent<HTMLSelectElement>) => {
+        let data = [...productField]
+        let {name, value} = event.target
+        data[index] = {...data[index], [name]: value}
+        setProductField(data)
+    }
 
-            setTimeout(() => {
-                if (inputRefs.current[id] && inputRefs.current[id].current) {
-                    inputRefs.current[id].current.focus();
-                }
-            }, 0);
-        };
-
-        const addProduct = () => {
-            const newProduct = { id: products.length + 1, code: '', quantity: '' };
-            onProductsChange([...products, newProduct]);
-        };
-
-        const removeProduct = (id) => {
-            const updatedProducts = products.filter((product) => product.id !== id);
-            onProductsChange(updatedProducts);
-        };
-
-        return (
-            <>
-                {products.map((p, index) => (
-                    <div key={p.id} className="mb-4 w-full gap-5">
-                        <div className="w-full flex flex-col lg:flex-row justify-between items-center gap-3">
-                            <div className="lg:w-1/2 w-full">
-                                <label htmlFor={`Product-${p.id}`} className="mb-2 block">
-                                    Product {index + 1}
-                                </label>
-                                <select
-                                    id={`Product-${p.id}`}
-                                    className="w-full outline-none rounded-lg"
-                                    value={p.code}
-                                    onChange={(e) => handleInputChange(p.id, 'code', e.target.value)}
-                                >
-                                    <option value="">Select Product</option>
-                                    {productOptions.map((product) => (
-                                        <option key={product.code} value={product.code}>
-                                            {product.name} ({product.code})
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="lg:w-1/2 w-full">
-                                <label htmlFor={`Quantity-${p.id}`} className="mb-2 block">
-                                    Quantity
-                                </label>
-                                <input
-                                    type='number'
-                                    id={`Quantity-${p.id}`}
-                                    className="w-full border rounded-lg"
-                                    value={p.quantity}
-                                    onChange={(e) => handleInputChange(p.id, 'quantity', e.target.value)}
-                                    ref={inputRefs.current[p.id]}
-                                />
-                            </div>
-                        </div>
-                        {products.length > 1 && (
-                            <button onClick={() => removeProduct(p.id)} className="mt-2 text-red-500">
-                                Remove
-                            </button>
-                        )}
-                    </div>
-                ))}
-                <button onClick={addProduct} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-                    Add Product
-                </button>
-            </>
-        );
-    };
+    const removeField = (index) => {
+        let data = [...productField]
+        data.splice(index, 1)
+        setProductField(data)
+    }
 
     return (
             <AuthenticatedLayout
@@ -318,31 +226,20 @@ function DeliveryIndex({auth}) {
                                                     <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
                                                         <div className='mb-4 w-full'>
                                                             <InputLabel value="Customer Address" className='mb-2' htmlFor="customer_address"/>
-                                                            <textarea onChange={(e) => {setAlamatKustomer(e.target.value)}}className='block font-medium text-sm text-gray-700 w-full outline-none border-gray-300 rounded-lg'></textarea>
+                                                            <textarea
+                                                            name='customer_address'
+                                                            id="customer_address"
+                                                            onChange={(e) => {setAlamatKustomer(e.target.value)}}
+                                                            className='block font-medium text-sm text-gray-700 w-full outline-none border-gray-300 rounded-lg'
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
                                                     <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
-                                                        <div className='mb-4 w-full'>
-                                                            <InputLabel value="Delivery Cost" className='mb-2' htmlFor="delivery_cost"/>
-                                                            <TextInput id="delivery_cost" className='w-full' onChange={(e) => setBiayaPengiriman(e.target.value)}/>
-                                                        </div>
                                                         <div className='mb-4 w-full'>
                                                             <InputLabel value="Number Plates" className='mb-2' htmlFor="plat_nomor"/>
-                                                            <TextInput id="plat_nomor" className='w-full' onChange={(e) => setNamaPengirim(e.target.value)}/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
-                                                        <div className='mb-4 w-full'>
-                                                            <InputLabel value="Date Delivery" className='mb-2' htmlFor="date_delivery"/>
-                                                            <TextInput id="date_delivery" readOnly={true} className='w-full' onChange={(e) => setBiayaPengiriman(e.target.value)} value={now}/>
-                                                        </div>
-                                                        <div className='mb-4 w-full'>
-                                                            <InputLabel value="Time Delivery" className='mb-2' htmlFor="jam_pengiriman"/>
-                                                            <TextInput id="jam_pengiriman" className='w-full' onChange={(e) => setNamaPengirim(e.target.value)} value={`${hours} : ${minutes} : ${seconds}`}/>
+                                                            <TextInput id="plat_nomor" className='w-full' onChange={(e) => setPlatNomor(e.target.value)}/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -355,7 +252,25 @@ function DeliveryIndex({auth}) {
                                                     </div>
                                                 </div>
                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                    <DynamicProductForm productOptions={product} onProductsChange={handleProductChange}/>
+                                                {productField.map((input, index) =>
+                                                <>
+                                                    <div className='mb-4 w-full' key={index}>
+                                                        <InputLabel children={`Product ${index + 1}`} htmlFor={`product-${index + 1}`}/>
+                                                        <select name={`code`} id={`product-${index + 1}`} className='w-full border-gray-400 rounded-md outline-none' onChange={event => handleFormChange(index, event)}>
+                                                            <option value="">Select Product</option>
+                                                            {product.map((p) =>
+                                                                <option value={p.code}>{`${p.name} (${p.code})`}</option>
+                                                            )}
+                                                        </select>
+                                                    </div>
+                                                    <div className='mb-4 w-full'>
+                                                        <InputLabel children={`Quantity-${index + 1}`} htmlFor={`Quantity-${index + 1}`}/>
+                                                        <TextInput className="w-full" id={`Quantity-${index + 1}`} name="quantity" onChange={event => handleFormChange(index, event)}/>
+                                                    </div>
+                                                    <Button children={`-`} color='danger' onClick={() => removeField(index)}/>
+                                                </>
+                                                )}
+                                                    <Button children={`+`} color='success' onClick={addFields}/>
                                                 </div>
                                             </div>
                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>

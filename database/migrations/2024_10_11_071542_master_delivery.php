@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('delivery_name');
             $table->string('customer_name');
             $table->string('customer_address');
-            $table->string('delivery_cost');
             $table->string('number_plates');
             $table->date('date_delivery');
             $table->time('time_delivery');
