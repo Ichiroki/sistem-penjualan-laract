@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [ViewController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('products/{code}', [ProductController::class, 'showByCode']);
-Route::get('deliveries/{number_plates}', [DeliveriesController::class, 'showByNumberPlates']);
+Route::get('deliveries/{invoice}', [DeliveriesController::class, 'show']);
 
 Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
     Route::get('product', [ViewController::class, 'product'])->name('product');

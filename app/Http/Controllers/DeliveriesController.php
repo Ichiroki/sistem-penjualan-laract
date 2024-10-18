@@ -7,11 +7,8 @@ date_default_timezone_set('Asia/Jakarta');
 use App\Http\Requests\StoreDeliveriesRequest;
 use App\Http\Requests\UpdateDeliveriesRequest;
 use App\Models\Delivery;
-use App\Models\Product;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Ramsey\Uuid\Uuid;
 
 class DeliveriesController extends Controller
 {
@@ -20,34 +17,18 @@ class DeliveriesController extends Controller
         $search = $request->query('search');
 
         if ($search) {
-            $pengiriman = Delivery::with(['vehicle', 'product'])
-                ->whereHas('vehicle', function ($query) use ($search) {
-                    $query->where('number_plates', 'like', '%' . $search . '%');
-                })
-                ->orWhereHas('product', function ($query) use ($search) {
-                    $query->where('code', 'like', '%' . $search . '%')->orWhere('name', 'like', '%' . $search . '%');
-                })
-                ->get();
+            $pengiriman = DB::table('master_delivery')
+            ->where('delivery_invoice', 'like' , `%$search%`)
+            ->where('delivery_name', 'like' , `%$search%`)
+            ->where('customer_name', 'like' , `%$search%`)
+            ->where('batch_number', 'like' , `%$search%`)
+            ->where('number_plates', 'like', `%$search%`)
+            ->get();
         } else {
-            $pengiriman = Delivery::with(['vehicle', 'product'])->latest()->get();
+            $pengiriman = DB::table('master_delivery')->get();
         }
 
         return response()->json($pengiriman);
-    }
-
-    public function showByNumberPlates($number_plates) {
-        $product = Delivery::with(['vehicle', 'product'])
-        ->whereHas('vehicle', function($query) use ($number_plates) {
-            $query->where('number_plates', 'like', '%' . $number_plates . '%');
-        })
-        ->orWhereHas('product', function ($query) use ($number_plates) {
-            $query->where('code', 'like', '%' . $number_plates . '%');
-        })
-        ->get();
-        if($product->isEmpty()) {
-            return response()->json(['error' => 'bjir pengirimannya dari plat nomor ini gak ketemu'], 404);
-        }
-        return response()->json($product);
     }
 
     public function store(StoreDeliveriesRequest $request)
@@ -70,11 +51,15 @@ class DeliveriesController extends Controller
             ]);
 
             forEach($request->products as $product) {
+                $realProduct = DB::table('products')->select('quantity')->where('code', $product['code'])->first();
+
                 DB::table('detail_delivery')->insert([
                     'delivery_invoice' => $delivery->delivery_invoice,
                     'product_code' => $product['code'],
                     'quantity' => $product['quantity']
                 ]);
+
+                DB::table('products')->where('code', $product['code'])->update(['quantity' => $realProduct->quantity - (int) $product['quantity']]);
             }
 
             DB::commit();
@@ -86,6 +71,20 @@ class DeliveriesController extends Controller
             return response()->json(['error' => 'Failed to create delivery', 'details' => $e->getMessage()], 500);
         }
 
+    }
+
+    public function show($invoice) {
+        $delivery = DB::table('master_delivery')->where('delivery_invoice', "$invoice")->first();
+
+        if (!$delivery) {
+            return response()->json(['error' => 'Delivery not found'], 404);
+        }
+
+        $details = DB::table('detail_delivery')
+        ->where('delivery_invoice', $invoice)
+        ->get();
+
+        return response()->json(['message' => 'Delivery detail successfully fetched', 'delivery' => $delivery, 'details' => $details]);
     }
 
     public function update(UpdateDeliveriesRequest $request, Delivery $delivery)

@@ -21,7 +21,7 @@ export default function Dashboard({ auth }: PageProps) {
                                 <ProductChart />
                             </div>
                             <div className='w-full lg:w-1/2'>
-                                <DeliveriesChart />
+                                {/* <DeliveriesChart /> */}
                             </div>
                         </div>
                     </div>

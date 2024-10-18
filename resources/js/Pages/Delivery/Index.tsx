@@ -16,8 +16,25 @@ interface Product {
     quantity?: number
 }
 
+interface DeliveryDetail {
+    delivery: {
+        delivery_invoice: string,
+        delivery_name: string,
+        customer_name: string,
+        customer_address: string,
+        date_delivery: Date | undefined,
+        time_delivery: Date,
+    }
+    delivery_invoice: string
+    delivery_name: string
+    customer_name: string
+    customer_address: string
+    details: [] | any
+}
+
 function DeliveryIndex({auth}) {
     let i = 1
+    let j = 1
 
     const {
         deliveries,
@@ -50,15 +67,18 @@ function DeliveryIndex({auth}) {
         quantity: '',
     }])
 
-    const [errorVehicleId, setErrorVehicleId] = useState('')
-    const [errorProductCode, setErrorProductCode] = useState('')
-    const [errorTargetDelivery, setErrorTargetDelivery] = useState('')
-    const [errorActualDelivery, setErrorActualDelivery] = useState('')
+    // const [errorVehicleId, setErrorVehicleId] = useState('')
+    // const [errorProductCode, setErrorProductCode] = useState('')
+    // const [errorTargetDelivery, setErrorTargetDelivery] = useState('')
+    // const [errorActualDelivery, setErrorActualDelivery] = useState('')
 
     const [showEditModal, setShowEditModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [showDetailModal, setShowDetailModal] = useState(false)
 
     const [deletePengirimanId, setDeletePengirimanId] = useState(null)
+
+    const [detailPengirimanId, setDetailPengirimanId] = useState<DeliveryDetail | null>(null)
 
     const resetInput = () => {
         setInvoice('')
@@ -110,14 +130,28 @@ function DeliveryIndex({auth}) {
                     console.log(e.response)
                     const getError = e.response.data.errors
 
-                    setErrorVehicleId(getError.vehicle_id[0])
-                    setErrorProductCode(getError.product_code[0])
-                    setErrorTargetDelivery(getError.target_delivery[0])
-                    setErrorActualDelivery(getError.actual_delivery[0])
+                    // setErrorVehicleId(getError.vehicle_id[0])
+                    // setErrorProductCode(getError.product_code[0])
+                    // setErrorTargetDelivery(getError.target_delivery[0])
+                    // setErrorActualDelivery(getError.actual_delivery[0])
                 }
             })
         } catch(e) {
             console.error('Internal server error, please wait')
+        }
+    }
+
+    let detailPengirimanData = async (invoice) => {
+        try {
+            await axios.get(`/deliveries/${invoice}`)
+            .then((res) => {
+                setDetailPengirimanId(res.data)
+                setShowDetailModal(true)
+
+                console.log(detailPengirimanId)
+            })
+        } catch(e) {
+            console.log(e)
         }
     }
 
@@ -176,6 +210,8 @@ function DeliveryIndex({auth}) {
         data.splice(index, 1)
         setProductField(data)
     }
+
+    console.log(detailPengirimanId)
 
     return (
             <AuthenticatedLayout
@@ -239,7 +275,12 @@ function DeliveryIndex({auth}) {
                                                     <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
                                                         <div className='mb-4 w-full'>
                                                             <InputLabel value="Number Plates" className='mb-2' htmlFor="plat_nomor"/>
-                                                            <TextInput id="plat_nomor" className='w-full' onChange={(e) => setPlatNomor(e.target.value)}/>
+                                                            <select id="plat_nomor" onChange={e => setPlatNomor(e.target.value)} className='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full'>
+                                                                <option value="">Select Product</option>
+                                                                {vehicles.map((p) =>
+                                                                    <option value={p.number_plates}>{`${p.number_plates} (${p.vehicle_type})`}</option>
+                                                                )}
+                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -256,7 +297,7 @@ function DeliveryIndex({auth}) {
                                                 <>
                                                     <div className='mb-4 w-full' key={index}>
                                                         <InputLabel children={`Product ${index + 1}`} htmlFor={`product-${index + 1}`}/>
-                                                        <select name={`code`} id={`product-${index + 1}`} className='w-full border-gray-400 rounded-md outline-none' onChange={event => handleFormChange(index, event)}>
+                                                        <select name={`code`} id={`product-${index + 1}`} className='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full' onChange={event => handleFormChange(index, event)}>
                                                             <option value="">Select Product</option>
                                                             {product.map((p) =>
                                                                 <option value={p.code}>{`${p.name} (${p.code})`}</option>
@@ -264,7 +305,7 @@ function DeliveryIndex({auth}) {
                                                         </select>
                                                     </div>
                                                     <div className='mb-4 w-full'>
-                                                        <InputLabel children={`Quantity-${index + 1}`} htmlFor={`Quantity-${index + 1}`}/>
+                                                        <InputLabel children={`Quantity ${index + 1}`} htmlFor={`Quantity ${index + 1}`}/>
                                                         <TextInput className="w-full" id={`Quantity-${index + 1}`} name="quantity" onChange={event => handleFormChange(index, event)}/>
                                                     </div>
                                                     <Button children={`-`} color='danger' onClick={() => removeField(index)}/>
@@ -293,13 +334,9 @@ function DeliveryIndex({auth}) {
                                                 <thead className="border-b font-medium dark:border-neutral-500">
                                                     <tr>
                                                     <th scope="col" className="px-6 py-4">#</th>
+                                                    <th scope="col" className="px-6 py-4">Delivery Invoice</th>
                                                     <th scope="col" className="px-6 py-4">Number Plates</th>
-                                                    <th scope="col" className="px-6 py-4">Vehicle Type</th>
-                                                    <th scope="col" className='px-6 py-4'>Product Code</th>
-                                                    <th scope="col" className='px-6 py-4'>Product Name</th>
-                                                    <th scope="col" className="px-6 py-4">Target Package</th>
-                                                    <th scope="col" className="px-6 py-4">Actual Package</th>
-                                                    <th scope="col" className="px-6 py-4">Percentage</th>
+                                                    <th scope="col" className="px-6 py-4">Delivery Date</th>
                                                     <th scope="col" className="px-6 py-4">Aksi</th>
                                                     </tr>
                                                 </thead>
@@ -308,15 +345,75 @@ function DeliveryIndex({auth}) {
                                                     <tr
                                                     className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={p.id}>
                                                         <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.vehicle.number_plates}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.vehicle.vehicle_type}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.product[0].code}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.product[0].name}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4 text-center">{p.target_delivery}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4 text-center">{p.actual_delivery}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4 text-center">{Math.ceil(p.percentage) + ' %'}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{p.delivery_invoice}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{p.number_plates}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{`${p.date_delivery}` + ` ${p.time_delivery}`}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">
                                                             <div className='flex gap-3'>
+                                                                <Button color="primary" onClick={() => detailPengirimanData(p.delivery_invoice)}>Detail</Button>
+                                                                {detailPengirimanId && (
+                                                                    <Modal show={showDetailModal} onClose={() => {
+                                                                        resetInput();
+                                                                        setShowDetailModal(false)
+                                                                    }}>
+                                                                        <div className='p-5'>
+                                                                            <div className='flex justify-between pb-4 border-b'>
+                                                                                <h1 className='text-medium text-xl w-6/12 lg:w-full'>Detail Pengiriman</h1>
+                                                                                <button onClick={() => setShowDetailModal(!showDetailModal)}>X</button>
+                                                                            </div>
+                                                                            <div className='my-4 flex flex-col'>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Invoice</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{detailPengirimanId?.delivery.delivery_invoice}</p>
+                                                                                </div>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Delivery Name</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{detailPengirimanId?.delivery.delivery_name}</p>
+                                                                                </div>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Customer Name</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{detailPengirimanId?.delivery.customer_name}</p>
+                                                                                </div>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Address</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{detailPengirimanId?.delivery.customer_address}</p>
+                                                                                </div>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Date Delivery</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{`${detailPengirimanId?.delivery.date_delivery}`}</p>
+                                                                                </div>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Time Delivery</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{` ${detailPengirimanId?.delivery.time_delivery}`}</p>
+                                                                                </div>
+                                                                                <table className="mt-5">
+                                                                                    <thead>
+                                                                                        <tr className='border'>
+                                                                                            <td className="p-2">No</td>
+                                                                                            <td className="p-2">Product Code</td>
+                                                                                            <td className="p-2">Quantity</td>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                    {detailPengirimanId.details.map((d, i) => (
+                                                                                        <tr className={i % 2 === 1 ? 'border' : 'border bg-gray-200'}>
+                                                                                            <td className="p-2">{i + 1}</td>
+                                                                                            <td className="p-2">{d.product_code}</td>
+                                                                                            <td className="p-2">{d.quantity}</td>
+                                                                                        </tr>
+                                                                                    ))}
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </Modal>
+                                                                )}
                                                                 <Button color="warning" onClick={() => handleEditModal(p.id)}>Edit</Button>
                                                                 {editPengirimanData && editPengirimanData.id === p.id && (
                                                                     <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
