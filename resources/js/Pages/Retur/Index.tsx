@@ -32,7 +32,7 @@ interface DeliveryDetail {
     details: [] | any
 }
 
-function DeliveryIndex({auth}) {
+function ReturIndex({auth}) {
     let i = 1
     let j = 1
 
@@ -358,10 +358,10 @@ function DeliveryIndex({auth}) {
                                                                     }}>
                                                                         <div className='p-5'>
                                                                             <div className='flex justify-between pb-4 border-b'>
-                                                                                <h1 className='text-medium text-xl w-8/12 lg:w-full'>Detail Pengiriman</h1>
+                                                                                <h1 className='text-medium text-xl w-6/12 lg:w-full'>Detail Pengiriman</h1>
                                                                                 <button onClick={() => setShowDetailModal(!showDetailModal)}>X</button>
                                                                             </div>
-                                                                            <div className='my-4 flex flex-col overflow-scroll scrollbar-hide'>
+                                                                            <div className='my-4 flex flex-col'>
                                                                                 <div className='flex gap-3'>
                                                                                     <h1 className="w-6/12">Invoice</h1>
                                                                                     <p>:</p>
@@ -392,12 +392,11 @@ function DeliveryIndex({auth}) {
                                                                                     <p>:</p>
                                                                                     <p className="w-6/12">{` ${detailPengirimanId?.delivery.time_delivery}`}</p>
                                                                                 </div>
-                                                                                <table className="mt-5 overflow-scroll w-[25rem] lg:w-full">
+                                                                                <table className="mt-5">
                                                                                     <thead>
                                                                                         <tr className='border'>
                                                                                             <td className="p-2">No</td>
                                                                                             <td className="p-2">Product Code</td>
-                                                                                            <td className="p-2">Product Name</td>
                                                                                             <td className="p-2">Quantity</td>
                                                                                         </tr>
                                                                                     </thead>
@@ -406,7 +405,6 @@ function DeliveryIndex({auth}) {
                                                                                         <tr className={i % 2 === 1 ? 'border' : 'border bg-gray-200'}>
                                                                                             <td className="p-2">{i + 1}</td>
                                                                                             <td className="p-2">{d.product_code}</td>
-                                                                                            <td className="p-2">{d.name}</td>
                                                                                             <td className="p-2">{d.quantity}</td>
                                                                                         </tr>
                                                                                     ))}
@@ -526,4 +524,4 @@ function DeliveryIndex({auth}) {
     );
 }
 
-export default DeliveryIndex
+export default ReturIndex

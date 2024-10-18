@@ -16,6 +16,7 @@ Route::get('deliveries/{invoice}', [DeliveriesController::class, 'show']);
 Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
     Route::get('product', [ViewController::class, 'product'])->name('product');
     Route::get('delivery', [ViewController::class, 'delivery'])->name('delivery');
+    Route::get('retur', [ViewController::class, 'retur'])->name('retur');
     Route::get('incoming', [ViewController::class, 'incoming'])->name('incoming');
     Route::get('vehicle', [ViewController::class, 'vehicle'])->name('vehicle');
 

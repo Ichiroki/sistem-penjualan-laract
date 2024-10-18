@@ -74,15 +74,20 @@ class DeliveriesController extends Controller
     }
 
     public function show($invoice) {
-        $delivery = DB::table('master_delivery')->where('delivery_invoice', "$invoice")->first();
+
+        $delivery = DB::table('master_delivery')
+        ->where('delivery_invoice', "$invoice")
+        ->first();
+
+        $details = DB::table('detail_delivery')
+        ->where('detail_delivery.delivery_invoice', "$invoice")
+        ->leftJoin('master_delivery', 'detail_delivery.delivery_invoice', '=' , 'master_delivery.delivery_invoice')
+        ->leftJoin('products', 'detail_delivery.product_code', '=', 'products.code')
+        ->get();
 
         if (!$delivery) {
             return response()->json(['error' => 'Delivery not found'], 404);
         }
-
-        $details = DB::table('detail_delivery')
-        ->where('delivery_invoice', $invoice)
-        ->get();
 
         return response()->json(['message' => 'Delivery detail successfully fetched', 'delivery' => $delivery, 'details' => $details]);
     }
