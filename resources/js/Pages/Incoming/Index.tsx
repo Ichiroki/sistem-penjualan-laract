@@ -11,6 +11,18 @@ import { Head } from '@inertiajs/react'
 import axios from 'axios'
 import { ChangeEvent, useState } from 'react'
 
+interface IncomingDetail {
+    incoming: {
+        incoming_invoice: string,
+        supplier_name: string,
+        received_to: string,
+        number_plate: string,
+        date_incoming: Date | undefined,
+        time_incoming: Date,
+    }
+    details: [] | any
+}
+
 function ProductIndex({auth}) {
 
     let i = 1
@@ -43,7 +55,7 @@ function ProductIndex({auth}) {
     }
 
     const [editIncomingData, setEditIncomingData] = useState({
-        invoice: '',
+        incoming_invoice: '',
         delivery_name: '',
         customer_name: '',
         customer_address: '',
@@ -54,11 +66,14 @@ function ProductIndex({auth}) {
     const [showCreateModal, setShowCreateModal] = useState(false)
     const [showEditModal, setShowEditModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [showDetailModal, setShowDetailModal] = useState(false)
 
     const [deleteProductId, setDeleteProductId] = useState(null)
 
+    const [detailIncomingId, setDetailIncomingId] = useState<IncomingDetail | null>(null)
+
     const handleEditModal = (invoice) => {
-        const selectedProduct: any = incomings.find((p) => p.invoice === invoice)
+        const selectedProduct: any = incomings.find((p) => p.incoming_invoice === invoice)
         console.log(selectedProduct)
         // setEditIncomingData(selectedProduct)
         // setShowEditModal(!showEditModal)
@@ -102,6 +117,20 @@ function ProductIndex({auth}) {
         }
     }
 
+    let detailIncomingData = async (invoice) => {
+        try {
+            await axios.get(`/incoming/${invoice}`)
+            .then((res) => {
+                setDetailIncomingId(res.data)
+                setShowDetailModal(true)
+
+                console.log(detailIncomingId)
+            })
+        } catch(e) {
+            console.log(e)
+        }
+    }
+
     let editIncomingIdData = async (productId) => {
         try {
             // await axios.put(`/incomings/${productId}`, {
@@ -133,7 +162,7 @@ function ProductIndex({auth}) {
         try {
             await axios.delete(`/incomings/${invoice}`)
             .then(() => {
-                const updateProductList = incomings.filter((p) => p.invoice !== invoice)
+                const updateProductList = incomings.filter((p) => p.incoming_invoice !== invoice)
                 setIncomings(updateProductList)
                 setDeleteProductId(null)
                 setShowDeleteModal(false)
@@ -274,24 +303,92 @@ function ProductIndex({auth}) {
                                             <thead className="border-b font-medium dark:border-neutral-500">
                                                 <tr>
                                                 <th scope="col" className="px-6 py-4">#</th>
-                                                <th scope="col" className="px-6 py-4">Tanggal Masuk</th>
-                                                <th scope="col" className="px-6 py-4">Plat Nomor</th>
-                                                <th scope="col" className="px-6 py-4">Kode Produk</th>
+                                                <th scope="col" className="px-6 py-4">Invoice</th>
+                                                <th scope="col" className="px-6 py-4">Supplier Name</th>
+                                                <th scope="col" className="px-6 py-4">Number Plate</th>
+                                                <th scope="col" className="px-6 py-4">Received To</th>
                                                 <th scope="col" className="px-6 py-4">Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {incomings.map((d) => (
                                                 <tr
-                                                className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={d.invoice}>
+                                                className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={d.incoming_invoice}>
                                                     <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{d.input_date.slice(0, 10)}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{d.number_plates}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{d.code}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{d.incoming_invoice}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{d.supplier_name}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{d.number_plate}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{d.received_to}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">
                                                         <div className='flex gap-3'>
-                                                            <Button color="warning" onClick={() => handleEditModal(d.id)}>Edit</Button>
-                                                            {editIncomingData && editIncomingData.id === d.id && (
+                                                        <Button color="primary" onClick={() => detailIncomingData(d.incoming_invoice)}>Detail</Button>
+                                                                {detailIncomingId && (
+                                                                    <Modal show={showDetailModal} onClose={() => {
+                                                                        resetInput();
+                                                                        setShowDetailModal(false)
+                                                                    }}>
+                                                                        <div className='p-5'>
+                                                                            <div className='flex justify-between pb-4 border-b'>
+                                                                                <h1 className='text-medium text-xl w-8/12 lg:w-full'>Detail Pengiriman</h1>
+                                                                                <button onClick={() => setShowDetailModal(!showDetailModal)}>X</button>
+                                                                            </div>
+                                                                            <div className='my-4 flex flex-col overflow-scroll scrollbar-hide'>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Invoice</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{detailIncomingId?.incoming.incoming_invoice}</p>
+                                                                                </div>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Supplier Name</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{detailIncomingId?.incoming.supplier_name}</p>
+                                                                                </div>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Number Plate</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{detailIncomingId?.incoming.number_plate}</p>
+                                                                                </div>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Received To</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{detailIncomingId?.incoming.received_to}</p>
+                                                                                </div>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Date Incoming</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{`${detailIncomingId?.incoming.date_incoming}`}</p>
+                                                                                </div>
+                                                                                <div className='flex gap-3'>
+                                                                                    <h1 className="w-6/12">Time Incoming</h1>
+                                                                                    <p>:</p>
+                                                                                    <p className="w-6/12">{` ${detailIncomingId?.incoming.time_incoming}`}</p>
+                                                                                </div>
+                                                                                <table className="mt-5 overflow-scroll w-full">
+                                                                                    <thead>
+                                                                                        <tr className='border'>
+                                                                                            <td className="p-2">No</td>
+                                                                                            <td className="p-2">Product Code</td>
+                                                                                            <td className="p-2">Product Name</td>
+                                                                                            <td className="p-2">Quantity</td>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                    {detailIncomingId.details.map((d, i) => (
+                                                                                        <tr className={i % 2 === 1 ? 'border' : 'border bg-gray-200'}>
+                                                                                            <td className="p-2">{i + 1}</td>
+                                                                                            <td className="p-2">{d.product_code}</td>
+                                                                                            <td className="p-2">{d.product_name}</td>
+                                                                                            <td className="p-2">{d.quantity}</td>
+                                                                                        </tr>
+                                                                                    ))}
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </Modal>
+                                                                )}
+                                                            <Button color="warning" onClick={() => handleEditModal(d.incoming_invoice)}>Edit</Button>
+                                                            {editIncomingData && editIncomingData.incoming_invoice === d.incoming_invoice && (
                                                                 <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
                                                                     <div className='p-5'>
                                                                         <div className='flex justify-between pb-4 border-b'>
@@ -363,8 +460,8 @@ function ProductIndex({auth}) {
                                                                         </div>
                                                                 </Modal>
                                                             )}
-                                                            <Button color="danger" onClick={() => handleDeleteModal(d.id)}>Delete</Button>
-                                                            {deleteProductId && deleteProductId === d.id && (
+                                                            <Button color="danger" onClick={() => handleDeleteModal(d.incoming_invoice)}>Delete</Button>
+                                                            {deleteProductId && deleteProductId === d.incoming_invoice && (
                                                                 <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
                                                                     <div className='p-5'>
                                                                         <div className='flex justify-between pb-4 border-b'>
@@ -376,7 +473,7 @@ function ProductIndex({auth}) {
                                                                         </div>
                                                                         <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                             <Button color="light" type="button" onClick={() => setShowDeleteModal(!showDeleteModal)}>Close</Button>
-                                                                            <Button color="danger" onClick={() => deleteIncomingData(d.id)}>Delete</Button>
+                                                                            <Button color="danger" onClick={() => deleteIncomingData(d.incoming_invoice)}>Delete</Button>
                                                                         </div>
                                                                     </div>
                                                                 </Modal>

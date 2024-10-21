@@ -19,13 +19,13 @@ class IncomingController extends Controller
         $search = $request->query('search');
 
         if($search) {
-            $incoming = DB::table('master_incoming')
-            ->where('incoming_invoice', 'like', "$search")
-            ->where('supplier_name', 'like', "$search")
-            ->where('received_to', 'like', "$search")
+            $incoming = Incoming::where('incoming_invoice', 'like', "$search")
+            ->orWhere('number_plate', 'like', "$search")
+            ->orWhere('supplier_name', 'like', "$search")
+            ->orWhere('received_to', 'like', "$search")
             ->get();
         } else {
-            $incoming = DB::table('master_incoming')->get();
+            $incoming = Incoming::get();
         }
 
         return response()->json($incoming);
@@ -98,9 +98,23 @@ class IncomingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Incoming $incoming)
+    public function show($invoice)
     {
-        //
+        $incoming = DB::table('master_incoming')
+        ->where('incoming_invoice', "$invoice")
+        ->first();
+
+        $details = DB::table('master_incoming')
+        ->where('master_incoming.incoming_invoice', "$invoice")
+        ->leftJoin('detail_incoming', 'master_incoming.incoming_invoice', '=' , 'detail_incoming.incoming_invoice')
+        // ->leftJoin('products', 'detail_delivery.product_code', '=', 'products.code')
+        ->get();
+
+        if (!$incoming) {
+            return response()->json(['error' => 'Delivery not found'], 404);
+        }
+
+        return response()->json(['message' => 'Delivery detail successfully fetched', 'incoming' => $incoming, 'details' => $details]);
     }
 
     /**
