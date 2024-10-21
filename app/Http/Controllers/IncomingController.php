@@ -36,7 +36,63 @@ class IncomingController extends Controller
      */
     public function store(StoreIncomingRequest $request)
     {
-        return Incoming::create($request->validated());
+        DB::beginTransaction();
+
+        $now = date('Y-m-d');
+        $time = date('H:i:s');
+
+        try {
+            // Buat master incoming tanpa subtotal
+            $incoming = Incoming::create([
+                'incoming_invoice' => $request->incoming_invoice,
+                'supplier_name' => $request->supplier_name,
+                'received_to' => $request->received_to,
+                'number_plate' => $request->number_plate,
+                'subtotal' => 0,
+                'date_incoming' => $now,
+                'time_incoming' => $time,
+            ]);
+
+            // Inisialisasi subtotal
+            $subtotal = 0;
+
+            // Loop untuk insert detail produk dan hitung subtotal
+            foreach ($request->products as $product) {
+                $realProduct = DB::table('products')
+                    ->select('name', 'quantity')
+                    ->where('code', $product['code'])
+                    ->first();
+
+                DB::table('detail_incoming')->insert([
+                    'incoming_invoice' => $incoming->incoming_invoice,
+                    'product_code' => $product['code'],
+                    'product_name' => $realProduct->name,
+                    'price_per_unit' => $product['price'],
+                    'subtotal' => $product['quantity'] * $product['price'],
+                    'quantity' => $product['quantity'],
+                ]);
+
+                // Update stok produk
+                DB::table('products')->where('code', $product['code'])
+                    ->update(['quantity' => $realProduct->quantity + (int) $product['quantity']]);
+
+                // Hitung subtotal
+                $subtotal += $product['quantity'] * $product['price'];
+            }
+
+            // Update subtotal pada master incoming
+            $incoming->update(['subtotal' => $subtotal]);
+
+            DB::commit();
+
+            return response()->json(['message' => 'Incoming created successfully'], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Failed to create incoming',
+                'details' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

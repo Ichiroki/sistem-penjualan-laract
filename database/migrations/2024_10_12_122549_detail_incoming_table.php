@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('detail_incoming', function (Blueprint $table) {
             $table->id();
-            $table->dateTimeTz('input_date');
             $table->string('product_code');
+            $table->string('product_name');
             $table->integer('quantity');
             $table->decimal('price_per_unit');
-            $table->decimal('subtotal');
+            $table->float('subtotal');
             $table->string('incoming_invoice');
             $table->timestamps();
 

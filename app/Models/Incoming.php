@@ -9,17 +9,16 @@ class Incoming extends Model
 {
     use HasFactory;
 
+    protected $table = 'master_incoming';
+
     protected $fillable = [
-        'input_date',
-        'delivery_id',
-        'product_code'
+        'incoming_invoice',
+        'supplier_name',
+        'received_to',
+        'number_plate',
+        'product',
+        'date_incoming',
+        'time_incoming',
+        'subtotal'
     ];
-
-    public function product() {
-        return $this->hasMany(Product::class, 'code', 'product_code');
-    }
-
-    public function delivery() {
-        return $this->hasMany(Delivery::class, 'id', 'delivery_id');
-    }
 }

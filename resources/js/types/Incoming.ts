@@ -3,10 +3,8 @@ import { Product } from "./Product"
 
 export interface Incoming {
     invoice: string
-    delivery_name: string
-    customer_name: string
-    customer_address: string
-    batch_number: string
-    input_date: string
+    supplier_name: string
+    received_to: string
+    number_plates: string
     product: [Product]
 }

@@ -23,9 +23,11 @@ class StoreIncomingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'input_date' => 'required|string',
-            'delivery_id' => 'required|integer',
-            'product_code' => 'required|string'
+            'incoming_invoice' => 'required|string',
+            'supplier_name' => 'required|string',
+            'received_to' => 'required|string',
+            'number_plate' => 'required|string',
+            'products' => 'required|array'
         ];
     }
 }

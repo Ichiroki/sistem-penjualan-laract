@@ -31,19 +31,10 @@ function ProductIndex({auth}) {
     const [errorDeliveryId, setErrorDeliveryId] = useState('')
     const [errorProductCode, setErrorProductCode] = useState('')
 
-    // const [inputDate, setInputDate] = useState('')
-    // const [deliveryId, setDeliveryId] = useState(1)
-    // const [productCode, setProductCode] = useState('')
-
     const [invoice, setInvoice] = useState('')
     const [supplierName, setSupplierName] = useState('')
     const [receivedTo, setReceivedTo] = useState('')
-
-    const [inputField, setInputField] = useState([{
-        id:'',
-        code: '',
-        quantity: '',
-    }])
+    const [numberPlate, setNumberPlate] = useState('')
 
     const resetInput = () => {
         setInvoice('')
@@ -85,7 +76,9 @@ function ProductIndex({auth}) {
             {
                 incoming_invoice: invoice,
                 supplier_name: supplierName,
-                received_to: receivedTo
+                received_to: receivedTo,
+                number_plate: numberPlate,
+                products: productField
             })
             .then((res) => {
                 resetInput()
@@ -111,25 +104,26 @@ function ProductIndex({auth}) {
 
     let editIncomingIdData = async (productId) => {
         try {
-            await axios.put(`/incomings/${productId}`, {
-                input_date : editIncomingData.input_date,
-                delivery_id : editIncomingData.delivery_id,
-                product_code : editIncomingData.product_code
-            })
-            .then(() => {
-                resetInput()
-                setShowEditModal(false)
-                getIncomingsData()
-            })
-            .catch((error) => {
-                if(error.response) {
-                    const getError = error.response.data.errors
-                    console.log(error.response)
-                    setErrorInputDate(getError.input_date[0])
-                    setErrorDeliveryId(getError.delivery_id[0])
-                    setErrorProductCode(getError.product_code[0])
-                }
-            })
+            // await axios.put(`/incomings/${productId}`, {
+            //     incoming_invoice : editIncomingData.delivery_id,
+            //     supplier_name : editIncomingData.input_date,
+            //     received_to : editIncomingData.product_code
+            //     number_plates : editIncomingData.number
+            // })
+            // .then(() => {
+            //     resetInput()
+            //     setShowEditModal(false)
+            //     getIncomingsData()
+            // })
+            // .catch((error) => {
+            //     if(error.response) {
+            //         const getError = error.response.data.errors
+            //         console.log(error.response)
+            //         setErrorInputDate(getError.input_date[0])
+            //         setErrorDeliveryId(getError.delivery_id[0])
+            //         setErrorProductCode(getError.product_code[0])
+            //     }
+            // })
         } catch(e) {
             console.error('Internal server error, please wait' + e)
         }
@@ -149,29 +143,36 @@ function ProductIndex({auth}) {
         }
     }
 
+    const [productField, setProductField] = useState([{
+        id:'',
+        code: '',
+        quantity: '',
+        price: '',
+    }])
+
     // Add new field for product
 
     const addFields = () => {
-        let newFields = { id: '', code: '', quantity: ''}
+        let newFields = { id: '', code: '', quantity: '', price: ''}
 
-        setInputField([...inputField, newFields])
+        setProductField([...productField, newFields])
     }
 
     // handling value changes on form
 
     const handleFormChange = (index: number, event: ChangeEvent<HTMLInputElement>|ChangeEvent<HTMLSelectElement>) => {
-        let data = [...inputField]
+        let data = [...productField]
         let {name, value} = event.target
         data[index] = {...data[index], [name]: value}
-        setInputField(data)
+        setProductField(data)
     }
 
     // remove field for product
 
     const removeField = (index) => {
-        let data = [...inputField]
+        let data = [...productField]
         data.splice(index, 1)
-        setInputField(data)
+        setProductField(data)
     }
 
     return (
@@ -186,48 +187,49 @@ function ProductIndex({auth}) {
                 <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div className="p-6 text-gray-900 dark:text-gray-100">
                         <div className='flex justify-between mb-6'>
-                            <TextInput placeholder={'Search here...'} value={search} onChange={(e) => setSearch(e.target.value)} />
-                            <Button onClick={() => setShowCreateModal(!showCreateModal)}>Create</Button>
-                            <Modal show={showCreateModal} onClose={() => setShowCreateModal(false)}>
-                                <div className='p-5'>
-                                    <div className='flex justify-between pb-4 border-b'>
-                                        <h1 className='text-medium text-xl'>Create Incoming</h1>
-                                        <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
-                                    </div>
-                                    <form onSubmit={createIncomingData}>
-                                        <div className='my-4 overflow-y-scroll scrollbar-hide'>
-                                            <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                <div className='mb-4 w-full'>
-                                                    <InputLabel value="Invoice" className='mb-2' htmlFor="Input Date"/>
-                                                    <TextInput value={invoice} onChange={(e) => setInvoice(e.target.value)} className={errorInputDate ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
-                                                    {errorInputDate ? (
-                                                        <InputError message={errorInputDate}/>
-                                                    ) : (
-                                                        <>
-                                                        </>
-                                                    )}
+                                <TextInput placeholder={'Search here...'} value={search} onChange={(e) => setSearch(e.target.value)} />
+                                <Button onClick={() => setShowCreateModal(!showCreateModal)}>Create</Button>
+                                <Modal show={showCreateModal} onClose={() => {
+                                    resetInput();
+                                    setShowCreateModal(false)
+                                }}>
+                                    <div className='p-5'>
+                                        <div className='flex justify-between pb-4 border-b'>
+                                            <h1 className='text-medium text-xl'>Create Incoming</h1>
+                                            <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
+                                        </div>
+                                        <form onSubmit={createIncomingData}>
+                                            <div className='my-4 overflow-y-scroll scrollbar-hide h-96'>
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Incoming Invoice" className='mb-2' htmlFor="incoming_invoice"/>
+                                                            <TextInput id="incoming_invoice" className='w-full' onChange={(e) => setInvoice(e.target.value)}/>
+                                                        </div>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Supplier Name" className='mb-2' htmlFor="supplier_name"/>
+                                                            <TextInput id="supplier_name" className='w-full' onChange={(e) => setSupplierName(e.target.value)}/>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className='mb-4 w-full'>
-                                                    <InputLabel value="Supplier Name" className='mb-2' htmlFor="Input Date"/>
-                                                    <TextInput value={supplierName} onChange={(e) => setSupplierName(e.target.value)} className={errorInputDate ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
-                                                    {errorInputDate ? (
-                                                        <InputError message={errorInputDate}/>
-                                                    ) : (
-                                                        <>
-                                                        </>
-                                                    )}
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Received To" className='mb-2' htmlFor="received_to"/>
+                                                            <TextInput id="received_to" className='w-full' onChange={(e) => setReceivedTo(e.target.value)}/>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className='mb-4 w-full'>
-                                                    <InputLabel value="Received To" className='mb-2' htmlFor="Input Date"/>
-                                                    <TextInput value={receivedTo} onChange={(e) => setReceivedTo(e.target.value)} className={errorInputDate ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
-                                                    {errorInputDate ? (
-                                                        <InputError message={errorInputDate}/>
-                                                    ) : (
-                                                        <>
-                                                        </>
-                                                    )}
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                        <div className='mb-4 w-full'>
+                                                            <InputLabel value="Number Plate" className='mb-2' htmlFor="number_plate"/>
+                                                            <TextInput id="number_plate" className='w-full' onChange={(e) => setNumberPlate(e.target.value)}/>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                {inputField.map((input, index) =>
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                {productField.map((input, index) =>
                                                 <>
                                                     <div className='mb-4 w-full' key={index}>
                                                         <InputLabel children={`Product ${index + 1}`} htmlFor={`product-${index + 1}`}/>
@@ -242,20 +244,27 @@ function ProductIndex({auth}) {
                                                         <InputLabel children={`Quantity ${index + 1}`} htmlFor={`Quantity ${index + 1}`}/>
                                                         <TextInput className="w-full" id={`Quantity-${index + 1}`} name="quantity" onChange={event => handleFormChange(index, event)}/>
                                                     </div>
+                                                    <div className='mb-4 w-full'>
+                                                        <InputLabel children={`Price ${index + 1}`} htmlFor={`Price ${index + 1}`}/>
+                                                        <TextInput className="w-full" id={`Price-${index + 1}`} name="price" onChange={event => handleFormChange(index, event)}/>
+                                                    </div>
                                                     <Button children={`-`} color='danger' onClick={() => removeField(index)}/>
                                                 </>
                                                 )}
-                                                <Button children={`+`} color='success' onClick={addFields}/>
+                                                    <Button children={`+`} color='success' type="button" onClick={addFields}/>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
-                                            <Button color="light" type="button" onClick={() => setShowCreateModal(!showCreateModal)}>Close</Button>
-                                            <Button color="success" type="submit">Submit</Button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </Modal>
-                        </div>
+                                            <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
+                                                <Button color="light" type="button" onClick={() =>{
+                                                    resetInput();
+                                                    setShowCreateModal(!showCreateModal)
+                                                }}>Close</Button>
+                                                <Button color="success" type="submit">Submit</Button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </Modal>
+                            </div>
                         <div className=''>
                             <div className="flex flex-col">
                                 <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
