@@ -1,4 +1,6 @@
+import { Incoming } from '@/API/Incoming'
 import { Product } from '@/API/Product'
+import { Vehicles } from '@/API/Vehicle'
 import Button from '@/Components/Button'
 import InputError from '@/Components/InputError'
 import InputLabel from '@/Components/InputLabel'
@@ -6,10 +8,8 @@ import Modal from '@/Components/Modal'
 import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
-import { useState } from 'react'
 import axios from 'axios'
-import { Incoming } from '@/API/Incoming'
-import { Delivery } from '@/API/Delivery'
+import { ChangeEvent, useState } from 'react'
 
 function ProductIndex({auth}) {
 
@@ -24,10 +24,6 @@ function ProductIndex({auth}) {
     } = Incoming()
 
     const {
-        deliveries
-    } = Delivery()
-
-    const {
         product
     } = Product()
 
@@ -35,22 +31,33 @@ function ProductIndex({auth}) {
     const [errorDeliveryId, setErrorDeliveryId] = useState('')
     const [errorProductCode, setErrorProductCode] = useState('')
 
-    const [inputDate, setInputDate] = useState('')
-    const [deliveryId, setDeliveryId] = useState(1)
-    const [productCode, setProductCode] = useState('')
+    // const [inputDate, setInputDate] = useState('')
+    // const [deliveryId, setDeliveryId] = useState(1)
+    // const [productCode, setProductCode] = useState('')
+
+    const [invoice, setInvoice] = useState('')
+    const [supplierName, setSupplierName] = useState('')
+    const [receivedTo, setReceivedTo] = useState('')
+
+    const [inputField, setInputField] = useState([{
+        id:'',
+        code: '',
+        quantity: '',
+    }])
 
     const resetInput = () => {
-        setInputDate('')
-        setDeliveryId(1)
-        setProductCode('')
+        setInvoice('')
+        setSupplierName('')
+        setReceivedTo('')
     }
 
     const [editIncomingData, setEditIncomingData] = useState({
-        id: 0,
-        input_date: '',
-        number_plates: '',
-        delivery_id: 0,
-        product_code: '',
+        invoice: '',
+        delivery_name: '',
+        customer_name: '',
+        customer_address: '',
+        batch_number: '',
+        products: []
     })
 
     const [showCreateModal, setShowCreateModal] = useState(false)
@@ -59,10 +66,11 @@ function ProductIndex({auth}) {
 
     const [deleteProductId, setDeleteProductId] = useState(null)
 
-    const handleEditModal = (productId) => {
-        const selectedProduct: any = incomings.find((p) => p.id === productId)
-        setEditIncomingData(selectedProduct)
-        setShowEditModal(!showEditModal)
+    const handleEditModal = (invoice) => {
+        const selectedProduct: any = incomings.find((p) => p.invoice === invoice)
+        console.log(selectedProduct)
+        // setEditIncomingData(selectedProduct)
+        // setShowEditModal(!showEditModal)
     }
 
     const handleDeleteModal = (productId) => {
@@ -75,9 +83,9 @@ function ProductIndex({auth}) {
         try {
             axios.post('/incomings',
             {
-                input_date: inputDate,
-                delivery_id: deliveryId,
-                product_code: productCode
+                incoming_invoice: invoice,
+                supplier_name: supplierName,
+                received_to: receivedTo
             })
             .then((res) => {
                 resetInput()
@@ -127,11 +135,11 @@ function ProductIndex({auth}) {
         }
     }
 
-    let deleteIncomingData = async (productId) => {
+    let deleteIncomingData = async (invoice) => {
         try {
-            await axios.delete(`/incomings/${productId}`)
+            await axios.delete(`/incomings/${invoice}`)
             .then(() => {
-                const updateProductList = incomings.filter((p) => p.id !== productId)
+                const updateProductList = incomings.filter((p) => p.invoice !== invoice)
                 setIncomings(updateProductList)
                 setDeleteProductId(null)
                 setShowDeleteModal(false)
@@ -139,6 +147,31 @@ function ProductIndex({auth}) {
         } catch(e) {
             console.error('Internal Server Error, Please Wait' + e)
         }
+    }
+
+    // Add new field for product
+
+    const addFields = () => {
+        let newFields = { id: '', code: '', quantity: ''}
+
+        setInputField([...inputField, newFields])
+    }
+
+    // handling value changes on form
+
+    const handleFormChange = (index: number, event: ChangeEvent<HTMLInputElement>|ChangeEvent<HTMLSelectElement>) => {
+        let data = [...inputField]
+        let {name, value} = event.target
+        data[index] = {...data[index], [name]: value}
+        setInputField(data)
+    }
+
+    // remove field for product
+
+    const removeField = (index) => {
+        let data = [...inputField]
+        data.splice(index, 1)
+        setInputField(data)
     }
 
     return (
@@ -162,11 +195,11 @@ function ProductIndex({auth}) {
                                         <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
                                     </div>
                                     <form onSubmit={createIncomingData}>
-                                        <div className='my-4'>
+                                        <div className='my-4 overflow-y-scroll scrollbar-hide'>
                                             <div className='flex items-center justify-between gap-3 flex-wrap'>
                                                 <div className='mb-4 w-full'>
-                                                    <InputLabel value="Input Date" className='mb-2' htmlFor="Input Date"/>
-                                                    <TextInput type="date" value={inputDate} onChange={(e) => setInputDate(e.target.value)} className={errorInputDate ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
+                                                    <InputLabel value="Invoice" className='mb-2' htmlFor="Input Date"/>
+                                                    <TextInput value={invoice} onChange={(e) => setInvoice(e.target.value)} className={errorInputDate ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
                                                     {errorInputDate ? (
                                                         <InputError message={errorInputDate}/>
                                                     ) : (
@@ -174,38 +207,45 @@ function ProductIndex({auth}) {
                                                         </>
                                                     )}
                                                 </div>
-                                                <div className='flex justify-between w-full gap-5'>
-                                                    <div className='mb-4 w-full'>
-                                                        <InputLabel value="Plat Nomor" className='mb-2' htmlFor="delivery_id"/>
-                                                        <select id="delivery_id" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setDeliveryId(parseInt(e.target.value))}>
-                                                            <option value="" key="">Select Vehicle</option>
-                                                            {deliveries.map((p) => (
-                                                                <option value={p.id} key={p.id}>{p.vehicle.number_plates}</option>
-                                                            ))}
-                                                        </select>
-                                                        {errorDeliveryId ? (
-                                                            <InputError message={errorDeliveryId}/>
-                                                        ) : (
-                                                            <>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                    <div className='mb-4 w-full'>
-                                                        <InputLabel value="Kode Produk" className='mb-2' htmlFor="productCode"/>
-                                                        <select className='w-full outline-none rounded-lg selection::border-slate-900' id="productCode" onChange={(e) => setProductCode(e.target.value)}>
-                                                            <option value="" key="">Select Product</option>
-                                                            {product.map((p) => (
-                                                                <option value={p.code} key={p.code}>{p.name}</option>
-                                                            ))}
-                                                        </select>
-                                                        {errorProductCode ? (
-                                                            <InputError message={errorProductCode}/>
-                                                        ) : (
-                                                            <>
-                                                            </>
-                                                        )}
-                                                    </div>
+                                                <div className='mb-4 w-full'>
+                                                    <InputLabel value="Supplier Name" className='mb-2' htmlFor="Input Date"/>
+                                                    <TextInput value={supplierName} onChange={(e) => setSupplierName(e.target.value)} className={errorInputDate ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
+                                                    {errorInputDate ? (
+                                                        <InputError message={errorInputDate}/>
+                                                    ) : (
+                                                        <>
+                                                        </>
+                                                    )}
                                                 </div>
+                                                <div className='mb-4 w-full'>
+                                                    <InputLabel value="Received To" className='mb-2' htmlFor="Input Date"/>
+                                                    <TextInput value={receivedTo} onChange={(e) => setReceivedTo(e.target.value)} className={errorInputDate ? "w-full border-pink-700 text-pink-700 focus:border-pink-700 focus:ring-pink-700" : "w-full"} id="nama"/>
+                                                    {errorInputDate ? (
+                                                        <InputError message={errorInputDate}/>
+                                                    ) : (
+                                                        <>
+                                                        </>
+                                                    )}
+                                                </div>
+                                                {inputField.map((input, index) =>
+                                                <>
+                                                    <div className='mb-4 w-full' key={index}>
+                                                        <InputLabel children={`Product ${index + 1}`} htmlFor={`product-${index + 1}`}/>
+                                                        <select name={`code`} id={`product-${index + 1}`} className='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full' onChange={event => handleFormChange(index, event)}>
+                                                            <option value="">Select Product</option>
+                                                            {product.map((p) =>
+                                                                <option value={p.code}>{`${p.name} (${p.code})`}</option>
+                                                            )}
+                                                        </select>
+                                                    </div>
+                                                    <div className='mb-4 w-full'>
+                                                        <InputLabel children={`Quantity ${index + 1}`} htmlFor={`Quantity ${index + 1}`}/>
+                                                        <TextInput className="w-full" id={`Quantity-${index + 1}`} name="quantity" onChange={event => handleFormChange(index, event)}/>
+                                                    </div>
+                                                    <Button children={`-`} color='danger' onClick={() => removeField(index)}/>
+                                                </>
+                                                )}
+                                                <Button children={`+`} color='success' onClick={addFields}/>
                                             </div>
                                         </div>
                                         <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
@@ -234,11 +274,11 @@ function ProductIndex({auth}) {
                                             <tbody>
                                                 {incomings.map((d) => (
                                                 <tr
-                                                className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={d.id}>
+                                                className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={d.invoice}>
                                                     <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">{d.input_date.slice(0, 10)}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{d.delivery[0].vehicle.number_plates}</td>
-                                                    <td className="whitespace-nowrap px-6 py-4">{d.product[0].code}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{d.number_plates}</td>
+                                                    <td className="whitespace-nowrap px-6 py-4">{d.code}</td>
                                                     <td className="whitespace-nowrap px-6 py-4">
                                                         <div className='flex gap-3'>
                                                             <Button color="warning" onClick={() => handleEditModal(d.id)}>Edit</Button>
@@ -274,9 +314,9 @@ function ProductIndex({auth}) {
                                                                                                 delivery_id: parseInt(e.target.value)
                                                                                             }))}>
                                                                                                 <option value="" key="">Select Vehicle</option>
-                                                                                                {deliveries.map((p) => (
+                                                                                                {/* {vehicles.map((p) => (
                                                                                                     <option value={p.id} key={p.id} selected={editIncomingData.delivery_id === p.id}>{p.vehicle.number_plates}</option>
-                                                                                                ))}
+                                                                                                ))} */}
                                                                                             </select>
                                                                                             {errorDeliveryId ? (
                                                                                                 <InputError message={errorDeliveryId}/>

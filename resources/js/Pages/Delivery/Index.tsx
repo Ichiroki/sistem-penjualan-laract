@@ -67,11 +67,6 @@ function DeliveryIndex({auth}) {
         quantity: '',
     }])
 
-    // const [errorVehicleId, setErrorVehicleId] = useState('')
-    // const [errorProductCode, setErrorProductCode] = useState('')
-    // const [errorTargetDelivery, setErrorTargetDelivery] = useState('')
-    // const [errorActualDelivery, setErrorActualDelivery] = useState('')
-
     const [showEditModal, setShowEditModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [showDetailModal, setShowDetailModal] = useState(false)
@@ -89,10 +84,11 @@ function DeliveryIndex({auth}) {
         setBatchNumber('')
     }
 
-    const handleEditModal = (pengirimanId) => {
-        const selectedPengiriman: any = deliveries.find((p) => p.id === pengirimanId)
-        setEditPengirimanData(selectedPengiriman)
-        setShowEditModal(!showEditModal)
+    const handleEditModal = (invoice) => {
+        const selectedPengiriman: any = deliveries.find((p) => p.delivery_invoice === invoice)
+        console.log(selectedPengiriman)
+        // setEditPengirimanData(selectedPengiriman)
+        // setShowEditModal(!showEditModal)
     }
 
     const handleDeleteModal = (pengirimanId) => {
@@ -101,11 +97,11 @@ function DeliveryIndex({auth}) {
     }
 
     const [editPengirimanData, setEditPengirimanData] = useState({
-        id: 0,
-        vehicle_id: '',
-        product_code: '',
-        target_delivery: '',
-        actual_delivery: ''
+        invoice: '',
+        delivery_name: '',
+        customer_name: '',
+        customer_address: '',
+        batch_number: ''
     })
 
     let createPengirimanData = async (e) => {
@@ -129,11 +125,6 @@ function DeliveryIndex({auth}) {
                 if(e.response) {
                     console.log(e.response)
                     const getError = e.response.data.errors
-
-                    // setErrorVehicleId(getError.vehicle_id[0])
-                    // setErrorProductCode(getError.product_code[0])
-                    // setErrorTargetDelivery(getError.target_delivery[0])
-                    // setErrorActualDelivery(getError.actual_delivery[0])
                 }
             })
         } catch(e) {
@@ -158,10 +149,11 @@ function DeliveryIndex({auth}) {
     let editPengirimanIdData = async (deliveryId) => {
         try {
             await axios.put(`/deliveries/${deliveryId}`, {
-                vehicle_id : editPengirimanData.vehicle_id,
-                product_code : editPengirimanData.product_code,
-                target_delivery : editPengirimanData.target_delivery,
-                actual_delivery : editPengirimanData.actual_delivery
+                delivery_invoice : editPengirimanData.invoice,
+                delivery_name : editPengirimanData.delivery_name,
+                customer_name : editPengirimanData.customer_name,
+                customer_address : editPengirimanData.customer_address,
+                batch_number: editPengirimanData.batch_number
             })
             .then(() => {
                 getDeliveriesData()
@@ -192,11 +184,15 @@ function DeliveryIndex({auth}) {
         }
     }
 
+    // Add new field for product
+
     const addFields = () => {
         let newFields = { id:'', code: '', quantity: '' }
 
         setProductField([...productField, newFields])
     }
+
+    // handling value changes on form
 
     const handleFormChange = (index: number, event: ChangeEvent<HTMLInputElement>|ChangeEvent<HTMLSelectElement>) => {
         let data = [...productField]
@@ -205,13 +201,13 @@ function DeliveryIndex({auth}) {
         setProductField(data)
     }
 
+    // remove field for product
+
     const removeField = (index) => {
         let data = [...productField]
         data.splice(index, 1)
         setProductField(data)
     }
-
-    console.log(detailPengirimanId)
 
     return (
             <AuthenticatedLayout
@@ -392,7 +388,7 @@ function DeliveryIndex({auth}) {
                                                                                     <p>:</p>
                                                                                     <p className="w-6/12">{` ${detailPengirimanId?.delivery.time_delivery}`}</p>
                                                                                 </div>
-                                                                                <table className="mt-5 overflow-scroll w-[25rem] lg:w-full">
+                                                                                <table className="mt-5 overflow-scroll w-full">
                                                                                     <thead>
                                                                                         <tr className='border'>
                                                                                             <td className="p-2">No</td>
@@ -406,7 +402,7 @@ function DeliveryIndex({auth}) {
                                                                                         <tr className={i % 2 === 1 ? 'border' : 'border bg-gray-200'}>
                                                                                             <td className="p-2">{i + 1}</td>
                                                                                             <td className="p-2">{d.product_code}</td>
-                                                                                            <td className="p-2">{d.name}</td>
+                                                                                            <td className="p-2">{d.product_name}</td>
                                                                                             <td className="p-2">{d.quantity}</td>
                                                                                         </tr>
                                                                                     ))}
@@ -416,8 +412,8 @@ function DeliveryIndex({auth}) {
                                                                         </div>
                                                                     </Modal>
                                                                 )}
-                                                                <Button color="warning" onClick={() => handleEditModal(p.id)}>Edit</Button>
-                                                                {editPengirimanData && editPengirimanData.id === p.id && (
+                                                                <Button color="warning" onClick={() => handleEditModal(p.delivery_invoice)}>Edit</Button>
+                                                                {/* {editPengirimanData && editPengirimanData.invoice === p.delivery_invoice && (
                                                                     <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
                                                                         <div className='p-5'>
                                                                             <div className='flex justify-between pb-4 border-b'>
@@ -488,7 +484,7 @@ function DeliveryIndex({auth}) {
                                                                             </div>
                                                                         </div>
                                                                     </Modal>
-                                                                )}
+                                                                )} */}
                                                                 <Button color="danger" onClick={() => handleDeleteModal(p.id)}>Delete</Button>
                                                                 {deletePengirimanId && deletePengirimanId === p.id && (
                                                                     <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateIncomingRequest;
 use App\Models\Incoming;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class IncomingController extends Controller
 {
@@ -18,12 +19,13 @@ class IncomingController extends Controller
         $search = $request->query('search');
 
         if($search) {
-            $incoming = Incoming::with(['delivery', 'product'])
-            ->where('number_plates', 'like' , '%'.$search.'%')
-            ->orWhere('product_code', 'like', '%'.$search.'%')
+            $incoming = DB::table('master_incoming')
+            ->where('incoming_invoice', 'like', "$search")
+            ->where('supplier_name', 'like', "$search")
+            ->where('received_to', 'like', "$search")
             ->get();
         } else {
-            $incoming = Incoming::with(['delivery', 'delivery.vehicle', 'product'])->get();
+            $incoming = DB::table('master_incoming')->get();
         }
 
         return response()->json($incoming);
