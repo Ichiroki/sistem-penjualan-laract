@@ -1,11 +1,6 @@
 <?php
 
-use App\Http\Controllers\DeliveriesController;
-use App\Http\Controllers\IncomingController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\VehicleController;
-use App\Http\Controllers\ViewController;
+use App\Http\Controllers\{DeliveriesController, IncomingController, ProductController, ProfileController, RetursController, VehicleController, ViewController};
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ViewController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
@@ -13,6 +8,7 @@ Route::get('/', [ViewController::class, 'dashboard'])->middleware(['auth', 'veri
 Route::get('products/{code}', [ProductController::class, 'showByCode']);
 Route::get('deliveries/{invoice}', [DeliveriesController::class, 'show']);
 Route::get('incoming/{invoice}', [IncomingController::class, 'show']);
+Route::get('returs/{invoice}', [RetursController::class, 'show']);
 
 Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
     Route::get('product', [ViewController::class, 'product'])->name('product');
@@ -24,6 +20,7 @@ Route::prefix('/')->middleware(['auth', 'verified'])->group(function() {
     Route::apiResource('products', ProductController::class);
     Route::apiResource('vehicles', VehicleController::class);
     Route::apiResource('deliveries', DeliveriesController::class);
+    Route::apiResource('returs', RetursController::class);
     Route::apiResource('incomings', IncomingController::class);
 });
 

@@ -164,6 +164,12 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         </ResponsiveNavLink>
                     </div>
 
+                    <div className="pt-2 pb-3 space-y-1 border-t">
+                        <ResponsiveNavLink href={route('retur')} active={route().current('retur')}>
+                            Retur
+                        </ResponsiveNavLink>
+                    </div>
+
                     <div className="pt-4 pb-1 border-t border-gray-200">
                         <div className="px-4">
                             <div className="font-medium text-base text-gray-800">

@@ -19,7 +19,6 @@ return new class extends Migration
             $table->time('time_incoming');
             $table->string('received_to');
             $table->string('number_plate');
-            $table->float('subtotal');
             $table->timestamps();
         });
     }

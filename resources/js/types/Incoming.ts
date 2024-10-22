@@ -5,6 +5,6 @@ export interface Incoming {
     incoming_invoice: string
     supplier_name: string
     received_to: string
-    number_plates: string
+    number_plate: string
     product: [Product]
 }

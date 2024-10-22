@@ -1,5 +1,6 @@
 import { Delivery } from '@/API/Delivery'
 import { Product } from '@/API/Product'
+import { Retur } from '@/API/Retur'
 import { Vehicles } from '@/API/Vehicle'
 import Button from '@/Components/Button'
 import InputLabel from '@/Components/InputLabel'
@@ -16,33 +17,29 @@ interface Product {
     quantity?: number
 }
 
-interface DeliveryDetail {
-    delivery: {
-        delivery_invoice: string,
-        delivery_name: string,
-        customer_name: string,
-        customer_address: string,
-        date_delivery: Date | undefined,
-        time_delivery: Date,
+interface ReturType {
+    retur: {
+        retur_invoice: string,
+        retur_name: string,
+        customer_name: string
+        customer_address: string
+        batch_number: string,
+        date_retur: Date | undefined,
+        time_retur: Date,
     }
-    delivery_invoice: string
-    delivery_name: string
-    customer_name: string
-    customer_address: string
     details: [] | any
 }
 
 function ReturIndex({auth}) {
     let i = 1
-    let j = 1
 
     const {
-        deliveries,
-        setDeliveries,
+        returs,
+        setReturs,
         search,
         setSearch,
-        getDeliveriesData
-    } = Delivery()
+        getRetursData
+    } = Retur()
 
     const {
         product,
@@ -55,74 +52,63 @@ function ReturIndex({auth}) {
     const [showCreateModal, setShowCreateModal] = useState(false)
 
     const [invoice, setInvoice] = useState('')
-    const [namaPengirim, setNamaPengirim] = useState('')
+    const [namaRetur, setNamaRetur] = useState('')
     const [namaKustomer, setNamaKustomer] = useState('')
     const [alamatKustomer, setAlamatKustomer] = useState('')
     const [platNomor, setPlatNomor] = useState('')
     const [batchNumber, setBatchNumber] = useState('')
 
-    const [productField, setProductField] = useState([{
-        id:'',
-        code: '',
-        quantity: '',
-    }])
-
-    // const [errorVehicleId, setErrorVehicleId] = useState('')
-    // const [errorProductCode, setErrorProductCode] = useState('')
-    // const [errorTargetDelivery, setErrorTargetDelivery] = useState('')
-    // const [errorActualDelivery, setErrorActualDelivery] = useState('')
-
     const [showEditModal, setShowEditModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [showDetailModal, setShowDetailModal] = useState(false)
 
-    const [deletePengirimanId, setDeletePengirimanId] = useState(null)
+    const [deleteReturId, setDeleteReturId] = useState(null)
 
-    const [detailPengirimanId, setDetailPengirimanId] = useState<DeliveryDetail | null>(null)
+    const [detailReturId, setDetailReturId] = useState<ReturType | null>(null)
 
     const resetInput = () => {
         setInvoice('')
-        setNamaPengirim('')
+        setNamaRetur('')
         setNamaKustomer('')
         setAlamatKustomer('')
         setPlatNomor('')
         setBatchNumber('')
     }
 
-    const handleEditModal = (pengirimanId) => {
-        const selectedPengiriman: any = deliveries.find((p) => p.id === pengirimanId)
-        setEditPengirimanData(selectedPengiriman)
+    const handleEditModal = (invoice) => {
+        const selectedRetur: any = returs.find((r) => r.retur_invoice === invoice)
+        setEditReturData(selectedRetur)
         setShowEditModal(!showEditModal)
     }
 
-    const handleDeleteModal = (pengirimanId) => {
-        setDeletePengirimanId(pengirimanId)
+    const handleDeleteModal = (returId) => {
+        setDeleteReturId(returId)
         setShowDeleteModal(!showDeleteModal)
     }
 
-    const [editPengirimanData, setEditPengirimanData] = useState({
-        id: 0,
-        vehicle_id: '',
-        product_code: '',
-        target_delivery: '',
-        actual_delivery: ''
+    const [editReturData, setEditReturData] = useState({
+        invoice: '',
+        retur_name: '',
+        customer_name: '',
+        customer_address: '',
+        batch_number: '',
     })
 
-    let createPengirimanData = async (e) => {
+    let createReturData = async (e) => {
         e.preventDefault()
         try {
-            await axios.post('/deliveries',
+            await axios.post('/returs',
             {
-                delivery_invoice: invoice,
-                delivery_name: namaPengirim,
+                retur_invoice: invoice,
+                retur_name: namaRetur,
                 customer_name: namaKustomer,
                 customer_address: alamatKustomer,
-                number_plates: platNomor,
+                number_plate: platNomor,
                 batch_number: batchNumber,
                 products: productField,
             }).then((res) =>{
                 console.log(res)
-                getDeliveriesData()
+                getRetursData()
                 resetInput()
                 setShowCreateModal(false)
             }).catch((e) => {
@@ -143,48 +129,46 @@ function ReturIndex({auth}) {
 
     let detailPengirimanData = async (invoice) => {
         try {
-            await axios.get(`/deliveries/${invoice}`)
+            await axios.get(`/returs/${invoice}`)
             .then((res) => {
-                setDetailPengirimanId(res.data)
+                setDetailReturId(res.data)
                 setShowDetailModal(true)
-
-                console.log(detailPengirimanId)
             })
         } catch(e) {
             console.log(e)
         }
     }
 
-    let editPengirimanIdData = async (deliveryId) => {
-        try {
-            await axios.put(`/deliveries/${deliveryId}`, {
-                vehicle_id : editPengirimanData.vehicle_id,
-                product_code : editPengirimanData.product_code,
-                target_delivery : editPengirimanData.target_delivery,
-                actual_delivery : editPengirimanData.actual_delivery
-            })
-            .then(() => {
-                getDeliveriesData()
-                resetInput()
-                setShowEditModal(false)
-            })
-            .catch((e) => {
-                console.error(e)
-            })
-        } catch(e) {
-            if(e){
-                console.log(e)
-            }
-        }
-    }
+    // let editPengirimanIdData = async (deliveryId) => {
+    //     try {
+    //         await axios.put(`/deliveries/${deliveryId}`, {
+    //             vehicle_id : editReturData.inv,
+    //             product_code : editReturData.product_code,
+    //             target_delivery : editReturData.target_delivery,
+    //             actual_delivery : editReturData.actual_delivery
+    //         })
+    //         .then(() => {
+    //             getRetursData()
+    //             resetInput()
+    //             setShowEditModal(false)
+    //         })
+    //         .catch((e) => {
+    //             console.error(e)
+    //         })
+    //     } catch(e) {
+    //         if(e){
+    //             console.log(e)
+    //         }
+    //     }
+    // }
 
-    let deletePengirimanData = async (pengirimanId) => {
+    let deletePengirimanData = async (invoice) => {
         try {
-            await axios.delete(`/deliveries/${deletePengirimanId}`)
+            await axios.delete(`/returs/${invoice}`)
             .then(() => {
-                const updatePengirimanList = deliveries.filter((p) => p.id !== pengirimanId)
-                setDeliveries(updatePengirimanList)
-                setDeletePengirimanId(null)
+                const updatePengirimanList = returs.filter((r) => r.retur_invoice !== invoice)
+                setReturs(updatePengirimanList)
+                setDeleteReturId(null)
                 setShowDeleteModal(false)
             })
         } catch(e) {
@@ -192,11 +176,23 @@ function ReturIndex({auth}) {
         }
     }
 
+    // State for add form input
+
+    const [productField, setProductField] = useState([{
+        code: '',
+        name: '',
+        quantity: '',
+    }])
+
+    // Function to add input
+
     const addFields = () => {
-        let newFields = { id:'', code: '', quantity: '' }
+        let newFields = { code:'', name: '', quantity: '' }
 
         setProductField([...productField, newFields])
     }
+
+    // Function for handle change for input value
 
     const handleFormChange = (index: number, event: ChangeEvent<HTMLInputElement>|ChangeEvent<HTMLSelectElement>) => {
         let data = [...productField]
@@ -205,18 +201,18 @@ function ReturIndex({auth}) {
         setProductField(data)
     }
 
+    // Function to remove one input
+
     const removeField = (index) => {
         let data = [...productField]
         data.splice(index, 1)
         setProductField(data)
     }
 
-    console.log(detailPengirimanId)
-
     return (
             <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Deliveries</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Retur</h2>}
             >
             <Head title="Dashboard" />
 
@@ -233,20 +229,20 @@ function ReturIndex({auth}) {
                                 }}>
                                     <div className='p-5'>
                                         <div className='flex justify-between pb-4 border-b'>
-                                            <h1 className='text-medium text-xl'>Create Pengiriman</h1>
+                                            <h1 className='text-medium text-xl'>Create Retur</h1>
                                             <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
                                         </div>
-                                        <form onSubmit={createPengirimanData}>
+                                        <form onSubmit={createReturData}>
                                             <div className='my-4 overflow-y-scroll scrollbar-hide h-96'>
                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
                                                     <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
                                                         <div className='mb-4 w-full'>
-                                                            <InputLabel value="Delivery Invoice" className='mb-2' htmlFor="delivery_invoice"/>
-                                                            <TextInput id="delivery_invoice" className='w-full' onChange={(e) => setInvoice(e.target.value)}/>
+                                                            <InputLabel value="Retur Invoice" className='mb-2' htmlFor="retur_invoice"/>
+                                                            <TextInput id="retur_invoice" className='w-full' onChange={(e) => setInvoice(e.target.value)}/>
                                                         </div>
                                                         <div className='mb-4 w-full'>
-                                                            <InputLabel value="Delivery Name" className='mb-2' htmlFor="delivery_name"/>
-                                                            <TextInput id="delivery_name" className='w-full' onChange={(e) => setNamaPengirim(e.target.value)}/>
+                                                            <InputLabel value="Retur Name" className='mb-2' htmlFor="retur_name"/>
+                                                            <TextInput id="retur_name" className='w-full' onChange={(e) => setNamaRetur(e.target.value)}/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -334,77 +330,85 @@ function ReturIndex({auth}) {
                                                 <thead className="border-b font-medium dark:border-neutral-500">
                                                     <tr>
                                                     <th scope="col" className="px-6 py-4">#</th>
-                                                    <th scope="col" className="px-6 py-4">Delivery Invoice</th>
-                                                    <th scope="col" className="px-6 py-4">Number Plates</th>
-                                                    <th scope="col" className="px-6 py-4">Delivery Date</th>
+                                                    <th scope="col" className="px-6 py-4">Retur Invoice</th>
+                                                    <th scope="col" className="px-6 py-4">Retur Name</th>
+                                                    <th scope="col" className="px-6 py-4">Customer Name</th>
+                                                    <th scope="col" className="px-6 py-4">Customer Address</th>
+                                                    <th scope="col" className="px-6 py-4">Batch Number</th>
+                                                    <th scope="col" className="px-6 py-4">Retur Date</th>
                                                     <th scope="col" className="px-6 py-4">Aksi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                {deliveries && deliveries.map((p) => (
+                                                {returs && returs.map((r) => (
                                                     <tr
-                                                    className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={p.id}>
+                                                    className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600" key={r.retur_invoice}>
                                                         <td className="whitespace-nowrap px-6 py-4 font-medium">{i++}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.delivery_invoice}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{p.number_plates}</td>
-                                                        <td className="whitespace-nowrap px-6 py-4">{`${p.date_delivery}` + ` ${p.time_delivery}`}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{r.retur_invoice}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{r.retur_name}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{r.customer_name}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{r.customer_address}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{r.batch_number}</td>
+                                                        <td className="whitespace-nowrap px-6 py-4">{`${r.date_retur}` + ` ${r.time_retur}`}</td>
                                                         <td className="whitespace-nowrap px-6 py-4 text-center">
                                                             <div className='flex gap-3'>
-                                                                <Button color="primary" onClick={() => detailPengirimanData(p.delivery_invoice)}>Detail</Button>
-                                                                {detailPengirimanId && (
+                                                                <Button color="primary" onClick={() => detailPengirimanData(r.retur_invoice)}>Detail</Button>
+                                                                {detailReturId && (
                                                                     <Modal show={showDetailModal} onClose={() => {
                                                                         resetInput();
                                                                         setShowDetailModal(false)
                                                                     }}>
                                                                         <div className='p-5'>
                                                                             <div className='flex justify-between pb-4 border-b'>
-                                                                                <h1 className='text-medium text-xl w-6/12 lg:w-full'>Detail Pengiriman</h1>
+                                                                                <h1 className='text-medium text-xl w-6/12 lg:w-full'>Detail Retur</h1>
                                                                                 <button onClick={() => setShowDetailModal(!showDetailModal)}>X</button>
                                                                             </div>
                                                                             <div className='my-4 flex flex-col'>
                                                                                 <div className='flex gap-3'>
                                                                                     <h1 className="w-6/12">Invoice</h1>
                                                                                     <p>:</p>
-                                                                                    <p className="w-6/12">{detailPengirimanId?.delivery.delivery_invoice}</p>
+                                                                                    <p className="w-6/12">{detailReturId?.retur.retur_invoice}</p>
                                                                                 </div>
                                                                                 <div className='flex gap-3'>
-                                                                                    <h1 className="w-6/12">Delivery Name</h1>
+                                                                                    <h1 className="w-6/12">Retur Name</h1>
                                                                                     <p>:</p>
-                                                                                    <p className="w-6/12">{detailPengirimanId?.delivery.delivery_name}</p>
+                                                                                    <p className="w-6/12">{detailReturId?.retur.retur_name}</p>
                                                                                 </div>
                                                                                 <div className='flex gap-3'>
                                                                                     <h1 className="w-6/12">Customer Name</h1>
                                                                                     <p>:</p>
-                                                                                    <p className="w-6/12">{detailPengirimanId?.delivery.customer_name}</p>
+                                                                                    <p className="w-6/12">{detailReturId?.retur.customer_name}</p>
                                                                                 </div>
                                                                                 <div className='flex gap-3'>
                                                                                     <h1 className="w-6/12">Address</h1>
                                                                                     <p>:</p>
-                                                                                    <p className="w-6/12">{detailPengirimanId?.delivery.customer_address}</p>
+                                                                                    <p className="w-6/12">{detailReturId?.retur.customer_address}</p>
                                                                                 </div>
                                                                                 <div className='flex gap-3'>
-                                                                                    <h1 className="w-6/12">Date Delivery</h1>
+                                                                                    <h1 className="w-6/12">Date Retur</h1>
                                                                                     <p>:</p>
-                                                                                    <p className="w-6/12">{`${detailPengirimanId?.delivery.date_delivery}`}</p>
+                                                                                    <p className="w-6/12">{`${detailReturId?.retur.date_retur}`}</p>
                                                                                 </div>
                                                                                 <div className='flex gap-3'>
-                                                                                    <h1 className="w-6/12">Time Delivery</h1>
+                                                                                    <h1 className="w-6/12">Time Retur</h1>
                                                                                     <p>:</p>
-                                                                                    <p className="w-6/12">{` ${detailPengirimanId?.delivery.time_delivery}`}</p>
+                                                                                    <p className="w-6/12">{` ${detailReturId?.retur.time_retur}`}</p>
                                                                                 </div>
                                                                                 <table className="mt-5">
                                                                                     <thead>
                                                                                         <tr className='border'>
                                                                                             <td className="p-2">No</td>
                                                                                             <td className="p-2">Product Code</td>
+                                                                                            <td className="p-2">Product Name</td>
                                                                                             <td className="p-2">Quantity</td>
                                                                                         </tr>
                                                                                     </thead>
                                                                                     <tbody>
-                                                                                    {detailPengirimanId.details.map((d, i) => (
+                                                                                    {detailReturId.details.map((d, i) => (
                                                                                         <tr className={i % 2 === 1 ? 'border' : 'border bg-gray-200'}>
                                                                                             <td className="p-2">{i + 1}</td>
                                                                                             <td className="p-2">{d.product_code}</td>
+                                                                                            <td className="p-2">{d.product_name}</td>
                                                                                             <td className="p-2">{d.quantity}</td>
                                                                                         </tr>
                                                                                     ))}
@@ -414,8 +418,8 @@ function ReturIndex({auth}) {
                                                                         </div>
                                                                     </Modal>
                                                                 )}
-                                                                <Button color="warning" onClick={() => handleEditModal(p.id)}>Edit</Button>
-                                                                {editPengirimanData && editPengirimanData.id === p.id && (
+                                                                {/* <Button color="warning" onClick={() => handleEditModal(r.retur_invoice)}>Edit</Button> */}
+                                                                {editReturData && editReturData.invoice === r.retur_invoice && (
                                                                     <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
                                                                         <div className='p-5'>
                                                                             <div className='flex justify-between pb-4 border-b'>
@@ -487,8 +491,8 @@ function ReturIndex({auth}) {
                                                                         </div>
                                                                     </Modal>
                                                                 )}
-                                                                <Button color="danger" onClick={() => handleDeleteModal(p.id)}>Delete</Button>
-                                                                {deletePengirimanId && deletePengirimanId === p.id && (
+                                                                <Button color="danger" onClick={() => handleDeleteModal(r.retur_invoice)}>Delete</Button>
+                                                                {deleteReturId && deleteReturId === r.retur_invoice && (
                                                                     <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
                                                                         <div className='p-5'>
                                                                             <div className='flex justify-between pb-4 border-b'>
@@ -500,7 +504,7 @@ function ReturIndex({auth}) {
                                                                             </div>
                                                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                                 <Button color="light" type="button" onClick={() => setShowDeleteModal(!showDeleteModal)}>Close</Button>
-                                                                                <Button color="danger" onClick={() => deletePengirimanData(p.id)}>Delete</Button>
+                                                                                <Button color="danger" onClick={() => deletePengirimanData(r.retur_invoice)}>Delete</Button>
                                                                             </div>
                                                                         </div>
                                                                     </Modal>

@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('product_code');
             $table->string('product_name');
             $table->integer('quantity');
-            $table->decimal('price_per_unit');
-            $table->float('subtotal');
             $table->string('incoming_invoice');
             $table->timestamps();
 

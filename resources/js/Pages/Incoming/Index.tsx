@@ -5,8 +5,10 @@ import Button from '@/Components/Button'
 import InputError from '@/Components/InputError'
 import InputLabel from '@/Components/InputLabel'
 import Modal from '@/Components/Modal'
+import SignatureInput from '@/Components/SignatureInput'
 import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import formatRupiah from '@/utils/formatRupiah'
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
 import { ChangeEvent, useState } from 'react'
@@ -17,6 +19,7 @@ interface IncomingDetail {
         supplier_name: string,
         received_to: string,
         number_plate: string,
+        subtotal: number,
         date_incoming: Date | undefined,
         time_incoming: Date,
     }
@@ -26,6 +29,7 @@ interface IncomingDetail {
 function ProductIndex({auth}) {
 
     let i = 1
+    let total = 0
 
     const {
         incomings,
@@ -47,6 +51,19 @@ function ProductIndex({auth}) {
     const [supplierName, setSupplierName] = useState('')
     const [receivedTo, setReceivedTo] = useState('')
     const [numberPlate, setNumberPlate] = useState('')
+
+    // signature
+    const [signature, setSignature] = useState(null)
+
+    // save signature
+    const handleSaveSignature = (data) => {
+        setSignature(data)
+    }
+
+    // clear signature
+    const handleClearSignature = () => {
+        setSignature(null)
+    }
 
     const resetInput = () => {
         setInvoice('')
@@ -121,6 +138,7 @@ function ProductIndex({auth}) {
         try {
             await axios.get(`/incoming/${invoice}`)
             .then((res) => {
+                console.log(res.data)
                 setDetailIncomingId(res.data)
                 setShowDetailModal(true)
 
@@ -176,13 +194,12 @@ function ProductIndex({auth}) {
         id:'',
         code: '',
         quantity: '',
-        price: '',
     }])
 
     // Add new field for product
 
     const addFields = () => {
-        let newFields = { id: '', code: '', quantity: '', price: ''}
+        let newFields = { id: '', code: '', quantity: ''}
 
         setProductField([...productField, newFields])
     }
@@ -258,6 +275,20 @@ function ProductIndex({auth}) {
                                                     </div>
                                                 </div>
                                                 <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                        <div className='mb-4 w-full'>
+                                                            {/* <SignatureInput onSave={handleSaveSignature} onClear={handleClearSignature}/> */}
+                                                            {/* {signature && (
+                                                                <div>
+                                                                    <h2>Saved Signature</h2>
+                                                                    <img src={signature} alt="Signature" className="border w-full h-40 rounded-md" />
+                                                                </div>
+                                                            )} */}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
                                                 {productField.map((input, index) =>
                                                 <>
                                                     <div className='mb-4 w-full' key={index}>
@@ -272,10 +303,6 @@ function ProductIndex({auth}) {
                                                     <div className='mb-4 w-full'>
                                                         <InputLabel children={`Quantity ${index + 1}`} htmlFor={`Quantity ${index + 1}`}/>
                                                         <TextInput className="w-full" id={`Quantity-${index + 1}`} name="quantity" onChange={event => handleFormChange(index, event)}/>
-                                                    </div>
-                                                    <div className='mb-4 w-full'>
-                                                        <InputLabel children={`Price ${index + 1}`} htmlFor={`Price ${index + 1}`}/>
-                                                        <TextInput className="w-full" id={`Price-${index + 1}`} name="price" onChange={event => handleFormChange(index, event)}/>
                                                     </div>
                                                     <Button children={`-`} color='danger' onClick={() => removeField(index)}/>
                                                 </>
@@ -374,12 +401,15 @@ function ProductIndex({auth}) {
                                                                                     </thead>
                                                                                     <tbody>
                                                                                     {detailIncomingId.details.map((d, i) => (
-                                                                                        <tr className={i % 2 === 1 ? 'border' : 'border bg-gray-200'}>
-                                                                                            <td className="p-2">{i + 1}</td>
-                                                                                            <td className="p-2">{d.product_code}</td>
-                                                                                            <td className="p-2">{d.product_name}</td>
-                                                                                            <td className="p-2">{d.quantity}</td>
-                                                                                        </tr>
+                                                                                        <>
+                                                                                            <tr className={i % 2 === 1 ? 'border' : 'border bg-gray-200'}>
+                                                                                                <td className="p-2">{i + 1}</td>
+                                                                                                <td className="p-2">{d.product_code}</td>
+                                                                                                <td className="p-2">{d.product_name}</td>
+                                                                                                <td className="p-2">{d.quantity}</td>
+                                                                                            </tr>
+
+                                                                                        </>
                                                                                     ))}
                                                                                     </tbody>
                                                                                 </table>
@@ -415,46 +445,16 @@ function ProductIndex({auth}) {
 
                                                                                         <div className='mb-4 w-full'>
                                                                                             <InputLabel value="Plat Nomor" className='mb-2' htmlFor="delivery_id"/>
-                                                                                            <select id="delivery_id" className='w-full outline-none rounded-lg selection::border-slate-900' onChange={(e) => setEditIncomingData((prevData) => ({
-                                                                                                ...prevData,
-                                                                                                delivery_id: parseInt(e.target.value)
-                                                                                            }))}>
-                                                                                                <option value="" key="">Select Vehicle</option>
-                                                                                                {/* {vehicles.map((p) => (
-                                                                                                    <option value={p.id} key={p.id} selected={editIncomingData.delivery_id === p.id}>{p.vehicle.number_plates}</option>
-                                                                                                ))} */}
-                                                                                            </select>
-                                                                                            {errorDeliveryId ? (
-                                                                                                <InputError message={errorDeliveryId}/>
-                                                                                            ) : (
-                                                                                                <>
-                                                                                                </>
-                                                                                            )}
                                                                                         </div>
                                                                                         <div className='mb-4 w-full'>
                                                                                             <InputLabel value="Kode Produk" className='mb-2' htmlFor="productCode"/>
-                                                                                            <select className='w-full outline-none rounded-lg selection::border-slate-900' id="productCode" onChange={(e) => setEditIncomingData((prevData) => ({
-                                                                                                ...prevData,
-                                                                                                product_code: e.target.value
-                                                                                            }))}>
-                                                                                                <option value="" key="">Select Product</option>
-                                                                                                {product.map((p) => (
-                                                                                                    <option value={p.code} key={p.code} selected={editIncomingData.product_code === p.code}>{p.name}</option>
-                                                                                                ))}
-                                                                                            </select>
-                                                                                            {errorProductCode ? (
-                                                                                                <InputError message={errorProductCode}/>
-                                                                                            ) : (
-                                                                                                <>
-                                                                                                </>
-                                                                                            )}
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                                 <Button color="light" type="button" onClick={() => setShowEditModal(!showEditModal)}>Close</Button>
-                                                                                <Button color="success" type="button" onClick={() => editIncomingIdData(d.id)}>Submit</Button>
+                                                                                <Button color="success" type="button" onClick={() => editIncomingIdData(d.incoming_invoice)}>Submit</Button>
                                                                             </div>
                                                                         </form>
                                                                         </div>

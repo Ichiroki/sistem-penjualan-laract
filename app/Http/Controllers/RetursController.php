@@ -2,39 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreIncomingRequest;
-use App\Http\Requests\UpdateIncomingRequest;
-use App\Models\Incoming;
-use App\Models\Product;
+use App\Http\Requests\StoreReturRequest;
+use App\Models\Retur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class IncomingController extends Controller
+class RetursController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $search = $request->query('search');
+        $search = $request->input('search');
 
         if($search) {
-            $incoming = Incoming::where('incoming_invoice', 'like', "$search")
-            ->orWhere('number_plate', 'like', "$search")
-            ->orWhere('supplier_name', 'like', "$search")
-            ->orWhere('received_to', 'like', "$search")
+            $retur = DB::table('master_retur')
+            ->where('retur_invoice', "$search")
+            ->orWhere('retur_name', "$search")
+            ->orWhere('customer_name', "$search")
+            ->orWhere('customer_address', "$search")
             ->get();
         } else {
-            $incoming = Incoming::get();
+            $retur = DB::table('master_retur')->get();
         }
 
-        return response()->json($incoming);
+        return response()->json($retur);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreIncomingRequest $request)
+    public function store(StoreReturRequest $request)
     {
         DB::beginTransaction();
 
@@ -42,14 +41,16 @@ class IncomingController extends Controller
         $time = date('H:i:s');
 
         try {
-            // Buat master incoming tanpa subtotal
-            $incoming = Incoming::create([
-                'incoming_invoice' => $request->incoming_invoice,
-                'supplier_name' => $request->supplier_name,
-                'received_to' => $request->received_to,
+            // Buat master retur tanpa subtotal
+            $retur = Retur::create([
+                'retur_invoice' => $request->retur_invoice,
+                'retur_name' => $request->retur_name,
+                'customer_name' => $request->customer_name,
+                'customer_address' => $request->customer_address,
                 'number_plate' => $request->number_plate,
-                'date_incoming' => $now,
-                'time_incoming' => $time,
+                'date_retur' => $now,
+                'time_retur' => $time,
+                'batch_number' => $request->batch_number
             ]);
 
             // Loop untuk insert detail produk dan hitung subtotal
@@ -59,8 +60,8 @@ class IncomingController extends Controller
                     ->where('code', $product['code'])
                     ->first();
 
-                DB::table('detail_incoming')->insert([
-                    'incoming_invoice' => $incoming->incoming_invoice,
+                DB::table('detail_retur')->insert([
+                    'retur_invoice' => $retur->retur_invoice,
                     'product_code' => $product['code'],
                     'product_name' => $realProduct->name,
                     'quantity' => $product['quantity'],
@@ -77,7 +78,7 @@ class IncomingController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'error' => 'Failed to create incoming',
+                'error' => 'Failed to create retur',
                 'details' => $e->getMessage()
             ], 500);
         }
@@ -88,36 +89,37 @@ class IncomingController extends Controller
      */
     public function show($invoice)
     {
-        $incoming = DB::table('master_incoming')
-        ->where('incoming_invoice', "$invoice")
+        $retur = DB::table('master_retur')
+        ->where('retur_invoice', "$invoice")
         ->first();
 
-        $details = DB::table('master_incoming')
-        ->where('master_incoming.incoming_invoice', "$invoice")
-        ->leftJoin('detail_incoming', 'master_incoming.incoming_invoice', '=' , 'detail_incoming.incoming_invoice')
+        $details = DB::table('master_retur')
+        ->where('master_retur.retur_invoice', "$invoice")
+        ->leftJoin('detail_retur', 'master_retur.retur_invoice', '=' , 'detail_retur.retur_invoice')
         // ->leftJoin('products', 'detail_delivery.product_code', '=', 'products.code')
         ->get();
 
-        if (!$incoming) {
+        if (!$retur) {
             return response()->json(['error' => 'Delivery not found'], 404);
         }
 
-        return response()->json(['message' => 'Delivery detail successfully fetched', 'incoming' => $incoming, 'details' => $details]);
+        return response()->json(['message' => 'Delivery detail successfully fetched', 'retur' => $retur, 'details' => $details]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateIncomingRequest $request, Incoming $incoming)
+    public function update(Request $request, string $id)
     {
-        return $incoming->update($request->validated());
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Incoming $incoming)
+    public function destroy($invoice)
     {
-        return $incoming->delete();
+        $data = DB::table('master_retur')->where('retur_invoice', "$invoice")->first();
+
     }
 }

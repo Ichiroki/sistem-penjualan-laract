@@ -17,16 +17,11 @@ return new class extends Migration
             $table->string('retur_name');
             $table->string('customer_name');
             $table->string('customer_address');
-            $table->string('retur_cost');
-            $table->unsignedBigInteger('vehicle_id');
-            $table->string('product_code');
+            $table->string('number_plate');
             $table->date('date_retur');
             $table->time('time_retur');
             $table->string('batch_number');
             $table->timestamps();
-
-            $table->foreign('vehicle_id')->references('id')->on('vehicles');
-            $table->foreign('product_code')->references('code')->on('products');
         });
     }
 

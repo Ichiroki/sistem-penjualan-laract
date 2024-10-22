@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('detail_retur', function (Blueprint $table) {
             $table->id();
             $table->integer('quantity');
-            $table->decimal('price_per_unit');
             $table->string('product_code');
-            $table->decimal('subtotal');
+            $table->string('product_name');
             $table->string('retur_invoice');
             $table->timestamps();
 
