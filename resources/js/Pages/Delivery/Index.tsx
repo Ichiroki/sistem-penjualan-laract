@@ -9,6 +9,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/ReactToastify.css'
 
 interface Product {
     id: number
@@ -91,8 +93,8 @@ function DeliveryIndex({auth}) {
         // setShowEditModal(!showEditModal)
     }
 
-    const handleDeleteModal = (pengirimanId) => {
-        setDeletePengirimanId(pengirimanId)
+    const handleDeleteModal = (invoice) => {
+        setDeletePengirimanId(invoice)
         setShowDeleteModal(!showDeleteModal)
     }
 
@@ -121,6 +123,7 @@ function DeliveryIndex({auth}) {
                 getDeliveriesData()
                 resetInput()
                 setShowCreateModal(false)
+                toast(res.data.message)
             }).catch((e) => {
                 if(e.response) {
                     console.log(e.response)
@@ -173,11 +176,12 @@ function DeliveryIndex({auth}) {
     let deletePengirimanData = async (pengirimanId) => {
         try {
             await axios.delete(`/deliveries/${deletePengirimanId}`)
-            .then(() => {
+            .then((res) => {
                 const updatePengirimanList = deliveries.filter((p) => p.id !== pengirimanId)
                 setDeliveries(updatePengirimanList)
                 setDeletePengirimanId(null)
                 setShowDeleteModal(false)
+                toast(res.data.message)
             })
         } catch(e) {
             console.error('Internal Server Error, Please Wait' + e)
@@ -215,7 +219,10 @@ function DeliveryIndex({auth}) {
             header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Deliveries</h2>}
             >
             <Head title="Dashboard" />
-
+            <ToastContainer
+                theme='light'
+                draggable
+            />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -485,8 +492,8 @@ function DeliveryIndex({auth}) {
                                                                         </div>
                                                                     </Modal>
                                                                 )} */}
-                                                                <Button color="danger" onClick={() => handleDeleteModal(p.id)}>Delete</Button>
-                                                                {deletePengirimanId && deletePengirimanId === p.id && (
+                                                                <Button color="danger" onClick={() => handleDeleteModal(p.delivery_invoice)}>Delete</Button>
+                                                                {deletePengirimanId && deletePengirimanId === p.delivery_invoice && (
                                                                     <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
                                                                         <div className='p-5'>
                                                                             <div className='flex justify-between pb-4 border-b'>
@@ -498,7 +505,7 @@ function DeliveryIndex({auth}) {
                                                                             </div>
                                                                             <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
                                                                                 <Button color="light" type="button" onClick={() => setShowDeleteModal(!showDeleteModal)}>Close</Button>
-                                                                                <Button color="danger" onClick={() => deletePengirimanData(p.id)}>Delete</Button>
+                                                                                <Button color="danger" onClick={() => deletePengirimanData(p.delivery_invoice)}>Delete</Button>
                                                                             </div>
                                                                         </div>
                                                                     </Modal>

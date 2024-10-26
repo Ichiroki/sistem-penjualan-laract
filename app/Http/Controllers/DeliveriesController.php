@@ -160,8 +160,30 @@ class DeliveriesController extends Controller
 
     }
 
-    public function destroy(Delivery $delivery)
+    public function destroy($invoice)
     {
-        return $delivery->delete();
+        $delivery = DB::table('master_delivery')
+        ->where('master_delivery.delivery_invoice', '=', "$invoice")
+        ->leftJoin('detail_delivery', 'master_delivery.delivery_invoice', '=', 'detail_delivery.delivery_invoice')
+        ->get();
+
+        forEach($delivery as $d) {
+            $quantity = DB::table('detail_delivery')
+            ->where('detail_delivery.delivery_invoice', '=', $d->delivery_invoice)
+            ->leftJoin('products', 'detail_delivery.product_code', '=', 'products.code')
+            ->get();
+
+            forEach($quantity as $q) {
+                DB::table('products')
+                ->where('code', $q->code)
+                ->update(['quantity' => $q->quantity + $d->quantity]);
+            }
+
+            DB::table('detail_delivery')->where('detail_delivery.delivery_invoice', '=', $d->delivery_invoice)->delete();
+        }
+
+        DB::table('master_delivery')->where("delivery_invoice", "$invoice")->delete();
+
+        return response()->json(['message' => "Delivery data successfully deleted"], 200);
     }
 }

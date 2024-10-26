@@ -419,7 +419,7 @@ function ReturIndex({auth}) {
                                                                     </Modal>
                                                                 )}
                                                                 {/* <Button color="warning" onClick={() => handleEditModal(r.retur_invoice)}>Edit</Button> */}
-                                                                {editReturData && editReturData.invoice === r.retur_invoice && (
+                                                                {/* {editReturData && editReturData.invoice === r.retur_invoice && (
                                                                     <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
                                                                         <div className='p-5'>
                                                                             <div className='flex justify-between pb-4 border-b'>
@@ -490,7 +490,7 @@ function ReturIndex({auth}) {
                                                                             </div>
                                                                         </div>
                                                                     </Modal>
-                                                                )}
+                                                                )} */}
                                                                 <Button color="danger" onClick={() => handleDeleteModal(r.retur_invoice)}>Delete</Button>
                                                                 {deleteReturId && deleteReturId === r.retur_invoice && (
                                                                     <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
