@@ -68,7 +68,7 @@ class IncomingController extends Controller
 
                 // Update stok produk
                 DB::table('products')->where('code', $product['code'])
-                    ->update(['quantity' => $realProduct->quantity + (int) $product['quantity']]);
+                    ->update(['quantity' => $realProduct->quantity - (int) $product['quantity']]);
             }
 
             DB::commit();
@@ -116,8 +116,30 @@ class IncomingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Incoming $incoming)
+    public function destroy($invoice)
     {
-        return $incoming->delete();
+        $incoming = DB::table('master_incoming')
+        ->where('master_incoming.incoming_invoice', '=', "$invoice")
+        ->leftJoin('detail_incoming', 'master_incoming.incoming_invoice', '=', 'detail_incoming.incoming_invoice')
+        ->get();
+
+        forEach($incoming as $i) {
+            $quantity = DB::table('detail_incoming')
+            ->where('detail_incoming.incoming_invoice', '=', $i->incoming_invoice)
+            ->leftJoin('products', 'detail_incoming.product_code', '=', 'products.code')
+            ->get();
+
+            forEach($quantity as $q) {
+                DB::table('products')
+                ->where('code', $q->code)
+                ->update(['quantity' => $q->quantity + $i->quantity]);
+            }
+
+            DB::table('detail_incoming')->where('detail_incoming.incoming_invoice', '=', $i->incoming_invoice)->delete();
+        }
+
+        DB::table('master_incoming')->where("incoming_invoice", "$invoice")->delete();
+
+        return response()->json(['message' => "Incoming data successfully deleted"], 200);
     }
 }

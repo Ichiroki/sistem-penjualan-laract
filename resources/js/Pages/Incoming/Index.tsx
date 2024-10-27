@@ -12,6 +12,7 @@ import formatRupiah from '@/utils/formatRupiah'
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
 import { ChangeEvent, useState } from 'react'
+import { toast, ToastContainer } from 'react-toastify'
 
 interface IncomingDetail {
     incoming: {
@@ -116,6 +117,7 @@ function ProductIndex({auth}) {
                 resetInput()
                 getIncomingsData()
                 setShowCreateModal(false)
+                toast.success(`New Notification\n ${res.data.message}`)
             })
             .catch((error) => {
                 console.log(error)
@@ -179,14 +181,15 @@ function ProductIndex({auth}) {
     let deleteIncomingData = async (invoice) => {
         try {
             await axios.delete(`/incomings/${invoice}`)
-            .then(() => {
+            .then((res) => {
                 const updateProductList = incomings.filter((p) => p.incoming_invoice !== invoice)
                 setIncomings(updateProductList)
                 setDeleteProductId(null)
                 setShowDeleteModal(false)
+                toast.success(`New Notification \n${res.data.message}`)
             })
         } catch(e) {
-            console.error('Internal Server Error, Please Wait' + e)
+            toast.error(`Internal server error, Please wait \n${e}`)
         }
     }
 
@@ -227,7 +230,9 @@ function ProductIndex({auth}) {
         header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Incoming</h2>}
         >
         <Head title="Dashboard" />
-
+        <ToastContainer
+            draggable
+        />
         <div className="py-12">
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -418,7 +423,7 @@ function ProductIndex({auth}) {
                                                                     </Modal>
                                                                 )}
                                                             <Button color="warning" onClick={() => handleEditModal(d.incoming_invoice)}>Edit</Button>
-                                                            {editIncomingData && editIncomingData.incoming_invoice === d.incoming_invoice && (
+                                                            {/* {editIncomingData && editIncomingData.incoming_invoice === d.incoming_invoice && (
                                                                 <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
                                                                     <div className='p-5'>
                                                                         <div className='flex justify-between pb-4 border-b'>
@@ -459,7 +464,7 @@ function ProductIndex({auth}) {
                                                                         </form>
                                                                         </div>
                                                                 </Modal>
-                                                            )}
+                                                            )} */}
                                                             <Button color="danger" onClick={() => handleDeleteModal(d.incoming_invoice)}>Delete</Button>
                                                             {deleteProductId && deleteProductId === d.incoming_invoice && (
                                                                 <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
