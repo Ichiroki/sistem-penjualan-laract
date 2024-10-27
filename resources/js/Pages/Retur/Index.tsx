@@ -10,6 +10,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/ReactToastify.css'
 
 interface Product {
     id: number
@@ -111,6 +113,7 @@ function ReturIndex({auth}) {
                 getRetursData()
                 resetInput()
                 setShowCreateModal(false)
+                toast.success(res.data.message)
             }).catch((e) => {
                 if(e.response) {
                     console.log(e.response)
@@ -165,14 +168,16 @@ function ReturIndex({auth}) {
     let deletePengirimanData = async (invoice) => {
         try {
             await axios.delete(`/returs/${invoice}`)
-            .then(() => {
+            .then((res) => {
                 const updatePengirimanList = returs.filter((r) => r.retur_invoice !== invoice)
                 setReturs(updatePengirimanList)
                 setDeleteReturId(null)
                 setShowDeleteModal(false)
+                toast.success(res.data.message)
             })
         } catch(e) {
             console.error('Internal Server Error, Please Wait' + e)
+            toast.error(`Internal Server Error. please wait ${e}`)
         }
     }
 
@@ -215,7 +220,7 @@ function ReturIndex({auth}) {
             header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Retur</h2>}
             >
             <Head title="Dashboard" />
-
+            <ToastContainer/>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">

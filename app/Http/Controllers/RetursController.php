@@ -74,7 +74,7 @@ class RetursController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Incoming created successfully'], 201);
+            return response()->json(['message' => 'Retur ticket created successfully'], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -119,7 +119,8 @@ class RetursController extends Controller
      */
     public function destroy($invoice)
     {
-        $data = DB::table('master_retur')->where('retur_invoice', "$invoice")->first();
-
+        DB::table('detail_retur')->where('retur_invoice', '=', "$invoice")->delete();
+        DB::table('master_retur')->where('retur_invoice', '=', "$invoice")->delete();
+        return response()->json(['message' => "Retur ticket successfully deleted"], 200);
     }
 }

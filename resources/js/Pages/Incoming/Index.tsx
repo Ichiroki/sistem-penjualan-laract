@@ -13,6 +13,7 @@ import { Head } from '@inertiajs/react'
 import axios from 'axios'
 import { ChangeEvent, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/ReactToastify.css'
 
 interface IncomingDetail {
     incoming: {
