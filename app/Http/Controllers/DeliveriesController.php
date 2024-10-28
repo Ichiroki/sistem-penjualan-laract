@@ -86,7 +86,7 @@ class DeliveriesController extends Controller
         ->get();
 
         if (!$delivery) {
-            return response()->json(['error' => 'Delivery not found'], 404);
+            return response()->json(['error' => 'Delivery not found', 'status' => false], 404);
         }
 
         return response()->json(['message' => 'Delivery detail successfully fetched', 'delivery' => $delivery, 'details' => $details]);
