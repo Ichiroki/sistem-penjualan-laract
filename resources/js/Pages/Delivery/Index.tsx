@@ -2,15 +2,17 @@ import { Delivery } from '@/API/Delivery'
 import { Product } from '@/API/Product'
 import { Vehicles } from '@/API/Vehicle'
 import Button from '@/Components/Button'
+import Dropdown from '@/Components/Dropdown'
 import InputLabel from '@/Components/InputLabel'
 import Modal from '@/Components/Modal'
 import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/ReactToastify.css'
+import * as XLSX from 'xlsx'
 
 interface Product {
     id: number
@@ -105,6 +107,23 @@ function DeliveryIndex({auth}) {
         customer_address: '',
         batch_number: ''
     })
+
+    const downloadTo = (data, fileName, type) => {
+        if(type === 'excel') {
+            try {
+                const worksheet = XLSX.utils.json_to_sheet(data)
+
+                const workbook = XLSX.utils.book_new()
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1")
+
+                XLSX.writeFile(workbook, fileName)
+            } catch {
+
+            }
+        } else {
+
+        }
+    }
 
     let createPengirimanData = async (e) => {
         e.preventDefault()
@@ -227,106 +246,145 @@ function DeliveryIndex({auth}) {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <div className='flex justify-between mb-6'>
-                                <TextInput placeholder={'Search here...'} value={search} onChange={(e) => setSearch(e.target.value)} />
-                                <Button onClick={() => setShowCreateModal(!showCreateModal)}>Create</Button>
-                                <Modal show={showCreateModal} onClose={() => {
-                                    resetInput();
-                                    setShowCreateModal(false)
-                                }}>
-                                    <div className='p-5'>
-                                        <div className='flex justify-between pb-4 border-b'>
-                                            <h1 className='text-medium text-xl'>Create Pengiriman</h1>
-                                            <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
-                                        </div>
-                                        <form onSubmit={createPengirimanData}>
-                                            <div className='my-4 overflow-y-scroll scrollbar-hide h-96'>
-                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
-                                                        <div className='mb-4 w-full'>
-                                                            <InputLabel value="Delivery Invoice" className='mb-2' htmlFor="delivery_invoice"/>
-                                                            <TextInput id="delivery_invoice" className='w-full' onChange={(e) => setInvoice(e.target.value)}/>
-                                                        </div>
-                                                        <div className='mb-4 w-full'>
-                                                            <InputLabel value="Delivery Name" className='mb-2' htmlFor="delivery_name"/>
-                                                            <TextInput id="delivery_name" className='w-full' onChange={(e) => setNamaPengirim(e.target.value)}/>
-                                                        </div>
-                                                    </div>
+                            <div className='flex flex-col md:flex-row justify-between mb-6 gap-3'>
+                                <div>
+                                    <TextInput placeholder={'Search here...'} value={search} className='w-full' onChange={(e) => setSearch(e.target.value)} />
+                                </div>
+                                <div className='flex flex-col gap-3'>
+                                    <div>
+                                        <button onClick={() => setShowCreateModal(!showCreateModal)} className="w-full md:w-[8.5rem] h-[2.5rem] transition-all duration-[0.3s] enabled:cursor-pointer font-[550] rounded-xl border-2 border-solid border-slate-600 enabled:hover:text-white enabled:hover:bg-slate-600">Create</button>
+                                        <Modal show={showCreateModal} onClose={() => {
+                                            resetInput();
+                                            setShowCreateModal(false)
+                                        }}>
+                                            <div className='p-5'>
+                                                <div className='flex justify-between pb-4 border-b'>
+                                                    <h1 className='text-medium text-xl'>Create Pengiriman</h1>
+                                                    <button onClick={() => setShowCreateModal(!showCreateModal)}>X</button>
                                                 </div>
-                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
-                                                        <div className='mb-4 w-full'>
-                                                            <InputLabel value="Customer Name" className='mb-2' htmlFor="customer_name"/>
-                                                            <TextInput id="customer_name" className='w-full' onChange={(e) => setNamaKustomer(e.target.value)}/>
+                                                <form onSubmit={createPengirimanData}>
+                                                    <div className='my-4 overflow-y-scroll scrollbar-hide h-96'>
+                                                        <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                            <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                                <div className='mb-4 w-full'>
+                                                                    <InputLabel value="Delivery Invoice" className='mb-2' htmlFor="delivery_invoice"/>
+                                                                    <TextInput id="delivery_invoice" className='w-full' onChange={(e) => setInvoice(e.target.value)}/>
+                                                                </div>
+                                                                <div className='mb-4 w-full'>
+                                                                    <InputLabel value="Delivery Name" className='mb-2' htmlFor="delivery_name"/>
+                                                                    <TextInput id="delivery_name" className='w-full' onChange={(e) => setNamaPengirim(e.target.value)}/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                            <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                                <div className='mb-4 w-full'>
+                                                                    <InputLabel value="Customer Name" className='mb-2' htmlFor="customer_name"/>
+                                                                    <TextInput id="customer_name" className='w-full' onChange={(e) => setNamaKustomer(e.target.value)}/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                            <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                                <div className='mb-4 w-full'>
+                                                                    <InputLabel value="Customer Address" className='mb-2' htmlFor="customer_address"/>
+                                                                    <textarea
+                                                                    name='customer_address'
+                                                                    id="customer_address"
+                                                                    onChange={(e) => {setAlamatKustomer(e.target.value)}}
+                                                                    className='block font-medium text-sm text-gray-700 w-full outline-none border-gray-300 rounded-lg'
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                            <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                                <div className='mb-4 w-full'>
+                                                                    <InputLabel value="Number Plates" className='mb-2' htmlFor="plat_nomor"/>
+                                                                    <select id="plat_nomor" onChange={e => setPlatNomor(e.target.value)} className='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full'>
+                                                                        <option value="">Select Product</option>
+                                                                        {vehicles.map((p) =>
+                                                                            <option value={p.number_plates}>{`${p.number_plates} (${p.vehicle_type})`}</option>
+                                                                        )}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                            <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
+                                                                <div className='mb-4 w-full'>
+                                                                    <InputLabel value="Batch Number" className='mb-2' htmlFor="batch_number"/>
+                                                                    <TextInput id="batch_number" className='w-full' onChange={(e) => setBatchNumber(e.target.value)}/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='flex items-center justify-between gap-3 flex-wrap'>
+                                                        {productField.map((input, index) =>
+                                                        <>
+                                                            <div className='mb-4 w-full' key={index}>
+                                                                <InputLabel children={`Product ${index + 1}`} htmlFor={`product-${index + 1}`}/>
+                                                                <select name={`code`} id={`product-${index + 1}`} className='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full' onChange={event => handleFormChange(index, event)}>
+                                                                    <option value="">Select Product</option>
+                                                                    {product.map((p) =>
+                                                                        <option value={p.code}>{`${p.name} (${p.code})`}</option>
+                                                                    )}
+                                                                </select>
+                                                            </div>
+                                                            <div className='mb-4 w-full'>
+                                                                <InputLabel children={`Quantity ${index + 1}`} htmlFor={`Quantity ${index + 1}`}/>
+                                                                <TextInput className="w-full" id={`Quantity-${index + 1}`} name="quantity" onChange={event => handleFormChange(index, event)}/>
+                                                            </div>
+                                                            <Button children={`-`} color='danger' onClick={() => removeField(index)}/>
+                                                        </>
+                                                        )}
+                                                            <Button children={`+`} color='success' onClick={addFields}/>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
-                                                        <div className='mb-4 w-full'>
-                                                            <InputLabel value="Customer Address" className='mb-2' htmlFor="customer_address"/>
-                                                            <textarea
-                                                            name='customer_address'
-                                                            id="customer_address"
-                                                            onChange={(e) => {setAlamatKustomer(e.target.value)}}
-                                                            className='block font-medium text-sm text-gray-700 w-full outline-none border-gray-300 rounded-lg'
-                                                            />
-                                                        </div>
+                                                    <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
+                                                        <Button color="light" type="button" onClick={() =>{
+                                                            resetInput();
+                                                            setShowCreateModal(!showCreateModal)
+                                                        }}>Close</Button>
+                                                        <Button color="success" type="submit">Submit</Button>
                                                     </div>
-                                                </div>
-                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
-                                                        <div className='mb-4 w-full'>
-                                                            <InputLabel value="Number Plates" className='mb-2' htmlFor="plat_nomor"/>
-                                                            <select id="plat_nomor" onChange={e => setPlatNomor(e.target.value)} className='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full'>
-                                                                <option value="">Select Product</option>
-                                                                {vehicles.map((p) =>
-                                                                    <option value={p.number_plates}>{`${p.number_plates} (${p.vehicle_type})`}</option>
-                                                                )}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                    <div className='flex flex-col lg:flex-row justify-between w-full gap-5'>
-                                                        <div className='mb-4 w-full'>
-                                                            <InputLabel value="Batch Number" className='mb-2' htmlFor="batch_number"/>
-                                                            <TextInput id="batch_number" className='w-full' onChange={(e) => setBatchNumber(e.target.value)}/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='flex items-center justify-between gap-3 flex-wrap'>
-                                                {productField.map((input, index) =>
-                                                <>
-                                                    <div className='mb-4 w-full' key={index}>
-                                                        <InputLabel children={`Product ${index + 1}`} htmlFor={`product-${index + 1}`}/>
-                                                        <select name={`code`} id={`product-${index + 1}`} className='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full' onChange={event => handleFormChange(index, event)}>
-                                                            <option value="">Select Product</option>
-                                                            {product.map((p) =>
-                                                                <option value={p.code}>{`${p.name} (${p.code})`}</option>
-                                                            )}
-                                                        </select>
-                                                    </div>
-                                                    <div className='mb-4 w-full'>
-                                                        <InputLabel children={`Quantity ${index + 1}`} htmlFor={`Quantity ${index + 1}`}/>
-                                                        <TextInput className="w-full" id={`Quantity-${index + 1}`} name="quantity" onChange={event => handleFormChange(index, event)}/>
-                                                    </div>
-                                                    <Button children={`-`} color='danger' onClick={() => removeField(index)}/>
-                                                </>
-                                                )}
-                                                    <Button children={`+`} color='success' onClick={addFields}/>
-                                                </div>
+                                                </form>
                                             </div>
-                                            <div className='flex justify-end gap-3 mt-6 pt-6 border-t'>
-                                                <Button color="light" type="button" onClick={() =>{
-                                                    resetInput();
-                                                    setShowCreateModal(!showCreateModal)
-                                                }}>Close</Button>
-                                                <Button color="success" type="submit">Submit</Button>
-                                            </div>
-                                        </form>
+                                        </Modal>
                                     </div>
-                                </Modal>
+                                    <div>
+                                        <Dropdown>
+                                            <Dropdown.Trigger>
+                                                <span>
+                                                    <button className="w-full md:w-[8.5rem] h-[2.5rem] transition-all duration-[0.3s] enabled:cursor-pointer font-[550] rounded-xl border-2 border-solid border-slate-600 enabled:hover:text-white enabled:hover:bg-slate-600">
+                                                        <span className='inline-flex items-center'>
+                                                            Download To
+                                                            <svg
+                                                                className="ms-2 -me-0.5 h-4 w-4"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                viewBox="0 0 20 20"
+                                                                fill="currentColor"
+                                                            >
+                                                                <path
+                                                                    fillRule="evenodd"
+                                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                                    clipRule="evenodd"
+                                                                />
+                                                            </svg>
+                                                        </span>
+                                                    </button>
+                                                </span>
+                                            </Dropdown.Trigger>
+                                            <Dropdown.Content contentClasses={'flex flex-col justify-left items-start z-10 bg-slate-50 overflow-hidden'}>
+                                                <button className='py-2 pl-3 w-full text-left transition duration-150 hover:bg-slate-300' onClick={() => downloadTo(deliveries, 'Deliveries.xlsx', 'excel')}>
+                                                    Excel
+                                                </button>
+                                                <button className='py-2 pl-3 w-full text-left transition duration-150 hover:bg-slate-300' onClick={() => downloadTo()}>
+                                                    PDF
+                                                </button>
+                                            </Dropdown.Content>
+                                        </Dropdown>
+                                    </div>
+                                </div>
                             </div>
                             <div className=''>
                                 <div className="flex flex-col">
