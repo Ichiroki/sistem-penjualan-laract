@@ -4,6 +4,7 @@ import { Delivery } from "@/types/Delivery"
 
 export function Delivery() {
     const [deliveries, setDeliveries] = useState<Delivery[]>([])
+    const [deliverDetail, setDeliverDetail] = useState([])
 
     const [search, setSearch] = useState('')
 
@@ -12,7 +13,10 @@ export function Delivery() {
         if(search) {
             await axios.get(`/deliveries?search=${search}`).then((res) => { setDeliveries(res.data) })
         } else {
-            await axios.get('/deliveries').then((res) => { setDeliveries(res.data) })
+            await axios.get('/deliveries').then((res) => {
+                setDeliveries(res.data.pengiriman)
+                setDeliverDetail(res.data.details)
+            })
         }
         } catch (e) {
             console.error('Internal Server error, please wait' + e)
@@ -26,6 +30,7 @@ export function Delivery() {
     return {
         deliveries,
         setDeliveries,
+        deliverDetail,
         search,
         setSearch,
         getDeliveriesData

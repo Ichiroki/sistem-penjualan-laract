@@ -9,6 +9,8 @@ import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 import { ChangeEvent, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/ReactToastify.css'
@@ -43,6 +45,7 @@ function DeliveryIndex({auth}) {
     const {
         deliveries,
         setDeliveries,
+        deliverDetail,
         search,
         setSearch,
         getDeliveriesData
@@ -108,21 +111,80 @@ function DeliveryIndex({auth}) {
         batch_number: ''
     })
 
-    const downloadTo = (data, fileName, type) => {
-        if(type === 'excel') {
-            try {
-                const worksheet = XLSX.utils.json_to_sheet(data)
+    const excelDownload = (data, fileName) => {
+        try {
+            const worksheet = XLSX.utils.json_to_sheet(data)
 
-                const workbook = XLSX.utils.book_new()
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1")
+            const workbook = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1")
 
-                XLSX.writeFile(workbook, fileName)
-            } catch {
-
-            }
-        } else {
-
+            return XLSX.writeFile(workbook, fileName)
+        } catch(e) {
+            console.log(e)
         }
+    }
+
+    const pdfDownload = (deliveries, deliverDetail) => {
+        const pdf = new jsPDF()
+        const tableContent = deliveries.map((d, i) => `
+            <tr>
+                <td style="border: 1px solid black; padding: 4px;">${i + 1}</td>
+                <td style="border: 1px solid black; padding: 4px;">${d.delivery_invoice}</td>
+                <td style="border: 1px solid black; padding: 4px;">${d.delivery_name}</td>
+                <td style="border: 1px solid black; padding: 4px;">${d.customer_name}</td>
+                <td style="border: 1px solid black; padding: 4px;">${d.customer_address}</td>
+                <td style="border: 1px solid black; padding: 4px;">${d.batch_number}</td>
+                <td style="border: 1px solid black; padding: 4px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        ${deliverDetail.map(dd => `
+                            <tr>
+                                <td style="padding-right: 6px;">${dd.product_name}</td>
+                                <td style="padding-left: 6px;">${dd.quantity}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                </td>
+            </tr>
+        `).join('')
+
+        const htmlContent = `
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; padding: 4px;">No</th>
+                        <th style="border: 1px solid black; padding: 4px;">Delivery Invoice</th>
+                        <th style="border: 1px solid black; padding: 4px;">Delivery Name</th>
+                        <th style="border: 1px solid black; padding: 4px;">Customer Name</th>
+                        <th style="border: 1px solid black; padding: 4px;">Customer Address</th>
+                        <th style="border: 1px solid black; padding: 4px;">Batch Number</th>
+                        <th style="border: 1px solid black; padding: 4px;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <th style="text-align:center;" colspan="3">Product</th>
+                                </tr>
+                                <tr>
+                                    <th style="padding-right: 6px; text-align:center;">Name</th>
+                                    <th style="padding-left: 6px; text-align:center;">Quantity</th>
+                                </tr>
+                            </table>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableContent}
+                </tbody>
+            </table>
+        `
+
+        pdf.html(htmlContent, {
+            callback: function(doc) {
+                doc.save('sample_document.pdf');
+            },
+            x: 15,
+            y: 10,
+            width: 170,
+            windowWidth: 650,
+        });
     }
 
     let createPengirimanData = async (e) => {
@@ -375,10 +437,10 @@ function DeliveryIndex({auth}) {
                                                 </span>
                                             </Dropdown.Trigger>
                                             <Dropdown.Content contentClasses={'flex flex-col justify-left items-start z-10 bg-slate-50 overflow-hidden'}>
-                                                <button className='py-2 pl-3 w-full text-left transition duration-150 hover:bg-slate-300' onClick={() => downloadTo(deliveries, 'Deliveries.xlsx', 'excel')}>
+                                                <button className='py-2 pl-3 w-full text-left transition duration-150 hover:bg-slate-300' onClick={() => excelDownload(deliveries, 'Deliveries.xlsx')}>
                                                     Excel
                                                 </button>
-                                                <button className='py-2 pl-3 w-full text-left transition duration-150 hover:bg-slate-300' onClick={() => downloadTo()}>
+                                                <button className='py-2 pl-3 w-full text-left transition duration-150 hover:bg-slate-300' onClick={() => pdfDownload(deliveries, deliverDetail)}>
                                                     PDF
                                                 </button>
                                             </Dropdown.Content>

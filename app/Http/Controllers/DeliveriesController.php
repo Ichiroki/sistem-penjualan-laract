@@ -26,9 +26,14 @@ class DeliveriesController extends Controller
             ->get();
         } else {
             $pengiriman = DB::table('master_delivery')->get();
+
+            $details = DB::table('detail_delivery')
+            ->distinct()
+            ->leftJoin('master_delivery', 'detail_delivery.delivery_invoice', '=', 'master_delivery.delivery_invoice')
+            ->get();
         }
 
-        return response()->json($pengiriman);
+        return response()->json(['pengiriman' => $pengiriman, 'details' => $details]);
     }
 
     public function store(StoreDeliveriesRequest $request)
